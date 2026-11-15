@@ -666,6 +666,10 @@ export interface Product {
    */
   hideOfferBottom?: boolean | null;
   /**
+   * Bật: ô nào để trống sẽ hiện chữ mẫu của hệ thống. Tắt: ô để trống thì ẩn.
+   */
+  useDefaultCopyHero?: boolean | null;
+  /**
    * Để trống = dùng chữ mặc định
    */
   offerSeriesLabel?: string | null;
@@ -681,6 +685,18 @@ export interface Product {
    * Để trống = dùng chữ mặc định
    */
   offerEmotionLine?: string | null;
+  /**
+   * Bật: ô nào để trống sẽ hiện chữ mẫu của hệ thống. Tắt: ô để trống thì ẩn.
+   */
+  useDefaultCopyIncludes?: boolean | null;
+  /**
+   * Bật: ô nào để trống sẽ hiện chữ mẫu của hệ thống. Tắt: ô để trống thì ẩn.
+   */
+  useDefaultCopyStats?: boolean | null;
+  /**
+   * Bật: ô nào để trống sẽ hiện chữ mẫu của hệ thống. Tắt: ô để trống thì ẩn.
+   */
+  useDefaultCopyCurriculum?: boolean | null;
   /**
    * Để trống = dùng chữ mặc định
    */
@@ -710,6 +726,10 @@ export interface Product {
       }[]
     | null;
   /**
+   * Bật: ô nào để trống sẽ hiện chữ mẫu của hệ thống. Tắt: ô để trống thì ẩn.
+   */
+  useDefaultCopyFeatures?: boolean | null;
+  /**
    * Để trống = dùng chữ mặc định
    */
   featuresHeading?: string | null;
@@ -733,6 +753,14 @@ export interface Product {
         id?: string | null;
       }[]
     | null;
+  /**
+   * Bật: ô nào để trống sẽ hiện chữ mẫu của hệ thống. Tắt: ô để trống thì ẩn.
+   */
+  useDefaultCopyFaq?: boolean | null;
+  /**
+   * Bật: ô nào để trống sẽ hiện chữ mẫu của hệ thống. Tắt: ô để trống thì ẩn.
+   */
+  useDefaultCopyBottom?: boolean | null;
   /**
    * Để trống = dùng chữ mặc định
    */
@@ -2869,10 +2897,14 @@ export interface ProductsSelect<T extends boolean = true> {
   hideOfferFeatures?: T;
   hideOfferFaq?: T;
   hideOfferBottom?: T;
+  useDefaultCopyHero?: T;
   offerSeriesLabel?: T;
   offerTitleLine1?: T;
   offerTitleLine2?: T;
   offerEmotionLine?: T;
+  useDefaultCopyIncludes?: T;
+  useDefaultCopyStats?: T;
+  useDefaultCopyCurriculum?: T;
   curriculumHeading?: T;
   curriculumUnitLabel?: T;
   curriculumSubheading?: T;
@@ -2883,6 +2915,7 @@ export interface ProductsSelect<T extends boolean = true> {
         description?: T;
         id?: T;
       };
+  useDefaultCopyFeatures?: T;
   featuresHeading?: T;
   featuresSubheading?: T;
   featureItems?:
@@ -2892,6 +2925,8 @@ export interface ProductsSelect<T extends boolean = true> {
         description?: T;
         id?: T;
       };
+  useDefaultCopyFaq?: T;
+  useDefaultCopyBottom?: T;
   bottomTitle?: T;
   bottomDescription?: T;
   components?:
@@ -4440,6 +4475,10 @@ export interface HabitJourneyContent {
    */
   tracker?: {
     /**
+     * Bật: ô nào để trống sẽ hiện chữ mẫu của hệ thống. Tắt: ô để trống thì ẩn.
+     */
+    useDefaultCopyTracker?: boolean | null;
+    /**
      * Nhập tiêu đề khối đồng hành sau 28 ngày.
      */
     afterJourneyTitle?: string | null;
@@ -4467,6 +4506,10 @@ export interface HabitJourneyContent {
    */
   privacyNote?: string | null;
   header?: {
+    /**
+     * Bật: ô nào để trống sẽ hiện chữ mẫu của hệ thống. Tắt: ô để trống thì ẩn.
+     */
+    useDefaultCopyHeader?: boolean | null;
     /**
      * Nhập huy hiệu trên cùng (vd: content creator hub).
      */
@@ -4518,6 +4561,10 @@ export interface HabitJourneyContent {
   };
   step1?: {
     /**
+     * Bật: ô nào để trống sẽ hiện chữ mẫu của hệ thống. Tắt: ô để trống thì ẩn.
+     */
+    useDefaultCopyStep1?: boolean | null;
+    /**
      * Nhập lời dẫn mở đầu bước 1.
      */
     leadIn?: string | null;
@@ -4540,6 +4587,10 @@ export interface HabitJourneyContent {
   };
   step2?: {
     /**
+     * Bật: ô nào để trống sẽ hiện chữ mẫu của hệ thống. Tắt: ô để trống thì ẩn.
+     */
+    useDefaultCopyStep2?: boolean | null;
+    /**
      * Nhập lời dẫn mở đầu bước 2.
      */
     leadIn?: string | null;
@@ -4553,6 +4604,10 @@ export interface HabitJourneyContent {
     chartSubtitle?: string | null;
   };
   step3?: {
+    /**
+     * Bật: ô nào để trống sẽ hiện chữ mẫu của hệ thống. Tắt: ô để trống thì ẩn.
+     */
+    useDefaultCopyStep3?: boolean | null;
     /**
      * Nhập lời dẫn mở đầu bước 3.
      */
@@ -4587,6 +4642,10 @@ export interface HabitJourneyContent {
     mentorSuccessHint?: string | null;
   };
   step4?: {
+    /**
+     * Bật: ô nào để trống sẽ hiện chữ mẫu của hệ thống. Tắt: ô để trống thì ẩn.
+     */
+    useDefaultCopyStep4?: boolean | null;
     /**
      * Nhập lời dẫn mở đầu bước 4.
      */
@@ -4650,6 +4709,10 @@ export interface HabitJourneyContent {
   };
   step5?: {
     /**
+     * Bật: ô nào để trống sẽ hiện chữ mẫu của hệ thống. Tắt: ô để trống thì ẩn.
+     */
+    useDefaultCopyStep5?: boolean | null;
+    /**
      * Nhập lời dẫn mở đầu bước 5.
      */
     leadIn?: string | null;
@@ -4667,6 +4730,10 @@ export interface HabitJourneyContent {
     customActionPlaceholder?: string | null;
   };
   step6?: {
+    /**
+     * Bật: ô nào để trống sẽ hiện chữ mẫu của hệ thống. Tắt: ô để trống thì ẩn.
+     */
+    useDefaultCopyStep6?: boolean | null;
     /**
      * Nhập lời dẫn mở đầu bước 6.
      */
@@ -4686,6 +4753,10 @@ export interface HabitJourneyContent {
   };
   checkIn?: {
     /**
+     * Bật: ô nào để trống sẽ hiện chữ mẫu của hệ thống. Tắt: ô để trống thì ẩn.
+     */
+    useDefaultCopyCheckIn?: boolean | null;
+    /**
      * Nhập lời dẫn ngày cần check-in.
      */
     postDayHint?: string | null;
@@ -4699,6 +4770,10 @@ export interface HabitJourneyContent {
     notePlaceholder?: string | null;
   };
   footer?: {
+    /**
+     * Bật: ô nào để trống sẽ hiện chữ mẫu của hệ thống. Tắt: ô để trống thì ẩn.
+     */
+    useDefaultCopyFooter?: boolean | null;
     /**
      * Nhập khẩu hiệu thương hiệu.
      */
@@ -4727,6 +4802,10 @@ export interface EqBuddyContent {
    * Chỉ chủ sở hữu (Owner) mới có quyền đổi. "Miễn phí hoàn toàn": khách rút không giới hạn, không cần đăng nhập, mở toàn bộ 26 thẻ và câu hỏi suy ngẫm, không hiển thị paywall. "Cần đăng ký dùng thử": khách rút 1 thẻ rồi phải dùng thử.
    */
   eqAccessMode?: ('trial' | 'free') | null;
+  /**
+   * Bật: ô nào để trống sẽ hiện chữ mẫu của hệ thống. Tắt: ô để trống thì ẩn.
+   */
+  useDefaultCopyIntro?: boolean | null;
   tagline?: string | null;
   quoteTop?: string | null;
   badge?: string | null;
@@ -4734,11 +4813,23 @@ export interface EqBuddyContent {
   subtitle?: string | null;
   suggestedEmotions?: string | null;
   shopeeUrl?: string | null;
+  /**
+   * Bật: ô nào để trống sẽ hiện chữ mẫu của hệ thống. Tắt: ô để trống thì ẩn.
+   */
+  useDefaultCopyStateIcons?: boolean | null;
   stateIcon1Label?: string | null;
   stateIcon2Label?: string | null;
   stateIcon3Label?: string | null;
+  /**
+   * Bật: ô nào để trống sẽ hiện chữ mẫu của hệ thống. Tắt: ô để trống thì ẩn.
+   */
+  useDefaultCopyCardBack?: boolean | null;
   cardBackPromptTitle?: string | null;
   cardBackQuote?: string | null;
+  /**
+   * Bật: ô nào để trống sẽ hiện chữ mẫu của hệ thống. Tắt: ô để trống thì ẩn.
+   */
+  useDefaultCopyIntro1?: boolean | null;
   intro1Heading?: string | null;
   intro1Description?: string | null;
   card1Title?: string | null;
@@ -4749,6 +4840,10 @@ export interface EqBuddyContent {
   card3Desc?: string | null;
   card4Title?: string | null;
   card4Desc?: string | null;
+  /**
+   * Bật: ô nào để trống sẽ hiện chữ mẫu của hệ thống. Tắt: ô để trống thì ẩn.
+   */
+  useDefaultCopyGuide?: boolean | null;
   intro2Heading?: string | null;
   intro2Description?: string | null;
   step1Title?: string | null;
@@ -5129,6 +5224,7 @@ export interface HabitJourneyContentSelect<T extends boolean = true> {
   tracker?:
     | T
     | {
+        useDefaultCopyTracker?: T;
         afterJourneyTitle?: T;
         afterJourneyText?: T;
         myDataTitle?: T;
@@ -5143,6 +5239,7 @@ export interface HabitJourneyContentSelect<T extends boolean = true> {
   header?:
     | T
     | {
+        useDefaultCopyHeader?: T;
         badgeText?: T;
         titleLine1?: T;
         titleLine2?: T;
@@ -5159,6 +5256,7 @@ export interface HabitJourneyContentSelect<T extends boolean = true> {
   step1?:
     | T
     | {
+        useDefaultCopyStep1?: T;
         leadIn?: T;
         cueDiagnosis?: T;
         cravingDiagnosis?: T;
@@ -5168,6 +5266,7 @@ export interface HabitJourneyContentSelect<T extends boolean = true> {
   step2?:
     | T
     | {
+        useDefaultCopyStep2?: T;
         leadIn?: T;
         chartTitle?: T;
         chartSubtitle?: T;
@@ -5175,6 +5274,7 @@ export interface HabitJourneyContentSelect<T extends boolean = true> {
   step3?:
     | T
     | {
+        useDefaultCopyStep3?: T;
         leadIn?: T;
         scorecardTitle?: T;
         scorecardDesc?: T;
@@ -5187,6 +5287,7 @@ export interface HabitJourneyContentSelect<T extends boolean = true> {
   step4?:
     | T
     | {
+        useDefaultCopyStep4?: T;
         leadIn?: T;
         leadInEmphasis?: T;
         statementTitle?: T;
@@ -5206,6 +5307,7 @@ export interface HabitJourneyContentSelect<T extends boolean = true> {
   step5?:
     | T
     | {
+        useDefaultCopyStep5?: T;
         leadIn?: T;
         theoryTitle?: T;
         theoryDesc?: T;
@@ -5214,6 +5316,7 @@ export interface HabitJourneyContentSelect<T extends boolean = true> {
   step6?:
     | T
     | {
+        useDefaultCopyStep6?: T;
         leadIn?: T;
         passTitle?: T;
         passSubtitle?: T;
@@ -5222,6 +5325,7 @@ export interface HabitJourneyContentSelect<T extends boolean = true> {
   checkIn?:
     | T
     | {
+        useDefaultCopyCheckIn?: T;
         postDayHint?: T;
         restDayHint?: T;
         notePlaceholder?: T;
@@ -5229,6 +5333,7 @@ export interface HabitJourneyContentSelect<T extends boolean = true> {
   footer?:
     | T
     | {
+        useDefaultCopyFooter?: T;
         slogan?: T;
         authorInfo?: T;
         bookCredits?: T;
@@ -5243,6 +5348,7 @@ export interface HabitJourneyContentSelect<T extends boolean = true> {
  */
 export interface EqBuddyContentSelect<T extends boolean = true> {
   eqAccessMode?: T;
+  useDefaultCopyIntro?: T;
   tagline?: T;
   quoteTop?: T;
   badge?: T;
@@ -5250,11 +5356,14 @@ export interface EqBuddyContentSelect<T extends boolean = true> {
   subtitle?: T;
   suggestedEmotions?: T;
   shopeeUrl?: T;
+  useDefaultCopyStateIcons?: T;
   stateIcon1Label?: T;
   stateIcon2Label?: T;
   stateIcon3Label?: T;
+  useDefaultCopyCardBack?: T;
   cardBackPromptTitle?: T;
   cardBackQuote?: T;
+  useDefaultCopyIntro1?: T;
   intro1Heading?: T;
   intro1Description?: T;
   card1Title?: T;
@@ -5265,6 +5374,7 @@ export interface EqBuddyContentSelect<T extends boolean = true> {
   card3Desc?: T;
   card4Title?: T;
   card4Desc?: T;
+  useDefaultCopyGuide?: T;
   intro2Heading?: T;
   intro2Description?: T;
   step1Title?: T;

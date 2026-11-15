@@ -34,8 +34,13 @@ import { drawEqCardAction } from '@/lib/eq/actions'
 import { saveEqCardAction } from '@/lib/eq/saved-actions'
 import { EQ_BUDDY_PRODUCT_SLUG } from '@/lib/eq/config'
 import { vi } from '@/lib/i18n/vi'
+import { pickCopy } from '@/lib/copy'
 
 export interface EQDrawAppContentProps {
+  useDefaultCopyIntro?: boolean | null
+  useDefaultCopyGuide?: boolean | null
+  useDefaultCopyStateIcons?: boolean | null
+  useDefaultCopyCardBack?: boolean | null
   quoteTop?: string | null
   stateIcon1Label?: string | null
   stateIcon2Label?: string | null
@@ -141,6 +146,25 @@ export function EQDrawApp({
         }),
       ) || rawShopeeUrl
     : ''
+
+  // BX-05: Cờ checkbox dùng chữ mặc định theo từng nhóm (khi không truyền content từ CMS thì giữ mặc định)
+  const useDefaultIntro = content ? Boolean(content.useDefaultCopyIntro) : true
+  const useDefaultGuide = content ? Boolean(content.useDefaultCopyGuide) : true
+  const useDefaultStateIcons = content ? Boolean(content.useDefaultCopyStateIcons) : true
+  const useDefaultCardBack = content ? Boolean(content.useDefaultCopyCardBack) : true
+
+  const quoteTop = pickCopy(content?.quoteTop, vi.dp01eq.pauseReturnQuote, useDefaultIntro)
+  const stateIcon1 = pickCopy(content?.stateIcon1Label, vi.au02.stateIcon1, useDefaultStateIcons)
+  const stateIcon2 = pickCopy(content?.stateIcon2Label, vi.au02.stateIcon2, useDefaultStateIcons)
+  const stateIcon3 = pickCopy(content?.stateIcon3Label, vi.au02.stateIcon3, useDefaultStateIcons)
+  const showStateIcons = Boolean(stateIcon1 || stateIcon2 || stateIcon3)
+
+  const cardBackPromptTitle = pickCopy(
+    content?.cardBackPromptTitle,
+    vi.au02.reflectionHeading,
+    useDefaultCardBack,
+  )
+  const cardBackQuote = pickCopy(content?.cardBackQuote, vi.au02.cardBackQuote, useDefaultCardBack)
 
   // Rút thẻ
   const triggerConfetti = () => {
@@ -281,9 +305,11 @@ export function EQDrawApp({
               <span>{vi.dp01eq.guide}</span>
             </button>
 
-            <span className="font-quote italic text-sm sm:text-base md:text-lg text-bright-magenta font-semibold tracking-wide hidden sm:inline">
-              {content?.quoteTop || vi.dp01eq.pauseReturnQuote}
-            </span>
+            {quoteTop && (
+              <span className="font-quote italic text-sm sm:text-base md:text-lg text-bright-magenta font-semibold tracking-wide hidden sm:inline">
+                {quoteTop}
+              </span>
+            )}
           </div>
         </div>
 
@@ -317,34 +343,42 @@ export function EQDrawApp({
           <div className="space-y-6 animate-fadeIn font-ui">
             <div className="p-5 sm:p-8 rounded-3xl bg-white border border-lavender-mist shadow-soft-md space-y-5 text-center sm:text-left">
               {/* 3 Biểu tượng trạng thái theo Hana rà soát */}
-              <div className="grid grid-cols-3 gap-2 sm:gap-4 text-center">
-                <div className="flex flex-col items-center gap-1.5 p-2 sm:p-3 rounded-2xl bg-warm-ivory border border-lavender-mist">
-                  <div className="w-8 h-8 rounded-xl bg-mint-haze text-deep-navy flex items-center justify-center">
-                    <Wind className="w-4 h-4 text-deep-navy" strokeWidth={1.5} />
+              {showStateIcons && (
+                <div className="grid grid-cols-3 gap-2 sm:gap-4 text-center">
+                  <div className="flex flex-col items-center gap-1.5 p-2 sm:p-3 rounded-2xl bg-warm-ivory border border-lavender-mist">
+                    <div className="w-8 h-8 rounded-xl bg-mint-haze text-deep-navy flex items-center justify-center">
+                      <Wind className="w-4 h-4 text-deep-navy" strokeWidth={1.5} />
+                    </div>
+                    {stateIcon1 && (
+                      <span className="text-[11px] sm:text-xs font-semibold text-deep-navy leading-tight">
+                        {stateIcon1}
+                      </span>
+                    )}
                   </div>
-                  <span className="text-[11px] sm:text-xs font-semibold text-deep-navy leading-tight">
-                    {content?.stateIcon1Label || vi.au02.stateIcon1}
-                  </span>
-                </div>
 
-                <div className="flex flex-col items-center gap-1.5 p-2 sm:p-3 rounded-2xl bg-warm-ivory border border-lavender-mist">
-                  <div className="w-8 h-8 rounded-xl bg-soft-pink text-bright-magenta flex items-center justify-center">
-                    <Sparkles className="w-4 h-4 text-bright-magenta" strokeWidth={1.5} />
+                  <div className="flex flex-col items-center gap-1.5 p-2 sm:p-3 rounded-2xl bg-warm-ivory border border-lavender-mist">
+                    <div className="w-8 h-8 rounded-xl bg-soft-pink text-bright-magenta flex items-center justify-center">
+                      <Sparkles className="w-4 h-4 text-bright-magenta" strokeWidth={1.5} />
+                    </div>
+                    {stateIcon2 && (
+                      <span className="text-[11px] sm:text-xs font-semibold text-deep-navy leading-tight">
+                        {stateIcon2}
+                      </span>
+                    )}
                   </div>
-                  <span className="text-[11px] sm:text-xs font-semibold text-deep-navy leading-tight">
-                    {content?.stateIcon2Label || vi.au02.stateIcon2}
-                  </span>
-                </div>
 
-                <div className="flex flex-col items-center gap-1.5 p-2 sm:p-3 rounded-2xl bg-warm-ivory border border-lavender-mist">
-                  <div className="w-8 h-8 rounded-xl bg-butter-cream text-deep-navy flex items-center justify-center">
-                    <Heart className="w-4 h-4 text-deep-navy" strokeWidth={1.5} />
+                  <div className="flex flex-col items-center gap-1.5 p-2 sm:p-3 rounded-2xl bg-warm-ivory border border-lavender-mist">
+                    <div className="w-8 h-8 rounded-xl bg-butter-cream text-deep-navy flex items-center justify-center">
+                      <Heart className="w-4 h-4 text-deep-navy" strokeWidth={1.5} />
+                    </div>
+                    {stateIcon3 && (
+                      <span className="text-[11px] sm:text-xs font-semibold text-deep-navy leading-tight">
+                        {stateIcon3}
+                      </span>
+                    )}
                   </div>
-                  <span className="text-[11px] sm:text-xs font-semibold text-deep-navy leading-tight">
-                    {content?.stateIcon3Label || vi.au02.stateIcon3}
-                  </span>
                 </div>
-              </div>
+              )}
 
               {/* Gợi ý chọn nhanh cảm xúc */}
               <div className="space-y-1.5 text-left pt-1">
@@ -453,8 +487,8 @@ export function EQDrawApp({
               isFlipped={isFlipped}
               onToggleFlip={() => setIsFlipped((prev) => !prev)}
               totalPublishedCards={allCards.length || 26}
-              reflectionHeading={content?.cardBackPromptTitle || undefined}
-              cardBackQuote={content?.cardBackQuote || undefined}
+              reflectionHeading={cardBackPromptTitle}
+              cardBackQuote={cardBackQuote}
             />
 
             {/* Thao tác lật thẻ & rút thẻ khác */}
@@ -754,15 +788,16 @@ export function EQDrawApp({
       <GuideModal
         isOpen={isGuideModalOpen}
         onClose={() => setIsGuideModalOpen(false)}
-        title={content?.guideModalTitle || undefined}
-        quote={guideModalQuote || content?.guideModalQuote || undefined}
-        buttonText={content?.guideModalButton || undefined}
-        step1Title={content?.step1Title || undefined}
-        step1Desc={content?.step1Desc || undefined}
-        step2Title={content?.step2Title || undefined}
-        step2Desc={content?.step2Desc || undefined}
-        step3Title={content?.step3Title || undefined}
-        step3Desc={content?.step3Desc || undefined}
+        useDefaultCopy={useDefaultGuide}
+        title={content?.guideModalTitle}
+        quote={guideModalQuote || content?.guideModalQuote}
+        buttonText={content?.guideModalButton}
+        step1Title={content?.step1Title}
+        step1Desc={content?.step1Desc}
+        step2Title={content?.step2Title}
+        step2Desc={content?.step2Desc}
+        step3Title={content?.step3Title}
+        step3Desc={content?.step3Desc}
       />
     </div>
   )

@@ -3,10 +3,13 @@ import type { ComponentConfig } from '@puckeditor/core'
 import { QuoteBlock as UiQuoteBlock } from '@/components/ui/QuoteBlock'
 import { BRAND_COLOR_OPTIONS, PADDING_OPTIONS } from '../constants'
 import { alignField, sizeField } from '../format-fields'
+import { createDefaultCopyField } from '../copy-field'
+import { pickCopy } from '@/lib/copy'
 import type { AlignOption, FontSizeOption } from '@/lib/brand/format-classes'
 
 export interface QuoteBlockProps {
   version?: number
+  useDefaultCopy?: boolean
   quote: string
   cite?: string
   roleOrContext?: string
@@ -69,9 +72,11 @@ export const QuoteBlockConfig: ComponentConfig<QuoteBlockProps> = {
       label: 'Khoảng đệm (Padding)',
       options: [...PADDING_OPTIONS],
     },
+    useDefaultCopy: createDefaultCopyField(),
   },
   defaultProps: {
     version: 2,
+    useDefaultCopy: false,
     tone: 'light',
     quoteSize: 'md',
     align: 'left',
@@ -86,12 +91,23 @@ export const QuoteBlockConfig: ComponentConfig<QuoteBlockProps> = {
     quote,
     cite,
     roleOrContext,
+    useDefaultCopy = false,
     tone = 'light',
     quoteSize,
     align,
     bgColor = 'warm-ivory',
     padding = 'md',
   }) => {
+    const effectiveQuote = pickCopy(
+      quote,
+      '[MẪU] Câu trích dẫn cảm xúc ấm áp và sâu sắc chạm đến người đọc.',
+      useDefaultCopy,
+    )
+    const effectiveCite = pickCopy(cite, '[MẪU] Tên người nói', useDefaultCopy)
+    const effectiveRole = pickCopy(roleOrContext, '[MẪU] Vai trò / bối cảnh', useDefaultCopy)
+
+    if (!effectiveQuote) return <></>
+
     const isDark = tone === 'dark' || bgColor === 'deep-navy'
     const sectionBg = tone === 'dark' ? 'bg-deep-navy text-white' : BG_COLORS[bgColor]
 
@@ -100,9 +116,9 @@ export const QuoteBlockConfig: ComponentConfig<QuoteBlockProps> = {
         <div className="mx-auto max-w-4xl">
           <UiQuoteBlock
             id={id}
-            quote={quote}
-            cite={cite}
-            roleOrContext={roleOrContext}
+            quote={effectiveQuote}
+            cite={effectiveCite}
+            roleOrContext={effectiveRole}
             theme={isDark ? 'dark' : 'light'}
             size={quoteSize}
             align={align}

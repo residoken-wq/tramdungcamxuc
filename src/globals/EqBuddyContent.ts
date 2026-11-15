@@ -52,6 +52,15 @@ export const EqBuddyContent: GlobalConfig = {
           label: 'Giao diện chung',
           fields: [
             {
+              name: 'useDefaultCopyIntro',
+              label: vi.bx05.useDefaultCopyLabel,
+              type: 'checkbox',
+              defaultValue: false,
+              admin: {
+                description: vi.bx05.useDefaultCopyDescription,
+              },
+            },
+            {
               name: 'tagline',
               label: 'Dòng tiêu đề phụ (Series bar)',
               type: 'text',
@@ -96,6 +105,15 @@ export const EqBuddyContent: GlobalConfig = {
               defaultValue: 'https://tinyurl.com/yc43suhc',
             },
             {
+              name: 'useDefaultCopyStateIcons',
+              label: vi.bx05.useDefaultCopyLabel,
+              type: 'checkbox',
+              defaultValue: false,
+              admin: {
+                description: vi.bx05.useDefaultCopyDescription,
+              },
+            },
+            {
               name: 'stateIcon1Label',
               label: 'Nhãn biểu tượng 1 (Nhập trạng thái)',
               type: 'text',
@@ -114,6 +132,15 @@ export const EqBuddyContent: GlobalConfig = {
               defaultValue: 'Gọi tên cảm xúc hiện tại',
             },
             {
+              name: 'useDefaultCopyCardBack',
+              label: vi.bx05.useDefaultCopyLabel,
+              type: 'checkbox',
+              defaultValue: false,
+              admin: {
+                description: vi.bx05.useDefaultCopyDescription,
+              },
+            },
+            {
               name: 'cardBackPromptTitle',
               label: 'Tiêu đề 3 câu hỏi mặt sau thẻ',
               type: 'text',
@@ -130,6 +157,15 @@ export const EqBuddyContent: GlobalConfig = {
         {
           label: 'Bộ thẻ là gì? (Bước 1)',
           fields: [
+            {
+              name: 'useDefaultCopyIntro1',
+              label: vi.bx05.useDefaultCopyLabel,
+              type: 'checkbox',
+              defaultValue: false,
+              admin: {
+                description: vi.bx05.useDefaultCopyDescription,
+              },
+            },
             {
               name: 'intro1Heading',
               label: 'Tiêu đề khối (để trống sẽ ẩn toàn bộ phần Bộ thẻ là gì)',
@@ -195,6 +231,15 @@ export const EqBuddyContent: GlobalConfig = {
         {
           label: 'Hướng dẫn 3 bước',
           fields: [
+            {
+              name: 'useDefaultCopyGuide',
+              label: vi.bx05.useDefaultCopyLabel,
+              type: 'checkbox',
+              defaultValue: false,
+              admin: {
+                description: vi.bx05.useDefaultCopyDescription,
+              },
+            },
             {
               name: 'intro2Heading',
               label: 'Tiêu đề khối',

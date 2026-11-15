@@ -6,6 +6,7 @@ import { vi } from '@/lib/i18n/vi'
 import type { AlignOption, FontSizeOption } from '@/lib/brand/format-classes'
 import { LEAD_TEXT_SIZES, sizeClass } from '@/lib/brand/text-presets'
 import { textTarget } from '@/puck/style/text-target'
+import { pickCopy, hasCopy } from '@/lib/copy'
 
 export type CalloutStripTone =
   | 'soft-pink'
@@ -30,6 +31,7 @@ export interface CalloutProps {
   bgColor?:
     'warm-ivory' | 'soft-pink' | 'lavender-mist' | 'mint-haze' | 'butter-cream' | 'deep-navy'
   padding?: 'sm' | 'md' | 'lg'
+  useDefaultCopy?: boolean
   /** PK-10 format presets. The callout card is always deep navy, so text stays white. */
   titleSize?: FontSizeOption
   textSize?: FontSizeOption
@@ -93,6 +95,7 @@ export function Callout({
   buttonLink = '#',
   buttonVariant = 'primary',
   buttonSize = 'md',
+  useDefaultCopy = false,
   bgColor = 'warm-ivory',
   padding = 'md',
   titleSize,
@@ -105,6 +108,26 @@ export function Callout({
   const isEditing = puck?.isEditing ?? false
   const isLeft = align === 'left'
   const bookingProductId = _resolved?.bookingProductId ?? null
+
+  const effectiveTitle = pickCopy(
+    title,
+    '[MẪU] Bạn không cần phải tự mình đối diện với những rối bời cảm xúc',
+    useDefaultCopy,
+  )
+  const effectiveDesc = pickCopy(
+    description,
+    '[MẪU] Trạm Dừng Cảm Xúc luôn sẵn sàng đồng hành cùng bạn bằng những phương pháp khoa học, nhẹ nhàng và an toàn nhất.',
+    useDefaultCopy,
+  )
+  const effectiveButtonText = pickCopy(
+    buttonText,
+    '[MẪU] Đặt phiên trải nghiệm 149.000đ',
+    useDefaultCopy,
+  )
+
+  if (!isEditing && !effectiveTitle && !effectiveDesc && (!showButton || !effectiveButtonText)) {
+    return null
+  }
 
   let targetHref: string = buttonLink || '#'
   if (buttonLinkType === 'page') {
@@ -173,30 +196,30 @@ export function Callout({
             className={`rounded-xl sm:rounded-2xl px-6 py-4 text-center ${cardClass}`}
           >
             <p className="font-ui text-sm sm:text-base leading-relaxed inline">
-              {title && (
+              {effectiveTitle && (
                 <span
                   {...textTarget(id, 'title')}
                   className={`font-bold uppercase tracking-wide mr-1.5 ${titleClass}`}
                 >
-                  {renderHighlightedText(title)}
+                  {renderHighlightedText(effectiveTitle)}
                 </span>
               )}
-              {description && (
+              {effectiveDesc && (
                 <span
                   {...textTarget(id, 'description')}
                   className={`whitespace-pre-line ${textClass}`}
                 >
-                  {renderHighlightedText(description)}
+                  {renderHighlightedText(effectiveDesc)}
                 </span>
               )}
             </p>
 
             {showButton &&
-              buttonText &&
+              effectiveButtonText &&
               (finalSafeLink ? (
                 <div className="mt-3 sm:mt-0 sm:inline-block sm:ml-4">
                   <Button href={finalSafeLink} variant={buttonVariant} size="sm">
-                    <span {...textTarget(id, 'buttonText')}>{buttonText}</span>
+                    <span {...textTarget(id, 'buttonText')}>{effectiveButtonText}</span>
                   </Button>
                 </div>
               ) : isEditing && isBookingUnavailable ? (
@@ -207,7 +230,7 @@ export function Callout({
                     size="sm"
                     className="opacity-60 pointer-events-none"
                   >
-                    <span {...textTarget(id, 'buttonText')}>{buttonText}</span>
+                    <span {...textTarget(id, 'buttonText')}>{effectiveButtonText}</span>
                   </Button>
                 </div>
               ) : null)}
@@ -225,31 +248,31 @@ export function Callout({
           data-eb-card-solid=""
           className={`rounded-card sm:rounded-[24px] bg-deep-navy px-8 py-10 sm:px-12 sm:py-14 ${isLeft ? 'text-left' : 'text-center'} text-white shadow-soft`}
         >
-          {title && (
+          {effectiveTitle && (
             <h2
               {...textTarget(id, 'title')}
               className={`font-ui ${sizeClass(TITLE_SIZES, titleSize)} font-bold tracking-tight text-white leading-snug`}
             >
-              {renderHighlightedText(title)}
+              {renderHighlightedText(effectiveTitle)}
             </h2>
           )}
 
-          {description && (
+          {effectiveDesc && (
             <p
               {...textTarget(id, 'description')}
               className={`${isLeft ? '' : 'mx-auto '}mt-4 max-w-2xl font-ui ${sizeClass(LEAD_TEXT_SIZES, textSize)} leading-relaxed whitespace-pre-line text-white/90`}
             >
-              {renderHighlightedText(description)}
+              {renderHighlightedText(effectiveDesc)}
             </p>
           )}
 
           {showButton &&
-            buttonText &&
+            effectiveButtonText &&
             (finalSafeLink ? (
               <div className="mt-8 w-full self-stretch text-[inherit]">
                 <div className={`inline-block ${isLeft ? 'text-left' : 'text-center'}`}>
                   <Button href={finalSafeLink} variant={buttonVariant} size={buttonSize}>
-                    <span {...textTarget(id, 'buttonText')}>{buttonText}</span>
+                    <span {...textTarget(id, 'buttonText')}>{effectiveButtonText}</span>
                   </Button>
                 </div>
               </div>
@@ -262,7 +285,7 @@ export function Callout({
                     size={buttonSize}
                     className="opacity-60 pointer-events-none"
                   >
-                    <span {...textTarget(id, 'buttonText')}>{buttonText}</span>
+                    <span {...textTarget(id, 'buttonText')}>{effectiveButtonText}</span>
                   </Button>
                   <p className="text-xs text-soft-pink mt-2 font-ui">{vi.sm04.noBookingProduct}</p>
                 </div>

@@ -20,6 +20,7 @@ describe('HabitOfferClient (T2-03b / A4)', () => {
       cta: null,
       videoCount: 0,
       techniqueCount: 0,
+      useDefaultCopyBottom: true,
     }
 
     const { container } = render(<HabitOfferClient product={emptyProduct} />)
@@ -82,6 +83,7 @@ describe('HabitOfferClient (T2-03b / A4)', () => {
       cta: null,
       videoCount: 0,
       techniqueCount: 0,
+      useDefaultCopyBottom: true,
     }
     render(<HabitOfferClient product={product} journeyDays={30} />)
     expect(screen.getByText('Tracker 30 ngày & 10 Cảm xúc')).toBeDefined()

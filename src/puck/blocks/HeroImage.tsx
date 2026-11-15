@@ -9,6 +9,7 @@ import {
   brandImageDefaultProps,
   resolveBrandImageAvatars,
 } from '../brand-image-fields'
+import { createDefaultCopyField } from '../copy-field'
 import {
   HERO_LAYOUT_OPTIONS,
   HERO_IMAGE_SIDE_OPTIONS,
@@ -266,10 +267,12 @@ export const HeroImageBlock: ComponentConfig<HeroImageProps> = {
       label: vi.eb14a.minHeight,
       options: [...HERO_MIN_HEIGHT_OPTIONS],
     },
+    useDefaultCopy: createDefaultCopyField(),
     ...createBrandImageFields(),
   },
   defaultProps: {
     version: 3,
+    useDefaultCopy: false,
     seriesLabel: '[MẪU] Khởi đầu hành trình',
     seriesLabelFont: 'ui',
     titleLine1: '[MẪU] DÒNG TIÊU ĐỀ 1',
