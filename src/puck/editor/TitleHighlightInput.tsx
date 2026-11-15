@@ -3,6 +3,10 @@
 import React, { useId } from 'react'
 import { vi } from '@/lib/i18n/vi'
 import { parseTitleWords, toggleTitleWordAt, type TitleWordItem } from './title-word-chips'
+import { FieldLabelWithAa } from './text-style/FieldLabelWithAa'
+import { CurrentFieldContext } from './text-style/current-field-context'
+import { useStylePanel } from './style-context'
+import { isFieldVisible } from '@/puck/style/field-groups'
 
 export interface TitleHighlightInputProps {
   value?: string
@@ -21,9 +25,16 @@ export function TitleHighlightInput({
   readOnly = false,
   id: propId,
   name,
+  label = 'Tiêu đề',
 }: TitleHighlightInputProps) {
   const generatedId = useId()
   const inputId = propId || generatedId
+
+  // Tab filter: only show on 'content' tab
+  const { tab } = useStylePanel()
+  if (name && !isFieldVisible(name, tab)) {
+    return null
+  }
 
   const { words } = parseTitleWords(value)
 
@@ -44,20 +55,30 @@ export function TitleHighlightInput({
   }
 
   return (
-    <div className="flex flex-col gap-2 w-full">
-      <input
-        type="text"
-        id={inputId}
-        name={name}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        placeholder={placeholder}
-        readOnly={readOnly}
-        className="w-full h-9 px-3 text-xs rounded-lg border border-deep-navy/20 bg-white text-deep-navy focus:outline-none focus:border-accent-pink focus:ring-1 focus:ring-accent-pink transition"
-      />
+    <div className="flex flex-col w-full">
+      <CurrentFieldContext.Provider value={name}>
+        <FieldLabelWithAa
+          label={label}
+          el="label"
+          htmlFor={inputId}
+          readOnly={readOnly}
+          className={words.length > 0 ? 'mb-1.5' : 'mb-3'}
+        >
+          <input
+            type="text"
+            id={inputId}
+            name={name}
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+            placeholder={placeholder}
+            readOnly={readOnly}
+            className="w-full h-9 px-3 text-xs rounded-lg border border-deep-navy/20 bg-white text-deep-navy focus:outline-none focus:border-accent-pink focus:ring-1 focus:ring-accent-pink transition"
+          />
+        </FieldLabelWithAa>
+      </CurrentFieldContext.Provider>
 
       {words.length > 0 && (
-        <div className="flex flex-col gap-1.5 pt-0.5">
+        <div className="flex flex-col gap-1.5 mb-3 pt-0.5">
           <div
             className="flex flex-wrap gap-1.5 items-center"
             role="group"

@@ -22,6 +22,25 @@ import {
   parseTitleWords,
   toggleTitleWordAt,
 } from '@/puck/editor/title-word-chips'
+import { StylePanelProvider, useStylePanel } from '@/puck/editor/style-context'
+import { DEFAULT_DESIGN_SYSTEM } from '@/lib/design/design-system'
+
+function TabSwitcherTest() {
+  const { setTab } = useStylePanel()
+  return (
+    <div>
+      <button type="button" onClick={() => setTab('style')}>
+        Switch to Style
+      </button>
+      <TitleHighlightInput
+        name="titleLine1"
+        label="Tiêu đề dòng 1"
+        value="Tiêu đề mẫu"
+        onChange={() => {}}
+      />
+    </div>
+  )
+}
 
 // WCAG relative luminance & contrast ratio calculation
 function srgbToLinear(c: number): number {
@@ -353,6 +372,40 @@ describe('BX-04: Tiêu đề – Chọn kiểu nhấn chữ & gạch ngang tươ
 
       const chipTap = screen.getByRole('button', { name: /Chữ "TẬP" – Đang nhấn/i })
       expect(chipTap).toBeDefined()
+    })
+
+    it('associates label correctly so textbox accessible name is "Tiêu đề dòng 1"', () => {
+      render(
+        <TitleHighlightInput
+          name="titleLine1"
+          label="Tiêu đề dòng 1"
+          value="Tiêu đề mẫu"
+          onChange={() => {}}
+        />,
+      )
+
+      const input = screen.getByRole('textbox', { name: 'Tiêu đề dòng 1' })
+      expect(input).toBeDefined()
+      expect((input as HTMLInputElement).value).toBe('Tiêu đề mẫu')
+
+      // Dãy chip để ngoài <label> (nút không nằm trong label)
+      const labelEl = screen.getByText('Tiêu đề dòng 1').closest('label')
+      expect(labelEl).not.toBeNull()
+      expect(labelEl?.querySelector('button')).toBeNull()
+    })
+
+    it('only renders in "content" tab and hides in "style" tab', () => {
+      const { rerender } = render(
+        <StylePanelProvider ds={DEFAULT_DESIGN_SYSTEM}>
+          <TabSwitcherTest />
+        </StylePanelProvider>,
+      )
+
+      expect(screen.getByRole('textbox', { name: 'Tiêu đề dòng 1' })).toBeDefined()
+
+      // Chuyển sang tab Kiểu (style)
+      fireEvent.click(screen.getByRole('button', { name: 'Switch to Style' }))
+      expect(screen.queryByRole('textbox', { name: 'Tiêu đề dòng 1' })).toBeNull()
     })
   })
 

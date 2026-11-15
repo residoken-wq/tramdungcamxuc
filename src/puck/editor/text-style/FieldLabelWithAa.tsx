@@ -15,6 +15,7 @@ export function FieldLabelWithAa({
   icon,
   label,
   el = 'label',
+  htmlFor,
   readOnly,
   className,
 }: {
@@ -22,6 +23,7 @@ export function FieldLabelWithAa({
   icon?: React.ReactNode
   label: string
   el?: 'label' | 'div'
+  htmlFor?: string
   readOnly?: boolean
   className?: string
 }) {
@@ -30,7 +32,12 @@ export function FieldLabelWithAa({
   const [isPopoverOpen, setIsPopoverOpen] = useState(false)
 
   const fieldName = useCurrentField()
-  const selectedItem = usePuckSelector((s) => s.selectedItem)
+  let selectedItem: any
+  try {
+    selectedItem = usePuckSelector((s) => s.selectedItem)
+  } catch {
+    selectedItem = undefined
+  }
   const blockType = selectedItem?.type as string | undefined
 
   // Find target definition
@@ -50,7 +57,7 @@ export function FieldLabelWithAa({
   // label is invalid HTML and a click on it would also activate the field (toggle a checkbox).
   return (
     <div className={`relative block mb-3 ${className || ''}`}>
-      <Component className="block">
+      <Component className="block" {...(Component === 'label' && htmlFor ? { htmlFor } : {})}>
         <div className={`flex items-center gap-1.5 mb-1.5 min-w-0 ${targetDef ? 'pr-10' : ''}`}>
           {icon && <div className="shrink-0 text-deep-navy/60">{icon}</div>}
           <span className="font-ui text-xs font-semibold text-deep-navy truncate">{label}</span>
