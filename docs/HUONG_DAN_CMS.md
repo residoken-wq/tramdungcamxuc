@@ -11,6 +11,7 @@
    - [1.3b. Trang chủ admin – Dashboard "Hôm nay"](#13b-trang-chủ-admin--dashboard-hôm-nay)
    - [1.4. Cấu trúc menu bên trái theo công việc của Hana](#14-cấu-trúc-menu-bên-trái-theo-công-việc-của-hana)
    - [1.4b. Tên các nút trên form và nút Xem trước (con mắt)](#14b-tên-các-nút-trên-form-và-nút-xem-trước-con-mắt)
+   - [1.4c. Quy tắc ô để trống thì ẩn & Tùy chọn "Dùng chữ mặc định cho ô để trống" (BX-05)](#14c-quy-tắc-ô-để-trống-thì-ẩn--tùy-chọn-dùng-chữ-mặc-định-cho-ô-để-trống-bx-05)
    - [1.5. Khách hàng đăng nhập thế nào](#15-khách-hàng-đăng-nhập-thế-nào)
    - [1.5b. Quyền tự quản lý nhận email nhắc của khách hàng (Nghị định 13/2023)](#15b-quyền-tự-quản-lý-nhận-email-nhắc-của-khách-hàng-nghị-định-132023)
    - [1.6. Khách hàng tự xem đơn hàng và link thanh toán tại /tai-khoan](#16-khách-hàng-tự-xem-đơn-hàng-và-link-thanh-toán-tại-tai-khoan)
@@ -224,6 +225,29 @@ Trên **form chuẩn** của mọi bảng (sản phẩm, thẻ EQ, lời chia s�
 
 - Dòng **Trạng thái** bên trái thanh nút cho biết bản ghi đang là **Bản nháp** hay **Đã xuất bản** – xem dòng này để chắc nội dung đã lên web.
 - Các **trình hướng dẫn từng bước** (tạo sản phẩm, thêm bài học, lên lịch workshop) có nút riêng ở cuối trang: **Lưu nháp**, **Tiếp tục**, **Quay lại** và ở bước cuối **🚀 Xuất bản**.
+
+---
+
+### 1.4c. Quy tắc ô để trống thì ẩn & Tùy chọn "Dùng chữ mặc định cho ô để trống" (BX-05)
+
+**Mục đích**: Giúp Hana hoàn toàn chủ động kiểm soát nội dung hiển thị trên trang web. Nếu Hana không muốn hiển thị một dòng tiêu đề phụ, một mô tả, một điểm khác biệt hay một câu châm ngôn, chỉ cần **xóa trắng ô đó trong CMS** là ngoài trang web sẽ **tự động biến mất**, không còn tình trạng hệ thống tự ý nhảy ra câu chữ mặc định cũ.
+
+#### 1. Nguyên tắc cốt lõi: Ô để trống = Ẩn
+
+- **Ô văn bản để trống thì ẩn**: Bất kỳ ô nhập chữ nội dung nào (tiêu đề, dòng cảm xúc, đoạn giới thiệu, câu hỏi, điểm khác biệt...) nếu bạn để trống, website sẽ ẩn hoàn toàn phần chữ đó thay vì tự động lấy chữ mẫu.
+- **Cả khối tự động ẩn nếu không có nội dung**: Nếu trong một phần/khối (ví dụ: Khối FAQ, Khối khác biệt, Khối câu nói...), tất cả các ô chữ nội dung đều để trống, cả khối đó sẽ tự ẩn trên trang công khai, giúp trang luôn gọn gàng và không để lại khoảng trống vô lý.
+- **Nhãn chức năng luôn được bảo toàn**: Các nút bấm tương tác và nhãn chức năng cần thiết cho hoạt động của web (như nút *"Đăng nhập"*, *"Gửi mã OTP"*, *"Đăng ký dùng thử"*, *"Xem lộ trình"*, các biểu tượng tick xanh, link điều khoản...) là những thành phần chức năng hệ thống, luôn hiển thị đầy đủ để khách hàng thao tác thông suốt.
+
+#### 2. Khi nào dùng Checkbox "Dùng chữ mặc định cho ô để trống"?
+
+Ở mỗi nhóm/phần trong CMS (tab *"Trang giới thiệu"* của Sản phẩm, cài đặt toàn cục *"Nội dung EQ Buddy"*, *"Nội dung Habit Journey"*, và các khối trong trình dựng trang Puck), bạn sẽ thấy một ô checkbox:
+
+- **Tên checkbox**: `Dùng chữ mặc định cho ô để trống`
+- **Ghi chú hướng dẫn**: `Bật: ô nào để trống sẽ hiện chữ mẫu của hệ thống. Tắt: ô để trống thì ẩn.`
+
+**Cách sử dụng**:
+1. **Mặc định (Tắt - Không tick)**: Ô nào bạn để trống sẽ **ẩn đi** ngoài trang công khai. Đây là lựa chọn khuyên dùng khi bạn muốn trang hiển thị gọn gàng đúng những gì bạn đã nhập.
+2. **Khi bật (Tick chọn)**: Nếu bạn bận chưa kịp nghĩ câu chữ cho phần đó, hoặc muốn dùng tạm văn bản mẫu chuẩn của hệ thống, hãy tick chọn ô này. Khi đó, ô nào bạn để trống sẽ tự động lấy câu chữ mẫu từ hệ thống; ô nào bạn tự tay nhập chữ thì vẫn luôn hiển thị chữ của bạn.
 
 ---
 

@@ -196,6 +196,28 @@ Khi chuyển từ môi trường thử nghiệm sang môi trường production c
 - **Yêu cầu mạng máy chủ (Network Egress)**: Container / máy chủ ứng dụng **bắt buộc phải kết nối được ra Internet tới `plausible.io:443`** (HTTPS). Nếu server nằm trong mạng nội bộ có firewall chặn kết nối chiều ra, cần mở egress cho domain `plausible.io` cổng 443. Nếu không kết nối được, hàm `trackServer` sẽ timeout sau 2 giây và ghi `console.warn` mà không làm gián đoạn luồng nghiệp vụ chính.
 - **Bảo mật và riêng tư**: Mọi sự kiện từ server đều được làm sạch qua `sanitizeAnalyticsProps`, loại bỏ hoàn toàn PII (email, họ tên, điện thoại) và dữ liệu cảm xúc/suy ngẫm; URL sự kiện không chứa token, mã đơn hay thông tin định danh cá nhân.
 
+### 6. Báo cáo kiểm tra các ô CMS để trống trước khi deploy (BX-05)
+
+Từ đợt cập nhật BX-05, quy tắc hiển thị là: **ô nội dung trong CMS để trống thì ngoài trang công khai sẽ ẩn đi**, trừ khi nhóm đó có bật checkbox *"Dùng chữ mặc định cho ô để trống"*.
+
+Trước khi deploy hoặc sau khi cập nhật nội dung CMS, kỹ thuật viên có thể chạy script kiểm tra chỉ đọc (read-only) để rà soát toàn bộ các ô để trống trên toàn hệ thống (Sản phẩm, EQ Buddy, Habit Journey, Puck Blocks):
+
+- **Chạy trên máy dev (Local)**:
+  ```bash
+  pnpm report:empty-copy
+  ```
+  hoặc:
+  ```bash
+  node --import tsx scripts/report-empty-copy.ts
+  ```
+
+- **Chạy trên server (Docker Compose)**:
+  ```bash
+  docker compose -p tdcx-demo -f docker-compose.prod.yml exec app node --import tsx scripts/report-empty-copy.ts
+  ```
+
+Script sẽ in bảng tổng kết chi tiết gồm: Nguồn/Trang, Nhóm/Phần, Danh sách các ô đang để trống, và Trạng thái tương ứng (*Sẽ ẩn khi deploy (Tắt)* hoặc *Dùng chữ mẫu hệ thống (Bật)*).
+
 ---
 
 ## Deploy bản demo trên server riêng
