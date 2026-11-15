@@ -3,7 +3,7 @@ import type { ComponentConfig } from '@puckeditor/core'
 import { QuoteBlock as UiQuoteBlock } from '@/components/ui/QuoteBlock'
 import { BRAND_COLOR_OPTIONS, PADDING_OPTIONS } from '../constants'
 import { alignField, sizeField } from '../format-fields'
-import { useDefaultCopyField } from '../copy-field'
+import { createDefaultCopyField } from '../copy-field'
 import { pickCopy } from '@/lib/copy'
 import type { AlignOption, FontSizeOption } from '@/lib/brand/format-classes'
 
@@ -72,7 +72,7 @@ export const QuoteBlockConfig: ComponentConfig<QuoteBlockProps> = {
       label: 'Khoảng đệm (Padding)',
       options: [...PADDING_OPTIONS],
     },
-    useDefaultCopy: useDefaultCopyField(),
+    useDefaultCopy: createDefaultCopyField(),
   },
   defaultProps: {
     version: 2,

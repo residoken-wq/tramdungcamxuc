@@ -5,7 +5,7 @@ import { BRAND_COLOR_OPTIONS, PADDING_OPTIONS } from '../constants'
 import { createMediaExternalField } from '../media-field'
 import { vi } from '@/lib/i18n/vi'
 import { BUTTON_BG_OPTIONS, buttonTextOptions } from '@/lib/brand/button-colors'
-import { useDefaultCopyField } from '../copy-field'
+import { createDefaultCopyField } from '../copy-field'
 
 export type { HanaStoryProps }
 
@@ -115,7 +115,7 @@ export const HanaStoryBlock: ComponentConfig<HanaStoryProps> = {
       label: 'Khoảng đệm (Padding)',
       options: [...PADDING_OPTIONS],
     },
-    useDefaultCopy: useDefaultCopyField(),
+    useDefaultCopy: createDefaultCopyField(),
   },
   defaultProps: {
     version: 3,

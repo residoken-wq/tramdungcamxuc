@@ -1,6 +1,6 @@
 import { vi } from '@/lib/i18n/vi'
 
-export function useDefaultCopyField() {
+export function createDefaultCopyField() {
   return {
     type: 'select' as const,
     label: vi.bx05.useDefaultCopyLabel,

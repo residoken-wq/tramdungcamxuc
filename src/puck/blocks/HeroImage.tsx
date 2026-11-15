@@ -9,7 +9,7 @@ import {
   brandImageDefaultProps,
   resolveBrandImageAvatars,
 } from '../brand-image-fields'
-import { useDefaultCopyField } from '../copy-field'
+import { createDefaultCopyField } from '../copy-field'
 import {
   HERO_LAYOUT_OPTIONS,
   HERO_IMAGE_SIDE_OPTIONS,
@@ -269,7 +269,7 @@ export const HeroImageBlock: ComponentConfig<HeroImageProps> = {
       label: vi.eb14a.minHeight,
       options: [...HERO_MIN_HEIGHT_OPTIONS],
     },
-    useDefaultCopy: useDefaultCopyField(),
+    useDefaultCopy: createDefaultCopyField(),
     ...createBrandImageFields(),
   },
   defaultProps: {

@@ -4,7 +4,7 @@ import { Callout, type CalloutProps } from '@/components/site/Callout'
 import { BRAND_COLOR_OPTIONS, PADDING_OPTIONS } from '../constants'
 import { createPageExternalField } from '../page-field'
 import { alignField, sizeField } from '../format-fields'
-import { useDefaultCopyField } from '../copy-field'
+import { createDefaultCopyField } from '../copy-field'
 import { vi } from '@/lib/i18n/vi'
 
 export type { CalloutProps }
@@ -103,7 +103,7 @@ export const CalloutBlock: ComponentConfig<CalloutProps> = {
       label: 'Khoảng đệm (Padding)',
       options: [...PADDING_OPTIONS],
     },
-    useDefaultCopy: useDefaultCopyField(),
+    useDefaultCopy: createDefaultCopyField(),
   },
   defaultProps: {
     version: 1,

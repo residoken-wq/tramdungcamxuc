@@ -6,7 +6,7 @@ import { BRAND_ICONS } from '@/lib/brand/icons'
 import { createProductExternalField } from '../product-field'
 import { createServiceExternalField } from '../service-field'
 import { createProgramExternalField } from '../program-field'
-import { useDefaultCopyField } from '../copy-field'
+import { createDefaultCopyField } from '../copy-field'
 
 export type { SolutionEcosystemProps }
 
@@ -255,7 +255,7 @@ export const SolutionEcosystemBlock: ComponentConfig<SolutionEcosystemProps> = {
       label: 'Khoảng đệm (Padding)',
       options: [...PADDING_OPTIONS],
     },
-    useDefaultCopy: useDefaultCopyField(),
+    useDefaultCopy: createDefaultCopyField(),
   },
   defaultProps: {
     version: 2,

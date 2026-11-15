@@ -5,7 +5,7 @@ import { BRAND_COLOR_OPTIONS, PADDING_OPTIONS } from '../constants'
 import { faqGroupOptions } from '@/collections/Faqs'
 import { createMediaExternalField } from '../media-field'
 import { vi } from '@/lib/i18n/vi'
-import { useDefaultCopyField } from '../copy-field'
+import { createDefaultCopyField } from '../copy-field'
 
 export type { FAQProps }
 
@@ -140,7 +140,7 @@ export const FAQBlock: ComponentConfig<FAQProps> = {
       label: 'Khoảng đệm (Padding)',
       options: [...PADDING_OPTIONS],
     },
-    useDefaultCopy: useDefaultCopyField(),
+    useDefaultCopy: createDefaultCopyField(),
   },
   defaultProps: {
     version: 6,
