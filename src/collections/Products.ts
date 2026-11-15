@@ -5,6 +5,7 @@ import {
   date,
   image,
   lines,
+  money,
   number,
   privateFile,
   relation,
@@ -163,7 +164,7 @@ export const Products: CollectionConfig = {
             ]),
           },
           fields: [
-            number('price', 'Giá bán', undefined, {
+            money('price', 'Giá bán', undefined, {
               admin: {
                 condition: showFor([
                   'digital_tool',
@@ -179,7 +180,7 @@ export const Products: CollectionConfig = {
               },
               validate: validatePriceOnSale,
             }),
-            number('salePrice', 'Giá ưu đãi', undefined, {
+            money('salePrice', 'Giá ưu đãi', undefined, {
               admin: {
                 condition: showFor(['digital_tool']),
                 description: vi.cms.productForm.descriptions.salePrice,
@@ -441,11 +442,11 @@ export const Products: CollectionConfig = {
                   required: true,
                   admin: { description: vi.cms.productForm.descriptions.componentQuantity },
                 }),
-                number('unitValue', 'Giá trị mỗi đơn vị', undefined, {
+                money('unitValue', 'Giá trị mỗi đơn vị', undefined, {
                   required: true,
                   admin: { description: vi.cms.productForm.descriptions.componentUnitValue },
                 }),
-                number('retailPrice', 'Giá mua lẻ', undefined, {
+                money('retailPrice', 'Giá mua lẻ', undefined, {
                   admin: {
                     description: vi.cms.productForm.descriptions.componentRetailPrice,
                   },
@@ -457,7 +458,7 @@ export const Products: CollectionConfig = {
                 }),
               ],
             },
-            number('totalValue', 'Tổng giá trị', undefined, {
+            money('totalValue', 'Tổng giá trị', undefined, {
               admin: {
                 readOnly: true,
                 condition: showFor(['package']),

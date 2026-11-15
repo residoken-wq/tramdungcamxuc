@@ -984,7 +984,7 @@ export interface Service {
    */
   priceMode?: ('fixed' | 'quote') | null;
   /**
-   * Nhập số không âm. Giá tiền tính bằng đồng.
+   * Giá tiền tính bằng đồng. Chỉ cần gõ số, hệ thống tự thêm dấu chấm (VD: 1.750.000).
    */
   price?: number | null;
   /**
@@ -1228,13 +1228,13 @@ export interface Order {
      */
     product: number | Product;
     /**
-     * Nhập số không âm. Giá tiền tính bằng đồng.
+     * Giá tiền tính bằng đồng. Chỉ cần gõ số, hệ thống tự thêm dấu chấm (VD: 1.750.000).
      */
     price: number;
     id?: string | null;
   }[];
   /**
-   * Nhập số không âm. Giá tiền tính bằng đồng.
+   * Giá tiền tính bằng đồng. Chỉ cần gõ số, hệ thống tự thêm dấu chấm (VD: 1.750.000).
    */
   subtotal?: number | null;
   /**
@@ -1242,7 +1242,7 @@ export interface Order {
    */
   discountCode?: (number | null) | DiscountCode;
   /**
-   * Nhập số không âm. Giá tiền tính bằng đồng.
+   * Giá tiền tính bằng đồng. Chỉ cần gõ số, hệ thống tự thêm dấu chấm (VD: 1.750.000).
    */
   total: number;
   /**
