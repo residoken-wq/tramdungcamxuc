@@ -410,3 +410,11 @@ Chi tiết: `docs/plan/AUDIT-HANA-2026-11-09.md` mục "Kết quả trả lời 
 - Lời chia sẻ trang chủ: Hana tự chọn trong CMS (chỉ lời có `consent = true`).
 - Công cụ Habit: bỏ 3 thẻ giai đoạn lớn ở đầu, phần "Khám" làm thành **wizard từng bước**.
 - **Còn mở:** màu 2 chữ nổi bật ở hero (tạm dùng hồng sen); nhãn "Free" = "tất cả free" (cần làm rõ với VIP trả phí); 28 ngày dùng thử còn hay bỏ; form Tham gia Me Time / Yoga Buddy (email báo Hana, câu cảm ơn, có hỏi email không).
+
+## Ô CMS để trống – chốt 15/11/2026
+
+- Ô **nội dung** trong CMS (tiêu đề, mô tả, câu trích, danh sách…) để trống thì **ẩn**, không tự rơi về chữ mặc định trong code.
+- Muốn dùng chữ mặc định: bật checkbox **"Dùng chữ mặc định cho ô để trống"** – **1 checkbox cho mỗi phần**, không phải từng ô.
+- **Áp dụng ngay khi deploy** (checkbox mặc định tắt cho cả dữ liệu cũ); trước deploy chạy script báo các phần sẽ ẩn cho Hana xem.
+- Nhãn chức năng (nhãn ô nhập, nút gửi / mua, thông báo lỗi, câu cảm ơn sau gửi form, `aria-label`, chữ pháp lý) **luôn** giữ chữ mặc định.
+- Task: BX-05 (`docs/tasks/prompts/BX-05.md`).
