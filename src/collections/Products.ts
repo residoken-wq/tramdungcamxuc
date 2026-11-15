@@ -336,6 +336,11 @@ export const Products: CollectionConfig = {
                 }),
               ],
             },
+            checkbox('useDefaultCopyHero', `${vi.bx05.useDefaultCopyLabel} – Phần mở đầu (Hero)`, false, {
+              admin: {
+                description: vi.bx05.useDefaultCopyDescription,
+              },
+            }),
             text('offerSeriesLabel', vi.pk30.offerSeriesLabel, false, {
               admin: {
                 description: vi.pk30.descriptions.offerSeriesLabel,
@@ -354,6 +359,21 @@ export const Products: CollectionConfig = {
             text('offerEmotionLine', vi.pk30.offerEmotionLine, false, {
               admin: {
                 description: vi.pk30.descriptions.offerEmotionLine,
+              },
+            }),
+            checkbox('useDefaultCopyIncludes', `${vi.bx05.useDefaultCopyLabel} – Danh sách "Bộ tài liệu tự học…"`, false, {
+              admin: {
+                description: vi.bx05.useDefaultCopyDescription,
+              },
+            }),
+            checkbox('useDefaultCopyStats', `${vi.bx05.useDefaultCopyLabel} – Thanh số liệu`, false, {
+              admin: {
+                description: vi.bx05.useDefaultCopyDescription,
+              },
+            }),
+            checkbox('useDefaultCopyCurriculum', `${vi.bx05.useDefaultCopyLabel} – Lộ trình`, false, {
+              admin: {
+                description: vi.bx05.useDefaultCopyDescription,
               },
             }),
             text('curriculumHeading', vi.pk30.curriculumHeading, false, {
@@ -384,6 +404,11 @@ export const Products: CollectionConfig = {
                 textarea('description', vi.pk30.moduleDescription),
               ],
             },
+            checkbox('useDefaultCopyFeatures', `${vi.bx05.useDefaultCopyLabel} – Điểm khác biệt`, false, {
+              admin: {
+                description: vi.bx05.useDefaultCopyDescription,
+              },
+            }),
             text('featuresHeading', vi.pk30.featuresHeading, false, {
               admin: {
                 description: vi.pk30.descriptions.featuresHeading,
@@ -407,6 +432,16 @@ export const Products: CollectionConfig = {
                 textarea('description', vi.pk30.featureDescription),
               ],
             },
+            checkbox('useDefaultCopyFaq', `${vi.bx05.useDefaultCopyLabel} – Câu hỏi thường gặp (FAQ)`, false, {
+              admin: {
+                description: vi.bx05.useDefaultCopyDescription,
+              },
+            }),
+            checkbox('useDefaultCopyBottom', `${vi.bx05.useDefaultCopyLabel} – Khối kêu gọi cuối trang`, false, {
+              admin: {
+                description: vi.bx05.useDefaultCopyDescription,
+              },
+            }),
             text('bottomTitle', vi.pk30.bottomTitle, false, {
               admin: {
                 description: vi.pk30.descriptions.bottomTitle,

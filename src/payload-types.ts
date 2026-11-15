@@ -666,6 +666,10 @@ export interface Product {
    */
   hideOfferBottom?: boolean | null;
   /**
+   * Bật: ô nào để trống sẽ hiện chữ mẫu của hệ thống. Tắt: ô để trống thì ẩn.
+   */
+  useDefaultCopyHero?: boolean | null;
+  /**
    * Để trống = dùng chữ mặc định
    */
   offerSeriesLabel?: string | null;
@@ -681,6 +685,18 @@ export interface Product {
    * Để trống = dùng chữ mặc định
    */
   offerEmotionLine?: string | null;
+  /**
+   * Bật: ô nào để trống sẽ hiện chữ mẫu của hệ thống. Tắt: ô để trống thì ẩn.
+   */
+  useDefaultCopyIncludes?: boolean | null;
+  /**
+   * Bật: ô nào để trống sẽ hiện chữ mẫu của hệ thống. Tắt: ô để trống thì ẩn.
+   */
+  useDefaultCopyStats?: boolean | null;
+  /**
+   * Bật: ô nào để trống sẽ hiện chữ mẫu của hệ thống. Tắt: ô để trống thì ẩn.
+   */
+  useDefaultCopyCurriculum?: boolean | null;
   /**
    * Để trống = dùng chữ mặc định
    */
@@ -710,6 +726,10 @@ export interface Product {
       }[]
     | null;
   /**
+   * Bật: ô nào để trống sẽ hiện chữ mẫu của hệ thống. Tắt: ô để trống thì ẩn.
+   */
+  useDefaultCopyFeatures?: boolean | null;
+  /**
    * Để trống = dùng chữ mặc định
    */
   featuresHeading?: string | null;
@@ -733,6 +753,14 @@ export interface Product {
         id?: string | null;
       }[]
     | null;
+  /**
+   * Bật: ô nào để trống sẽ hiện chữ mẫu của hệ thống. Tắt: ô để trống thì ẩn.
+   */
+  useDefaultCopyFaq?: boolean | null;
+  /**
+   * Bật: ô nào để trống sẽ hiện chữ mẫu của hệ thống. Tắt: ô để trống thì ẩn.
+   */
+  useDefaultCopyBottom?: boolean | null;
   /**
    * Để trống = dùng chữ mặc định
    */
@@ -2869,10 +2897,14 @@ export interface ProductsSelect<T extends boolean = true> {
   hideOfferFeatures?: T;
   hideOfferFaq?: T;
   hideOfferBottom?: T;
+  useDefaultCopyHero?: T;
   offerSeriesLabel?: T;
   offerTitleLine1?: T;
   offerTitleLine2?: T;
   offerEmotionLine?: T;
+  useDefaultCopyIncludes?: T;
+  useDefaultCopyStats?: T;
+  useDefaultCopyCurriculum?: T;
   curriculumHeading?: T;
   curriculumUnitLabel?: T;
   curriculumSubheading?: T;
@@ -2883,6 +2915,7 @@ export interface ProductsSelect<T extends boolean = true> {
         description?: T;
         id?: T;
       };
+  useDefaultCopyFeatures?: T;
   featuresHeading?: T;
   featuresSubheading?: T;
   featureItems?:
@@ -2892,6 +2925,8 @@ export interface ProductsSelect<T extends boolean = true> {
         description?: T;
         id?: T;
       };
+  useDefaultCopyFaq?: T;
+  useDefaultCopyBottom?: T;
   bottomTitle?: T;
   bottomDescription?: T;
   components?:

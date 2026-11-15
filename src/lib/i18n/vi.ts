@@ -4959,6 +4959,11 @@ export const vi = {
     cardAriaLabel: (keyword: string, isFlipped: boolean) =>
       `Thẻ EQ: ${keyword}. ${isFlipped ? 'Đang ở mặt sau' : 'Đang ở mặt trước'}. Bấm để lật.`,
   },
+  bx05: {
+    useDefaultCopyLabel: 'Dùng chữ mặc định cho ô để trống',
+    useDefaultCopyDescription:
+      'Bật: ô nào để trống sẽ hiện chữ mẫu của hệ thống. Tắt: ô để trống thì ẩn.',
+  },
 } as const
 
 export type LocaleStrings = typeof vi

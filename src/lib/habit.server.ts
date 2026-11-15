@@ -74,6 +74,13 @@ export interface HabitProductData {
   hideOfferFeatures?: boolean | null
   hideOfferFaq?: boolean | null
   hideOfferBottom?: boolean | null
+  useDefaultCopyHero?: boolean | null
+  useDefaultCopyIncludes?: boolean | null
+  useDefaultCopyStats?: boolean | null
+  useDefaultCopyCurriculum?: boolean | null
+  useDefaultCopyFeatures?: boolean | null
+  useDefaultCopyFaq?: boolean | null
+  useDefaultCopyBottom?: boolean | null
 }
 
 /** Lỗi kỹ thuật dạng ZodError để action trả câu tiếng Việt cho người dùng (không thành lỗi máy chủ). */
@@ -326,6 +333,13 @@ export async function getHabitProduct(
     hideOfferFeatures: Boolean(doc.hideOfferFeatures),
     hideOfferFaq: Boolean(doc.hideOfferFaq),
     hideOfferBottom: Boolean(doc.hideOfferBottom),
+    useDefaultCopyHero: Boolean(doc.useDefaultCopyHero),
+    useDefaultCopyIncludes: Boolean(doc.useDefaultCopyIncludes),
+    useDefaultCopyStats: Boolean(doc.useDefaultCopyStats),
+    useDefaultCopyCurriculum: Boolean(doc.useDefaultCopyCurriculum),
+    useDefaultCopyFeatures: Boolean(doc.useDefaultCopyFeatures),
+    useDefaultCopyFaq: Boolean(doc.useDefaultCopyFaq),
+    useDefaultCopyBottom: Boolean(doc.useDefaultCopyBottom),
   }
 }
 

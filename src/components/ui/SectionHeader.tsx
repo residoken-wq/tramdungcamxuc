@@ -59,10 +59,20 @@ export function SectionHeader({
   const emotionColorStyle = emotionColorClass(emotionColor)
   const emotionSizeStyle = fontSizeClass('quote', emotionSize)
 
+  const hasAnyText = Boolean(
+    (seriesLabel && seriesLabel.trim()) ||
+      (titleLine1 && titleLine1.trim()) ||
+      (titleLine2 && titleLine2.trim()) ||
+      (emotionLine && emotionLine.trim()),
+  )
+  if (!hasAnyText) {
+    return null
+  }
+
   return (
     <header className={`flex flex-col ${alignClass} ${className}`}>
       {/* Series Label (Montserrat SemiBold/Bold, WCAG AA compliant on light background) */}
-      {seriesLabel && (
+      {seriesLabel && seriesLabel.trim() && (
         <span
           {...textTarget(id, 'seriesLabel')}
           className={`mb-[var(--tdcx-eyebrow-gap,1rem)] font-ui text-xs font-bold uppercase tracking-widest ${eyebrowColorClass}`}
@@ -72,22 +82,26 @@ export function SectionHeader({
       )}
 
       {/* Signature Two-Tone Heading (Anton: line 1 deep-navy, line 2 bright-magenta by default) */}
-      <HeadingTag
-        className={`font-display ${titleCase === 'none' ? '' : 'uppercase'} tracking-tight !leading-[var(--tdcx-title-lh,1.3)] ${headingSizeClasses}`}
-      >
-        <span {...textTarget(id, 'titleLine1')} className={`block ${line1ColorClass}`}>
-          {renderHighlightedTitle(titleLine1, {
-            isDark: line1Color === 'soft-pink',
-          })}
-        </span>
-        {titleLine2 && (
-          <span {...textTarget(id, 'titleLine2')} className={`block ${line2ColorClass}`}>
-            {renderHighlightedTitle(titleLine2, {
-              isDark: line2Color === 'soft-pink',
-            })}
-          </span>
-        )}
-      </HeadingTag>
+      {((titleLine1 && titleLine1.trim()) || (titleLine2 && titleLine2.trim())) && (
+        <HeadingTag
+          className={`font-display ${titleCase === 'none' ? '' : 'uppercase'} tracking-tight !leading-[var(--tdcx-title-lh,1.3)] ${headingSizeClasses}`}
+        >
+          {titleLine1 && titleLine1.trim() && (
+            <span {...textTarget(id, 'titleLine1')} className={`block ${line1ColorClass}`}>
+              {renderHighlightedTitle(titleLine1, {
+                isDark: line1Color === 'soft-pink',
+              })}
+            </span>
+          )}
+          {titleLine2 && titleLine2.trim() && (
+            <span {...textTarget(id, 'titleLine2')} className={`block ${line2ColorClass}`}>
+              {renderHighlightedTitle(titleLine2, {
+                isDark: line2Color === 'soft-pink',
+              })}
+            </span>
+          )}
+        </HeadingTag>
+      )}
 
       {(accentBar || showAccentBar) && (
         <span
