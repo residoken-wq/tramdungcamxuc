@@ -120,12 +120,8 @@ export function HabitOfferClient({ product, journeyDays = 28 }: HabitOfferClient
   const showStats =
     !product?.hideOfferStats &&
     (useDefaultStats || videoCount > 0 || techniqueCount > 0 || journeyDays > 0 || modulesCount > 0)
-  const showCurriculum =
-    !product?.hideOfferCurriculum &&
-    (curriculumModules.length > 0 || Boolean(curriculumHeading || curriculumSubheading))
-  const showFeatures =
-    !product?.hideOfferFeatures &&
-    (featureItems.length > 0 || Boolean(featuresHeading || featuresSubheading))
+  const showCurriculum = !product?.hideOfferCurriculum && curriculumModules.length > 0
+  const showFeatures = !product?.hideOfferFeatures && featureItems.length > 0
   const showFaq = !product?.hideOfferFaq && faqList.length > 0
   const showBottom = !product?.hideOfferBottom && (Boolean(bottomTitle || bottomDescription) || Boolean(cta))
 

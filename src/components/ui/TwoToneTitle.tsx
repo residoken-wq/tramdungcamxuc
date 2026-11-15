@@ -79,6 +79,12 @@ export interface TwoToneTitleProps {
   isDark?: boolean
 }
 
+function hasTitleContent(val: React.ReactNode): boolean {
+  if (val === null || val === undefined) return false
+  if (typeof val === 'string') return val.trim().length > 0
+  return true
+}
+
 export function TwoToneTitle({
   id,
   line1,
@@ -87,8 +93,8 @@ export function TwoToneTitle({
   line2ClassName = '',
   isDark,
 }: TwoToneTitleProps) {
-  const hasL1 = Boolean(line1 && line1.trim().length > 0)
-  const hasL2 = Boolean(line2 && line2.trim().length > 0)
+  const hasL1 = hasTitleContent(line1)
+  const hasL2 = hasTitleContent(line2)
 
   if (!hasL1 && !hasL2) return null
 
