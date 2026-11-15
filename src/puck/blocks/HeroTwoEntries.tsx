@@ -9,6 +9,7 @@ import {
   brandImageDefaultProps,
   resolveBrandImageAvatars,
 } from '../brand-image-fields'
+import { useDefaultCopyField } from '../copy-field'
 import {
   HERO_TWO_ENTRIES_LAYOUT_OPTIONS,
   HERO_OVERLAY_TONE_OPTIONS,
@@ -113,10 +114,12 @@ export const HeroTwoEntriesBlock: ComponentConfig<HeroTwoEntriesProps> = {
         { label: vi.eb14a.entriesPlacementTextColumn, value: 'textColumn' },
       ],
     },
+    useDefaultCopy: useDefaultCopyField(),
     ...createBrandImageFields(),
   },
   defaultProps: {
     version: 4,
+    useDefaultCopy: false,
     seriesLabel: '[MẪU] Series nhãn',
     titleLine1: '[MẪU] DÒNG TIÊU ĐỀ 1',
     titleLine2: '[MẪU] DÒNG TIÊU ĐỀ 2',

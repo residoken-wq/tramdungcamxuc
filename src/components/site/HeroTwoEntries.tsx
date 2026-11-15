@@ -9,6 +9,7 @@ import { EmptySlotHint } from '@/components/ui/EmptySlotHint'
 import { TwoToneTitle } from '@/components/ui/TwoToneTitle'
 import { HeroBackdrop } from './HeroBackdrop'
 import { textTarget } from '@/puck/style/text-target'
+import { pickCopy, hasCopy } from '@/lib/copy'
 import {
   heroBackdropColors,
   type HeroLayout,
@@ -64,6 +65,7 @@ export interface HeroTwoEntriesProps {
     | React.ReactNode
     | Array<{ type?: string; props?: HeroEntryCardProps & { id?: string } }>
   titleSize?: FontSizeOption
+  useDefaultCopy?: boolean
   bgColor?:
     'warm-ivory' | 'soft-pink' | 'lavender-mist' | 'mint-haze' | 'butter-cream' | 'deep-navy'
   padding?: 'sm' | 'md' | 'lg'
@@ -116,12 +118,28 @@ export function HeroTwoEntries({
   entry2,
   entries,
   titleSize = 'md',
+  useDefaultCopy = false,
   bgColor = 'warm-ivory',
   padding = 'md',
   puck,
 }: HeroTwoEntriesProps & { id?: string }) {
   const isEditing = Boolean(puck?.isEditing)
   const isFirstHero = Boolean(priority) && !isEditing
+
+  const effectiveSeriesLabel = pickCopy(seriesLabel, '[MẪU] Series nhãn', useDefaultCopy)
+  const effectiveTitle1 = pickCopy(titleLine1, '[MẪU] DÒNG TIÊU ĐỀ 1', useDefaultCopy)
+  const effectiveTitle2 = pickCopy(titleLine2, '[MẪU] DÒNG TIÊU ĐỀ 2', useDefaultCopy)
+  const effectiveEmotion = pickCopy(emotionLine, '[MẪU] Dòng cảm xúc trích dẫn ấm áp và chân thành', useDefaultCopy)
+  const effectiveDesc = pickCopy(description, '', useDefaultCopy)
+
+  const hasAnyHeaderCopy = Boolean(
+    effectiveSeriesLabel ||
+    effectiveTitle1 ||
+    effectiveTitle2 ||
+    effectiveEmotion ||
+    effectiveDesc
+  )
+
   const titleClass = `font-display ${fontSizeClass('title', titleSize, 'h1')} uppercase tracking-tight !leading-[var(--tdcx-title-lh,1.3)]`
   const isRows = entriesLayout === 'rows'
   const entriesLayoutClass = isRows
@@ -278,40 +296,42 @@ export function HeroTwoEntries({
         priority={priority}
       >
         <div className={`flex flex-col ${alignClass} w-full`}>
-          {seriesLabel && (
+          {effectiveSeriesLabel && (
             <span
               {...textTarget(id, 'seriesLabel')}
               className={`eb-hero-label mb-[var(--tdcx-eyebrow-gap,0.75rem)] font-ui text-xs font-bold uppercase tracking-widest ${bSeriesLabelColor}`}
             >
-              {seriesLabel}
+              {effectiveSeriesLabel}
             </span>
           )}
 
-          <h1 className={`eb-hero-title ${titleClass}`}>
-            <TwoToneTitle
-              id={id}
-              line1={titleLine1}
-              line2={titleLine2}
-              line1ClassName={bTitle1Color}
-              line2ClassName={bTitle2Color}
-            />
-          </h1>
+          {(effectiveTitle1 || effectiveTitle2) && (
+            <h1 className={`eb-hero-title ${titleClass}`}>
+              <TwoToneTitle
+                id={id}
+                line1={effectiveTitle1}
+                line2={effectiveTitle2}
+                line1ClassName={bTitle1Color}
+                line2ClassName={bTitle2Color}
+              />
+            </h1>
+          )}
 
-          {emotionLine && (
+          {effectiveEmotion && (
             <p
               {...textTarget(id, 'emotionLine')}
               className={`eb-hero-emotion mt-[var(--tdcx-emotion-gap,1rem)] font-quote text-lg sm:text-xl italic max-w-2xl ${bEmotionColor}`}
             >
-              {emotionLine}
+              {effectiveEmotion}
             </p>
           )}
 
-          {description && (
+          {effectiveDesc && (
             <p
               {...textTarget(id, 'description')}
               className={`mt-4 font-ui text-base sm:text-lg leading-relaxed max-w-2xl ${bDescColor}`}
             >
-              {description}
+              {effectiveDesc}
             </p>
           )}
         </div>
@@ -340,42 +360,44 @@ export function HeroTwoEntries({
                   }`}
                 >
                   <div className="order-1 lg:col-span-7 flex flex-col items-start text-left">
-                    {seriesLabel && (
+                    {effectiveSeriesLabel && (
                       <span
                         {...textTarget(id, 'seriesLabel')}
                         className={`eb-hero-label mb-[var(--tdcx-eyebrow-gap,0.75rem)] font-ui text-xs font-bold uppercase tracking-widest ${seriesLabelColorClass}`}
                       >
-                        {seriesLabel}
+                        {effectiveSeriesLabel}
                       </span>
                     )}
 
-                    <h1 className={`eb-hero-title ${titleClass}`}>
-                      <TwoToneTitle
-                        id={id}
-                        line1={titleLine1}
-                        line2={titleLine2}
-                        line1ClassName={isDeepNavy ? 'text-white' : 'text-deep-navy'}
-                        line2ClassName={titleLine2ColorClass}
-                      />
-                    </h1>
+                    {(effectiveTitle1 || effectiveTitle2) && (
+                      <h1 className={`eb-hero-title ${titleClass}`}>
+                        <TwoToneTitle
+                          id={id}
+                          line1={effectiveTitle1}
+                          line2={effectiveTitle2}
+                          line1ClassName={isDeepNavy ? 'text-white' : 'text-deep-navy'}
+                          line2ClassName={titleLine2ColorClass}
+                        />
+                      </h1>
+                    )}
 
-                    {emotionLine && (
+                    {effectiveEmotion && (
                       <p
                         {...textTarget(id, 'emotionLine')}
                         className={`eb-hero-emotion mt-[var(--tdcx-emotion-gap,1rem)] font-quote text-lg sm:text-xl italic max-w-2xl ${
                           isDeepNavy ? 'text-white/90' : 'text-deep-navy/85'
                         }`}
                       >
-                        {emotionLine}
+                        {effectiveEmotion}
                       </p>
                     )}
 
-                    {description && (
+                    {effectiveDesc && (
                       <p
                         {...textTarget(id, 'description')}
                         className={`mt-4 font-ui text-base sm:text-lg leading-relaxed max-w-2xl ${descColorClass}`}
                       >
-                        {description}
+                        {effectiveDesc}
                       </p>
                     )}
 
@@ -419,48 +441,53 @@ export function HeroTwoEntries({
         ) : (
           <div className="flex flex-col">
             {/* Header Section (1 column centered) */}
-            <div className="text-center mb-10 sm:mb-14 flex flex-col items-center">
-              {seriesLabel && (
-                <span
-                  {...textTarget(id, 'seriesLabel')}
-                  className={`eb-hero-label mb-[var(--tdcx-eyebrow-gap,0.75rem)] font-ui text-xs font-bold uppercase tracking-widest ${seriesLabelColorClass}`}
-                >
-                  {seriesLabel}
-                </span>
-              )}
+            {hasAnyHeaderCopy && (
+              <div className="text-center mb-10 sm:mb-14 flex flex-col items-center">
+                {effectiveSeriesLabel && (
+                  <span
+                    {...textTarget(id, 'seriesLabel')}
+                    className={`eb-hero-label mb-[var(--tdcx-eyebrow-gap,0.75rem)] font-ui text-xs font-bold uppercase tracking-widest ${seriesLabelColorClass}`}
+                  >
+                    {effectiveSeriesLabel}
+                  </span>
+                )}
 
-              {/* Signature Two-Tone Heading (Anton) */}
-              <h1 className={`eb-hero-title ${titleClass}`}>
-                <TwoToneTitle
-                  id={id}
-                  line1={titleLine1}
-                  line2={titleLine2}
-                  line1ClassName={isDeepNavy ? 'text-white' : 'text-deep-navy'}
-                  line2ClassName={titleLine2ColorClass}
-                />
-              </h1>
+                {/* Signature Two-Tone Heading (Anton) */}
+                {(effectiveTitle1 || effectiveTitle2) && (
+                  <h1 className={`eb-hero-title ${titleClass}`}>
+                    <TwoToneTitle
+                      id={id}
+                      line1={effectiveTitle1}
+                      line2={effectiveTitle2}
+                      line1ClassName={isDeepNavy ? 'text-white' : 'text-deep-navy'}
+                      line2ClassName={titleLine2ColorClass}
+                    />
+                  </h1>
+                )}
 
-              {/* Emotional Quote (Playfair Display Italic) */}
-              {emotionLine && (
-                <p
-                  {...textTarget(id, 'emotionLine')}
-                  className={`eb-hero-emotion mt-[var(--tdcx-emotion-gap,1rem)] font-quote text-lg sm:text-xl italic max-w-2xl ${
-                    isDeepNavy ? 'text-white/90' : 'text-deep-navy/85'
-                  }`}
-                >
-                  {emotionLine}
-                </p>
-              )}
+                {/* Emotional Quote (Playfair Display Italic) */}
+                {effectiveEmotion && (
+                  <p
+                    {...textTarget(id, 'emotionLine')}
+                    className={`eb-hero-emotion mt-[var(--tdcx-emotion-gap,1rem)] font-quote text-lg sm:text-xl italic max-w-2xl ${
+                      isDeepNavy ? 'text-white/90' : 'text-deep-navy/85'
+                    }`}
+                  >
+                    {effectiveEmotion}
+                  </p>
+                )}
 
-              {description && (
-                <p
-                  {...textTarget(id, 'description')}
-                  className={`mt-4 font-ui text-base sm:text-lg leading-relaxed max-w-2xl ${descColorClass}`}
-                >
-                  {description}
-                </p>
-              )}
-            </div>
+                {/* Description Text */}
+                {effectiveDesc && (
+                  <p
+                    {...textTarget(id, 'description')}
+                    className={`mt-4 font-ui text-base sm:text-lg leading-relaxed max-w-2xl ${descColorClass}`}
+                  >
+                    {effectiveDesc}
+                  </p>
+                )}
+              </div>
+            )}
 
             {/* Entry cards */}
             <div className="eb-hero-cta">{entryCards}</div>

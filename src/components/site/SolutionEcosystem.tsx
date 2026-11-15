@@ -16,6 +16,7 @@ import {
 } from '@/puck/client-preview'
 import { vi } from '@/lib/i18n/vi'
 import { TwoToneTitle } from '@/components/ui/TwoToneTitle'
+import { pickCopy, hasCopy } from '@/lib/copy'
 
 export type { PublicServiceSummary, PublicProgramSummary }
 
@@ -84,6 +85,7 @@ export interface SolutionEcosystemProps {
   bgColor?:
     'warm-ivory' | 'soft-pink' | 'lavender-mist' | 'mint-haze' | 'butter-cream' | 'deep-navy'
   padding?: 'sm' | 'md' | 'lg'
+  useDefaultCopy?: boolean
   _resolved?: {
     products?: PublicProduct[]
     services?: PublicServiceSummary[]
@@ -147,6 +149,7 @@ export function SolutionEcosystem({
   col3Accent = 'deep-navy',
   col3Programs,
   col3Groups,
+  useDefaultCopy = false,
   bgColor = 'warm-ivory',
   padding = 'md',
   _resolved,
@@ -157,6 +160,23 @@ export function SolutionEcosystem({
   const seriesLabelColorClass = isDeepNavy ? 'text-soft-pink' : 'text-bright-magenta'
   const titleLine2ColorClass = isDeepNavy ? 'text-soft-pink' : 'text-bright-magenta'
   const descColorClass = isDeepNavy ? 'text-white/80' : 'text-deep-navy/80'
+
+  const effectiveSeriesLabel = pickCopy(seriesLabel, '[MẪU] Hệ sinh thái giải pháp', useDefaultCopy)
+  const effectiveTitle1 = pickCopy(titleLine1, '[MẪU] ĐỒNG HÀNH TOÀN DIỆN', useDefaultCopy)
+  const effectiveTitle2 = pickCopy(titleLine2, '[MẪU] TRÊN MỌI CHẶNG ĐƯỜNG', useDefaultCopy)
+  const effectiveEmotion = pickCopy(
+    emotionLine,
+    '[MẪU] Từ bước tự nhận thức đầu tiên đến sự chuyển hóa sâu sắc',
+    useDefaultCopy,
+  )
+  const effectiveDesc = pickCopy(description, '', useDefaultCopy)
+
+  const effectiveCol1Title = pickCopy(col1Title, '[MẪU] Đào tạo cá nhân', useDefaultCopy)
+  const effectiveCol1Desc = pickCopy(col1Description, '[MẪU] Các công cụ số và lộ trình tự học', useDefaultCopy)
+  const effectiveCol2Title = pickCopy(col2Title, '[MẪU] Khai vấn 1:1', useDefaultCopy)
+  const effectiveCol2Desc = pickCopy(col2Description, '[MẪU] Đồng hành chuyên sâu cá nhân hóa', useDefaultCopy)
+  const effectiveCol3Title = pickCopy(col3Title, '[MẪU] Doanh nghiệp', useDefaultCopy)
+  const effectiveCol3Desc = pickCopy(col3Description, '[MẪU] Giải pháp phát triển văn hóa và đội ngũ', useDefaultCopy)
 
   const col1GroupProductIds = (col1Groups || []).flatMap(
     (g) => g?.items?.map((it) => it?.productId).filter(Boolean) || [],
@@ -351,8 +371,8 @@ export function SolutionEcosystem({
     type,
   }: {
     isDark: boolean
-    colTitle?: string
-    colDescription?: string
+    colTitle?: string | null
+    colDescription?: string | null
     colIcon?: BrandIconKey | string
     colAccent?: string
     groups: Array<ColumnGroup<any>>
@@ -585,42 +605,42 @@ export function SolutionEcosystem({
     <section className={`w-full ${BG_COLORS[bgColor]} ${PADDINGS[padding]} transition-colors`}>
       <div className="mx-auto max-w-6xl">
         {/* Header */}
-        {(titleLine1 || seriesLabel) && (
+        {(effectiveTitle1 || effectiveTitle2 || effectiveSeriesLabel) && (
           <div className="text-center mb-10 sm:mb-14 flex flex-col items-center">
-            {seriesLabel && (
+            {effectiveSeriesLabel && (
               <span
                 className={`mb-[var(--tdcx-eyebrow-gap,0.75rem)] font-ui text-xs font-bold uppercase tracking-widest ${seriesLabelColorClass}`}
               >
-                {seriesLabel}
+                {effectiveSeriesLabel}
               </span>
             )}
 
-            {titleLine1 && (
+            {(effectiveTitle1 || effectiveTitle2) && (
               <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl uppercase tracking-tight !leading-[var(--tdcx-title-lh,1.3)]">
                 <TwoToneTitle
-                  line1={titleLine1}
-                  line2={titleLine2}
+                  line1={effectiveTitle1}
+                  line2={effectiveTitle2}
                   line1ClassName={isDeepNavy ? 'text-white' : 'text-deep-navy'}
                   line2ClassName={titleLine2ColorClass}
                 />
               </h2>
             )}
 
-            {emotionLine && (
+            {effectiveEmotion && (
               <p
                 className={`mt-[var(--tdcx-emotion-gap,1rem)] font-quote text-lg sm:text-xl italic max-w-2xl ${
                   isDeepNavy ? 'text-white/90' : 'text-deep-navy/85'
                 }`}
               >
-                {emotionLine}
+                {effectiveEmotion}
               </p>
             )}
 
-            {description && (
+            {effectiveDesc && (
               <p
                 className={`mt-4 font-ui text-base sm:text-lg leading-relaxed max-w-2xl ${descColorClass}`}
               >
-                {description}
+                {effectiveDesc}
               </p>
             )}
           </div>
@@ -634,8 +654,8 @@ export function SolutionEcosystem({
               {showCol1 &&
                 renderGroupsColumn({
                   isDark: false,
-                  colTitle: col1Title,
-                  colDescription: col1Description,
+                  colTitle: effectiveCol1Title,
+                  colDescription: effectiveCol1Desc,
                   colIcon: col1Icon,
                   colAccent: col1Accent,
                   groups: effectiveCol1Groups,
@@ -647,8 +667,8 @@ export function SolutionEcosystem({
               {showCol2 &&
                 renderGroupsColumn({
                   isDark: true,
-                  colTitle: col2Title,
-                  colDescription: col2Description,
+                  colTitle: effectiveCol2Title,
+                  colDescription: effectiveCol2Desc,
                   colIcon: col2Icon,
                   colAccent: col2Accent,
                   groups: effectiveCol2Groups,
@@ -660,8 +680,8 @@ export function SolutionEcosystem({
               {showCol3 &&
                 renderGroupsColumn({
                   isDark: false,
-                  colTitle: col3Title,
-                  colDescription: col3Description,
+                  colTitle: effectiveCol3Title,
+                  colDescription: effectiveCol3Desc,
                   colIcon: col3Icon,
                   colAccent: col3Accent,
                   groups: effectiveCol3Groups,
@@ -678,12 +698,14 @@ export function SolutionEcosystem({
                   className="flex flex-col justify-between p-6 sm:p-8 rounded-card border border-deep-navy/10 bg-white text-deep-navy shadow-soft"
                 >
                   <div>
-                    <h3 className="font-display text-2xl uppercase tracking-tight text-deep-navy mb-2">
-                      {col1Title}
-                    </h3>
-                    {col1Description && (
+                    {effectiveCol1Title && (
+                      <h3 className="font-display text-2xl uppercase tracking-tight text-deep-navy mb-2">
+                        {effectiveCol1Title}
+                      </h3>
+                    )}
+                    {effectiveCol1Desc && (
                       <p className="font-ui text-sm text-deep-navy/70 leading-relaxed mb-6">
-                        {col1Description}
+                        {effectiveCol1Desc}
                       </p>
                     )}
 
@@ -751,12 +773,14 @@ export function SolutionEcosystem({
                   className="flex flex-col justify-between p-6 sm:p-8 rounded-card border border-white/20 bg-deep-navy text-white shadow-soft relative ring-2 ring-deep-navy"
                 >
                   <div>
-                    <h3 className="font-display text-2xl uppercase tracking-tight text-white mb-2">
-                      {col2Title}
-                    </h3>
-                    {col2Description && (
+                    {effectiveCol2Title && (
+                      <h3 className="font-display text-2xl uppercase tracking-tight text-white mb-2">
+                        {effectiveCol2Title}
+                      </h3>
+                    )}
+                    {effectiveCol2Desc && (
                       <p className="font-ui text-sm text-white/80 leading-relaxed mb-6">
-                        {col2Description}
+                        {effectiveCol2Desc}
                       </p>
                     )}
 
@@ -814,12 +838,14 @@ export function SolutionEcosystem({
                   className="flex flex-col justify-between p-6 sm:p-8 rounded-card border border-deep-navy/10 bg-white text-deep-navy shadow-soft"
                 >
                   <div>
-                    <h3 className="font-display text-2xl uppercase tracking-tight text-deep-navy mb-2">
-                      {col3Title}
-                    </h3>
-                    {col3Description && (
+                    {effectiveCol3Title && (
+                      <h3 className="font-display text-2xl uppercase tracking-tight text-deep-navy mb-2">
+                        {effectiveCol3Title}
+                      </h3>
+                    )}
+                    {effectiveCol3Desc && (
                       <p className="font-ui text-sm text-deep-navy/70 leading-relaxed mb-6">
-                        {col3Description}
+                        {effectiveCol3Desc}
                       </p>
                     )}
 

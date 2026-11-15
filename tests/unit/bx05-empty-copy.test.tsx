@@ -4,6 +4,11 @@ import { render, screen } from '@testing-library/react'
 import { pickCopy, pickCopyList, hasCopy } from '@/lib/copy'
 import { EQBuddyIntro } from '@/components/eq/zip/EQBuddyIntro'
 import { EQDrawApp } from '@/components/eq/zip/EQDrawApp'
+import { HeroTwoEntries } from '@/components/site/HeroTwoEntries'
+import { FAQ } from '@/components/site/FAQ'
+import { SolutionEcosystem } from '@/components/site/SolutionEcosystem'
+import { QuoteBlockConfig } from '@/puck/blocks/QuoteBlock'
+import { Callout } from '@/components/site/Callout'
 import { vi as viLocale } from '@/lib/i18n/vi'
 
 vi.mock('server-only', () => ({}))
@@ -162,5 +167,104 @@ describe('BX-05: Source 2 – EQ Buddy Content', () => {
     expect(screen.queryByText(viLocale.au02.stateIcon1)).toBeNull()
     expect(screen.queryByText(viLocale.au02.stateIcon2)).toBeNull()
     expect(screen.queryByText(viLocale.au02.stateIcon3)).toBeNull()
+  })
+})
+
+describe('BX-05: Puck blocks empty means hidden', () => {
+  it('HeroTwoEntries: khi ô tiêu đề trống và useDefaultCopy: false thì không hiện tiêu đề mẫu', () => {
+    const { container } = render(
+      <HeroTwoEntries
+        titleLine1=""
+        titleLine2=""
+        seriesLabel=""
+        emotionLine=""
+        description=""
+        useDefaultCopy={false}
+      />,
+    )
+    expect(container.querySelector('h1')).toBeNull()
+    expect(screen.queryByText('[MẪU] DÒNG TIÊU ĐỀ 1')).toBeNull()
+  })
+
+  it('HeroTwoEntries: khi ô tiêu đề trống và useDefaultCopy: true thì hiện tiêu đề mẫu', () => {
+    render(
+      <HeroTwoEntries
+        titleLine1=""
+        titleLine2=""
+        seriesLabel=""
+        emotionLine=""
+        description=""
+        useDefaultCopy={true}
+      />,
+    )
+    expect(screen.getByText('[MẪU] DÒNG TIÊU ĐỀ 1')).toBeDefined()
+  })
+
+  it('FAQ: khi câu hỏi và tiêu đề trống và useDefaultCopy: false thì ẩn toàn bộ FAQ', () => {
+    const { container } = render(
+      <FAQ
+        titleLine1=""
+        titleLine2=""
+        seriesLabel=""
+        description=""
+        items={[]}
+        useDefaultCopy={false}
+      />,
+    )
+    expect(container.firstChild).toBeNull()
+  })
+
+  it('QuoteBlockConfig: khi quote trống và useDefaultCopy: false thì trả về rỗng', () => {
+    const { container } = render(
+      (QuoteBlockConfig.render as any)({
+        quote: '',
+        cite: '',
+        roleOrContext: '',
+        useDefaultCopy: false,
+      }),
+    )
+    expect(container.firstChild).toBeNull()
+  })
+
+  it('QuoteBlockConfig: khi quote trống và useDefaultCopy: true thì hiện quote mẫu', () => {
+    render(
+      (QuoteBlockConfig.render as any)({
+        quote: '',
+        cite: '',
+        roleOrContext: '',
+        useDefaultCopy: true,
+      }),
+    )
+    expect(
+      screen.getByText(/\[MẪU\] Câu trích dẫn cảm xúc ấm áp và sâu sắc chạm đến người đọc/i),
+    ).toBeDefined()
+  })
+
+  it('Callout: khi title và description trống và useDefaultCopy: false thì ẩn toàn bộ block', () => {
+    const { container } = render(
+      <Callout
+        title=""
+        description=""
+        showButton={false}
+        buttonText=""
+        useDefaultCopy={false}
+      />,
+    )
+    expect(container.firstChild).toBeNull()
+  })
+
+  it('Callout: khi title và description trống và useDefaultCopy: true thì hiện chữ mẫu', () => {
+    render(
+      <Callout
+        title=""
+        description=""
+        showButton={true}
+        buttonText=""
+        useDefaultCopy={true}
+      />,
+    )
+    expect(
+      screen.getByText(/\[MẪU\] Bạn không cần phải tự mình đối diện/i),
+    ).toBeDefined()
   })
 })

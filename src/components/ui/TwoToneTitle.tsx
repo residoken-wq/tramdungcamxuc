@@ -72,8 +72,8 @@ export function renderHighlightedTitle(
 
 export interface TwoToneTitleProps {
   id?: string
-  line1?: string
-  line2?: string
+  line1?: string | null
+  line2?: string | null
   line1ClassName?: string
   line2ClassName?: string
   isDark?: boolean
@@ -87,6 +87,11 @@ export function TwoToneTitle({
   line2ClassName = '',
   isDark,
 }: TwoToneTitleProps) {
+  const hasL1 = Boolean(line1 && line1.trim().length > 0)
+  const hasL2 = Boolean(line2 && line2.trim().length > 0)
+
+  if (!hasL1 && !hasL2) return null
+
   const l1Class = line1ClassName ? `block ${line1ClassName}` : 'block'
   const l2Class = line2ClassName ? `block ${line2ClassName}` : 'block'
 
@@ -107,12 +112,14 @@ export function TwoToneTitle({
 
   return (
     <>
-      <span {...textTarget(id, 'titleLine1')} className={l1Class}>
-        {renderHighlightedTitle(line1, { isDark: l1Dark })}
-      </span>
-      {line2 ? (
+      {hasL1 && (
+        <span {...textTarget(id, 'titleLine1')} className={l1Class}>
+          {renderHighlightedTitle(line1, { isDark: l1Dark })}
+        </span>
+      )}
+      {hasL2 ? (
         <>
-          {' '}
+          {hasL1 ? ' ' : null}
           <span {...textTarget(id, 'titleLine2')} className={l2Class}>
             {renderHighlightedTitle(line2, { isDark: l2Dark })}
           </span>

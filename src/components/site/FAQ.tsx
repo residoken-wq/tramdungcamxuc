@@ -9,6 +9,7 @@ import { EmptySlotHint } from '@/components/ui/EmptySlotHint'
 import { TwoToneTitle } from '@/components/ui/TwoToneTitle'
 import { FaqContactAvatar } from './FaqContactAvatar'
 import { FaqStyleProvider } from './faq-style-context'
+import { pickCopy, hasCopy } from '@/lib/copy'
 
 export type { FAQItem }
 
@@ -28,6 +29,7 @@ export interface FAQProps {
   description?: string
   items?: React.ReactNode | React.ComponentType<{ className?: string }> | FAQItem[] | unknown[]
   numbered?: boolean
+  useDefaultCopy?: boolean
   aside?: 'none' | 'booking' | 'contact'
   contactMediaId?: string | number
   contactImageUrl?: string
@@ -95,6 +97,7 @@ export function FAQ({
   description,
   items = [],
   numbered = false,
+  useDefaultCopy = false,
   aside = 'none',
   contactMediaId,
   contactImageUrl: propContactImageUrl,
@@ -117,6 +120,13 @@ export function FAQ({
   const isEditing = puck?.isEditing ?? false
   const isDeepNavy = bgColor === 'deep-navy'
   const isGroupSource = source === 'group'
+
+  const effectiveSeriesLabel = pickCopy(seriesLabel, '[MẪU] Thắc mắc thường gặp', useDefaultCopy)
+  const effectiveTitle1 = pickCopy(titleLine1, '[MẪU] CÂU HỎI THƯỜNG GẶP', useDefaultCopy)
+  const effectiveTitle2 = pickCopy(titleLine2, '[MẪU] GIẢI ĐÁP BĂN KHOĂN', useDefaultCopy)
+  const effectiveDesc = pickCopy(description, '', useDefaultCopy)
+  const effectiveBookingAsideTitle = pickCopy(bookingAsideTitle, vi.sm03.bookingAsideTitle, useDefaultCopy)
+  const effectiveBookingAsideDesc = pickCopy(bookingAsideDescription, '', useDefaultCopy)
 
   const resolvedContactImageUrl = _resolved?.contactImageUrl ?? propContactImageUrl
   const resolvedContactImageAlt = _resolved?.contactImageAlt ?? propContactImageAlt
@@ -322,9 +332,9 @@ export function FAQ({
     >
       <div className="mx-auto max-w-6xl">
         {/* Heading */}
-        {(titleLine1 || seriesLabel) && (
+        {(effectiveTitle1 || effectiveTitle2 || effectiveSeriesLabel) && (
           <div className="text-center mb-10 sm:mb-12 flex flex-col items-center">
-            {seriesLabel &&
+            {effectiveSeriesLabel &&
               (seriesLabelStyle === 'pill' ? (
                 <span
                   className={`mb-[var(--tdcx-eyebrow-gap,0.75rem)] inline-flex items-center px-4 py-1 rounded-full border-[1.5px] font-ui text-xs font-bold uppercase tracking-wider ${
@@ -333,35 +343,37 @@ export function FAQ({
                       : 'border-accent-pink text-bright-magenta bg-white/60'
                   }`}
                 >
-                  {seriesLabel}
+                  {effectiveSeriesLabel}
                 </span>
               ) : (
                 <span
                   className={`mb-[var(--tdcx-eyebrow-gap,0.75rem)] font-ui text-xs font-bold uppercase tracking-widest ${seriesLabelColorClass}`}
                 >
-                  {seriesLabel}
+                  {effectiveSeriesLabel}
                 </span>
               ))}
 
-            <h2
-              id={headingId}
-              className={`${headingId ? 'scroll-mt-24 ' : ''}font-display text-3xl sm:text-4xl lg:text-5xl uppercase tracking-tight !leading-[var(--tdcx-title-lh,1.3)]`}
-            >
-              <TwoToneTitle
-                line1={titleLine1}
-                line2={titleLine2}
-                line1ClassName={isDeepNavy ? 'text-white' : 'text-deep-navy'}
-                line2ClassName={titleLine2ColorClass}
-              />
-            </h2>
+            {(effectiveTitle1 || effectiveTitle2) && (
+              <h2
+                id={headingId}
+                className={`${headingId ? 'scroll-mt-24 ' : ''}font-display text-3xl sm:text-4xl lg:text-5xl uppercase tracking-tight !leading-[var(--tdcx-title-lh,1.3)]`}
+              >
+                <TwoToneTitle
+                  line1={effectiveTitle1}
+                  line2={effectiveTitle2}
+                  line1ClassName={isDeepNavy ? 'text-white' : 'text-deep-navy'}
+                  line2ClassName={titleLine2ColorClass}
+                />
+              </h2>
+            )}
 
-            {description && (
+            {effectiveDesc && (
               <p
                 className={`mt-4 font-ui text-base sm:text-lg leading-relaxed max-w-3xl ${
                   isDeepNavy ? 'text-white/85' : 'text-deep-navy/80'
                 }`}
               >
-                {description}
+                {effectiveDesc}
               </p>
             )}
           </div>
@@ -387,13 +399,15 @@ export function FAQ({
                   />
                 </div>
 
-                <h3 className="font-ui font-bold text-2xl text-white mb-2 leading-tight">
-                  {bookingAsideTitle || vi.sm03.bookingAsideTitle}
-                </h3>
+                {effectiveBookingAsideTitle && (
+                  <h3 className="font-ui font-bold text-2xl text-white mb-2 leading-tight">
+                    {effectiveBookingAsideTitle}
+                  </h3>
+                )}
 
-                {bookingAsideDescription && (
+                {effectiveBookingAsideDesc && (
                   <p className="font-ui text-sm text-white/85 leading-relaxed mb-6">
-                    {bookingAsideDescription}
+                    {effectiveBookingAsideDesc}
                   </p>
                 )}
               </div>
@@ -451,12 +465,14 @@ export function FAQ({
                     {contactBadge}
                   </span>
                 )}
-                <h3 className="font-display text-2xl sm:text-3xl uppercase tracking-tight text-white mb-3">
-                  {bookingAsideTitle || vi.sm03.bookingAsideTitle}
-                </h3>
-                {bookingAsideDescription && (
+                {effectiveBookingAsideTitle && (
+                  <h3 className="font-display text-2xl sm:text-3xl uppercase tracking-tight text-white mb-3">
+                    {effectiveBookingAsideTitle}
+                  </h3>
+                )}
+                {effectiveBookingAsideDesc && (
                   <p className="font-ui text-sm text-white/80 leading-relaxed mb-6">
-                    {bookingAsideDescription}
+                    {effectiveBookingAsideDesc}
                   </p>
                 )}
               </div>

@@ -13,6 +13,7 @@ import { HeroStatItem } from './HeroStatItem'
 import { HeroBackdrop } from './HeroBackdrop'
 import { TwoToneTitle } from '@/components/ui/TwoToneTitle'
 import { textTarget } from '@/puck/style/text-target'
+import { pickCopy, hasCopy } from '@/lib/copy'
 import {
   heroBackdropColors,
   type HeroLayout,
@@ -62,6 +63,7 @@ export interface HeroImageProps {
   statValueSize?: FontSizeOption
   statLabelSize?: FontSizeOption
   titleSize?: FontSizeOption
+  useDefaultCopy?: boolean
   priority?: boolean
   titleCase?: 'upper' | 'none'
   seriesLabelFont?: 'ui' | 'quote'
@@ -278,6 +280,7 @@ export function HeroImage({
   imagePosition = 'center',
   contentAlign = 'center',
   minHeight = 'lg',
+  useDefaultCopy = false,
   bgColor = 'warm-ivory',
   padding = 'md',
   puck,
@@ -291,6 +294,17 @@ export function HeroImage({
   const buttonSafeHref = safeHref(buttonLink)
   const secondaryButtonSafeHref = safeHref(secondaryButtonLink)
   const hasValidImage = Boolean(imageUrl && imageAlt && imageAlt.trim().length > 0)
+
+  const effectiveSeriesLabel = pickCopy(seriesLabel, '[MẪU] Khởi đầu hành trình', useDefaultCopy)
+  const effectiveTitle1 = pickCopy(titleLine1, '[MẪU] DÒNG TIÊU ĐỀ 1', useDefaultCopy)
+  const effectiveTitle2 = pickCopy(titleLine2, '[MẪU] DÒNG TIÊU ĐỀ 2', useDefaultCopy)
+  const effectiveEmotion = pickCopy(
+    emotionLine,
+    '[MẪU] Dòng cảm xúc trích dẫn chạm đến trái tim',
+    useDefaultCopy,
+  )
+  const effectiveButtonText = pickCopy(buttonText, '[MẪU] Bắt đầu ngay', useDefaultCopy)
+  const effectiveSecondaryButtonText = pickCopy(secondaryButtonText, '', useDefaultCopy)
 
   const effectiveBg = isBackdrop
     ? hasValidImage
@@ -312,8 +326,24 @@ export function HeroImage({
 
   const normalizedStats = (Array.isArray(stats) ? stats : []).filter((st) => st && st.value)
 
-  const hasPrimaryButton = Boolean(buttonSafeHref && buttonText)
-  const hasSecondaryButton = Boolean(secondaryButtonSafeHref && secondaryButtonText)
+  const hasPrimaryButton = Boolean(buttonSafeHref && effectiveButtonText)
+  const hasSecondaryButton = Boolean(secondaryButtonSafeHref && effectiveSecondaryButtonText)
+
+  const hasAnyContent = Boolean(
+    hasValidImage ||
+    effectiveTitle1 ||
+    effectiveTitle2 ||
+    effectiveSeriesLabel ||
+    effectiveEmotion ||
+    hasPrimaryButton ||
+    hasSecondaryButton ||
+    normalizedBadges.length > 0 ||
+    normalizedStats.length > 0
+  )
+
+  if (!hasAnyContent && !isEditing) {
+    return null
+  }
 
   if (isBackdrop) {
     const backdropColors = hasValidImage ? heroBackdropColors(overlayTone) : null
@@ -367,7 +397,7 @@ export function HeroImage({
         priority={priority}
       >
         <div className={`flex flex-col ${alignClass} w-full ${contentWidth === 'half' ? 'max-w-xl' : ''}`}>
-          {seriesLabel && (
+          {effectiveSeriesLabel && (
             <span
               {...textTarget(id, 'seriesLabel')}
               className={
@@ -378,23 +408,25 @@ export function HeroImage({
                   : `eb-hero-label mb-[var(--tdcx-eyebrow-gap,0.75rem)] font-ui text-xs font-bold uppercase tracking-widest ${bSeriesLabelColor}`
               }
             >
-              {seriesLabel}
+              {effectiveSeriesLabel}
             </span>
           )}
 
-          <h1
-            className={`eb-hero-title font-display ${TITLE_SIZES[titleSize] ?? TITLE_SIZES.md} uppercase tracking-tight !leading-[var(--tdcx-title-lh,1.3)]`}
-          >
-            <TwoToneTitle
-              id={id}
-              line1={titleLine1}
-              line2={titleLine2}
-              line1ClassName={bTitle1Color}
-              line2ClassName={bTitle2Color}
-            />
-          </h1>
+          {(effectiveTitle1 || effectiveTitle2) && (
+            <h1
+              className={`eb-hero-title font-display ${TITLE_SIZES[titleSize] ?? TITLE_SIZES.md} uppercase tracking-tight !leading-[var(--tdcx-title-lh,1.3)]`}
+            >
+              <TwoToneTitle
+                id={id}
+                line1={effectiveTitle1}
+                line2={effectiveTitle2}
+                line1ClassName={bTitle1Color}
+                line2ClassName={bTitle2Color}
+              />
+            </h1>
+          )}
 
-          {emotionLine && (
+          {effectiveEmotion && (
             <p
               {...textTarget(id, 'emotionLine')}
               className={
@@ -403,7 +435,7 @@ export function HeroImage({
                   : `eb-hero-emotion mt-[var(--tdcx-emotion-gap,1rem)] font-quote text-lg sm:text-xl italic max-w-2xl ${bEmotionColor}`
               }
             >
-              {emotionLine}
+              {effectiveEmotion}
             </p>
           )}
 
@@ -435,7 +467,7 @@ export function HeroImage({
             >
               {hasPrimaryButton && (
                 <Button href={buttonSafeHref!} variant="primary" size="md">
-                  <span {...textTarget(id, 'buttonText')}>{buttonText}</span>
+                  <span {...textTarget(id, 'buttonText')}>{effectiveButtonText}</span>
                 </Button>
               )}
               {hasSecondaryButton && (
@@ -445,7 +477,7 @@ export function HeroImage({
                   size="md"
                   className={bSecondaryBtnClass}
                 >
-                  <span {...textTarget(id, 'secondaryButtonText')}>{secondaryButtonText}</span>
+                  <span {...textTarget(id, 'secondaryButtonText')}>{effectiveSecondaryButtonText}</span>
                 </Button>
               )}
             </div>
@@ -500,7 +532,7 @@ export function HeroImage({
           isImageLeft ? 'lg:order-2' : 'lg:order-1'
         } w-full`}
       >
-        {seriesLabel && (
+        {effectiveSeriesLabel && (
           <span
             {...textTarget(id, 'seriesLabel')}
             className={
@@ -509,24 +541,26 @@ export function HeroImage({
                 : `eb-hero-label mb-[var(--tdcx-eyebrow-gap,0.75rem)] font-ui text-xs font-bold uppercase tracking-widest ${seriesLabelColorClass}`
             }
           >
-            {seriesLabel}
+            {effectiveSeriesLabel}
           </span>
         )}
 
         {/* Signature Two-Tone Heading (Anton) */}
-        <h1
-          className={`eb-hero-title font-display ${TITLE_SIZES[titleSize] ?? TITLE_SIZES.md} ${
-            isUpper ? 'uppercase' : ''
-          } tracking-tight !leading-[var(--tdcx-title-lh,1.3)]`}
-        >
-          <TwoToneTitle
-            id={id}
-            line1={titleLine1}
-            line2={titleLine2}
-            line1ClassName={resolvedLine1Color}
-            line2ClassName={resolvedLine2Color}
-          />
-        </h1>
+        {(effectiveTitle1 || effectiveTitle2) && (
+          <h1
+            className={`eb-hero-title font-display ${TITLE_SIZES[titleSize] ?? TITLE_SIZES.md} ${
+              isUpper ? 'uppercase' : ''
+            } tracking-tight !leading-[var(--tdcx-title-lh,1.3)]`}
+          >
+            <TwoToneTitle
+              id={id}
+              line1={effectiveTitle1}
+              line2={effectiveTitle2}
+              line1ClassName={resolvedLine1Color}
+              line2ClassName={resolvedLine2Color}
+            />
+          </h1>
+        )}
 
         {showAccentBar && (
           <span
@@ -536,7 +570,7 @@ export function HeroImage({
         )}
 
         {/* Emotional Quote / Description */}
-        {emotionLine && (
+        {effectiveEmotion && (
           <p
             {...textTarget(id, 'emotionLine')}
             className={
@@ -549,7 +583,7 @@ export function HeroImage({
                   }`
             }
           >
-            {emotionLine}
+            {effectiveEmotion}
           </p>
         )}
 
@@ -578,7 +612,7 @@ export function HeroImage({
           <div className="eb-hero-cta mt-8 flex flex-col sm:flex-row items-start sm:items-center justify-start gap-4 w-full sm:w-auto">
             {hasPrimaryButton && (
               <Button href={buttonSafeHref!} variant="primary" size="md">
-                <span {...textTarget(id, 'buttonText')}>{buttonText}</span>
+                <span {...textTarget(id, 'buttonText')}>{effectiveButtonText}</span>
               </Button>
             )}
             {hasSecondaryButton && (
@@ -588,7 +622,7 @@ export function HeroImage({
                 size="md"
                 className={isDeepNavy ? 'text-white border-white/40 hover:bg-white/10' : ''}
               >
-                <span {...textTarget(id, 'secondaryButtonText')}>{secondaryButtonText}</span>
+                <span {...textTarget(id, 'secondaryButtonText')}>{effectiveSecondaryButtonText}</span>
               </Button>
             )}
           </div>
@@ -689,7 +723,7 @@ export function HeroImage({
       data-eb-hero={isFirstHero ? 'first' : undefined}
     >
       <div className="mx-auto max-w-5xl flex flex-col items-center text-center">
-        {seriesLabel && (
+        {effectiveSeriesLabel && (
           <span
             {...textTarget(id, 'seriesLabel')}
             className={
@@ -698,24 +732,26 @@ export function HeroImage({
                 : `eb-hero-label mb-[var(--tdcx-eyebrow-gap,0.75rem)] font-ui text-xs font-bold uppercase tracking-widest ${seriesLabelColorClass}`
             }
           >
-            {seriesLabel}
+            {effectiveSeriesLabel}
           </span>
         )}
 
         {/* Signature Two-Tone Heading (Anton) */}
-        <h1
-          className={`eb-hero-title font-display ${TITLE_SIZES[titleSize] ?? TITLE_SIZES.md} ${
-            isUpper ? 'uppercase' : ''
-          } tracking-tight !leading-[var(--tdcx-title-lh,1.3)]`}
-        >
-          <TwoToneTitle
-            id={id}
-            line1={titleLine1}
-            line2={titleLine2}
-            line1ClassName={resolvedLine1Color}
-            line2ClassName={resolvedLine2Color}
-          />
-        </h1>
+        {(effectiveTitle1 || effectiveTitle2) && (
+          <h1
+            className={`eb-hero-title font-display ${TITLE_SIZES[titleSize] ?? TITLE_SIZES.md} ${
+              isUpper ? 'uppercase' : ''
+            } tracking-tight !leading-[var(--tdcx-title-lh,1.3)]`}
+          >
+            <TwoToneTitle
+              id={id}
+              line1={effectiveTitle1}
+              line2={effectiveTitle2}
+              line1ClassName={resolvedLine1Color}
+              line2ClassName={resolvedLine2Color}
+            />
+          </h1>
+        )}
 
         {showAccentBar && (
           <span
@@ -725,7 +761,7 @@ export function HeroImage({
         )}
 
         {/* Emotional Quote / Description */}
-        {emotionLine && (
+        {effectiveEmotion && (
           <p
             {...textTarget(id, 'emotionLine')}
             className={
@@ -738,7 +774,7 @@ export function HeroImage({
                   }`
             }
           >
-            {emotionLine}
+            {effectiveEmotion}
           </p>
         )}
 
@@ -767,7 +803,7 @@ export function HeroImage({
           <div className="eb-hero-cta mt-8 flex flex-col sm:flex-row items-center justify-center gap-4 w-full sm:w-auto">
             {hasPrimaryButton && (
               <Button href={buttonSafeHref!} variant="primary" size="md">
-                <span {...textTarget(id, 'buttonText')}>{buttonText}</span>
+                <span {...textTarget(id, 'buttonText')}>{effectiveButtonText}</span>
               </Button>
             )}
             {hasSecondaryButton && (
@@ -777,7 +813,7 @@ export function HeroImage({
                 size="md"
                 className={isDeepNavy ? 'text-white border-white/40 hover:bg-white/10' : ''}
               >
-                <span {...textTarget(id, 'secondaryButtonText')}>{secondaryButtonText}</span>
+                <span {...textTarget(id, 'secondaryButtonText')}>{effectiveSecondaryButtonText}</span>
               </Button>
             )}
           </div>
