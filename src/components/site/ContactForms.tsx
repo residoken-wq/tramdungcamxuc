@@ -10,6 +10,12 @@ import { vi } from '@/lib/i18n/vi'
 export interface ContactFormsProps {
   version?: number
   layout?: 'tabs' | 'columns' | 'personal' | 'business'
+  b2cPurpose?: 'consult' | 'brochure'
+  b2cShowPathway?: boolean
+  b2cShowStatus?: boolean
+  b2cShowMessage?: boolean
+  b2cPhoneRequired?: boolean
+  b2cShowName?: boolean
   titleB2C?: string
   descriptionB2C?: string
   submitLabelB2C?: string
@@ -52,11 +58,17 @@ const PADDINGS = {
 
 export function ContactForms({
   layout = 'columns',
+  b2cPurpose = 'consult',
+  b2cShowPathway = true,
+  b2cShowStatus = true,
+  b2cShowMessage = true,
+  b2cPhoneRequired = false,
+  b2cShowName = true,
   titleB2C = vi.sm06.contactForms.defaultB2CTitle,
   descriptionB2C = vi.sm06.contactForms.defaultB2CDescription,
   submitLabelB2C,
   successTitleB2C = vi.sm06.contactForms.successTitle,
-  successMessageB2C = vi.sm06.contactForms.defaultSuccessMessageB2C,
+  successMessageB2C,
   titleB2B = vi.sm06.contactForms.defaultB2BTitle,
   descriptionB2B = vi.sm06.contactForms.defaultB2BDescription,
   submitLabelB2B = vi.sm06.contactForms.submitB2B,
@@ -70,6 +82,24 @@ export function ContactForms({
 }: ContactFormsProps) {
   const isDeepNavy = bgColor === 'deep-navy'
   const id = useId()
+
+  const isBrochure = b2cPurpose === 'brochure'
+  const showName = isBrochure ? b2cShowName !== false : true
+  const showPathway = isBrochure ? false : b2cShowPathway !== false
+  const showStatus = isBrochure ? false : b2cShowStatus !== false
+  const showMessage = isBrochure ? false : b2cShowMessage !== false
+  const phoneRequired = isBrochure ? true : Boolean(b2cPhoneRequired)
+
+  const resolvedSuccessMessageB2C =
+    !successMessageB2C ||
+    (isBrochure &&
+      (successMessageB2C === vi.sm06.contactForms.defaultSuccessMessageB2C ||
+        successMessageB2C ===
+          '[MẪU] Trạm đã nhận được thông tin và sẽ phản hồi qua email hoặc số điện thoại trong vòng 24 giờ làm việc.'))
+      ? isBrochure
+        ? 'Em sẽ liên hệ trực tiếp.'
+        : vi.sm06.contactForms.defaultSuccessMessageB2C
+      : successMessageB2C
 
   // Tabs state
   const [activeTab, setActiveTab] = useState<'personal' | 'business'>('personal')
@@ -141,9 +171,16 @@ export function ContactForms({
   // Validate B2C
   const validateB2C = (): boolean => {
     const errs: Record<string, string> = {}
-    if (!b2cName.trim()) {
-      errs.name = vi.forms.validation.nameRequired
+    if (!isBrochure) {
+      if (!b2cName.trim()) {
+        errs.name = vi.forms.validation.nameRequired
+      }
+    } else {
+      if (showName && b2cName.trim().length > 100) {
+        errs.name = vi.forms.validation.nameMax
+      }
     }
+
     if (!b2cEmail.trim()) {
       errs.email = vi.forms.validation.emailRequired
     } else {
@@ -152,9 +189,22 @@ export function ContactForms({
         errs.email = vi.forms.validation.emailInvalid
       }
     }
-    if (!b2cMessage.trim()) {
+
+    if (phoneRequired) {
+      if (!b2cPhone.trim()) {
+        errs.phone = vi.forms.validation.phoneRequired
+      } else {
+        const cleaned = b2cPhone.trim().replace(/[\s.-]/g, '')
+        if (!/^(?:\+?84|0)[0-9]{9,10}$/.test(cleaned)) {
+          errs.phone = vi.forms.validation.phoneInvalid
+        }
+      }
+    }
+
+    if (showMessage && !b2cMessage.trim()) {
       errs.message = vi.forms.validation.messageRequired
     }
+
     if (!isDemo && !b2cConsent) {
       errs.consent = vi.forms.validation.consentRequired
     }
@@ -181,31 +231,62 @@ export function ContactForms({
 
     setB2cStatusState('submitting')
     try {
-      const { submitCoachingAction } = await import('@/lib/forms/actions')
-      const res = await submitCoachingAction(
-        {
-          name: b2cName.trim(),
-          email: b2cEmail.trim(),
-          phone: b2cPhone.trim() || undefined,
-          service: b2cService ? Number(b2cService) : undefined,
-          currentStatus: b2cStatus.trim() || undefined,
-          message: b2cMessage.trim(),
-          consent: b2cConsent,
-          honeypot: b2cHoneypot.trim(),
-          turnstileToken: b2cTurnstileToken,
-          form: 'contact-b2c',
-          page: pageSlug,
-        },
-        { form: 'contact-b2c', page: pageSlug },
-      )
+      if (isBrochure) {
+        const { submitRegistrationAction } = await import('@/lib/forms/actions')
+        const res = await submitRegistrationAction(
+          {
+            name: showName && b2cName.trim() ? b2cName.trim() : undefined,
+            email: b2cEmail.trim().toLowerCase(),
+            phone: b2cPhone.trim(),
+            formType: 'brochure-chuyen-minh',
+            consent: b2cConsent,
+            honeypot: b2cHoneypot.trim(),
+            turnstileToken: b2cTurnstileToken,
+            page: pageSlug || (typeof window !== 'undefined' ? window.location.pathname : undefined),
+          },
+          {
+            page: pageSlug || (typeof window !== 'undefined' ? window.location.pathname : undefined),
+          },
+        )
 
-      if (res.success) {
-        setB2cStatusState('success')
-        track('lead_submitted', { need: 'personal' })
+        if (res.success) {
+          setB2cStatusState('success')
+          // REVIEW-REQUIRED: Personal data (NĐ 13/2023). Only pass form name, never PII (name, phone, email) to analytics.
+          track('lead_submitted', { form: 'brochure-chuyen-minh' })
+        } else {
+          setB2cStatusState('error')
+          setB2cServerError(res.error || res.message || vi.forms.serverError)
+          if (res.fieldErrors) setB2cErrors(res.fieldErrors)
+        }
       } else {
-        setB2cStatusState('error')
-        setB2cServerError(res.error || vi.forms.serverError)
-        if (res.fieldErrors) setB2cErrors(res.fieldErrors)
+        const { submitCoachingAction } = await import('@/lib/forms/actions')
+        const res = await submitCoachingAction(
+          {
+            name: b2cName.trim(),
+            email: b2cEmail.trim(),
+            phone: b2cPhone.trim() || undefined,
+            phoneRequired,
+            service: showPathway && b2cService ? Number(b2cService) : undefined,
+            currentStatus: showStatus && b2cStatus.trim() ? b2cStatus.trim() : undefined,
+            message: showMessage && b2cMessage.trim() ? b2cMessage.trim() : undefined,
+            consent: b2cConsent,
+            honeypot: b2cHoneypot.trim(),
+            turnstileToken: b2cTurnstileToken,
+            form: 'contact-b2c',
+            page: pageSlug,
+          },
+          { form: 'contact-b2c', page: pageSlug },
+        )
+
+        if (res.success) {
+          setB2cStatusState('success')
+          // REVIEW-REQUIRED: Personal data (NĐ 13/2023). Only pass need/form, never PII to analytics.
+          track('lead_submitted', { need: 'personal', form: 'contact-b2c' })
+        } else {
+          setB2cStatusState('error')
+          setB2cServerError(res.error || vi.forms.serverError)
+          if (res.fieldErrors) setB2cErrors(res.fieldErrors)
+        }
       }
     } catch {
       setB2cStatusState('error')
@@ -312,7 +393,7 @@ export function ContactForms({
             {successTitleB2C}
           </h3>
           <p className={`font-ui text-base leading-relaxed max-w-md mx-auto ${textMutedClass}`}>
-            {successMessageB2C}
+            {resolvedSuccessMessageB2C}
           </p>
           <div className="pt-4">
             <Button
@@ -366,37 +447,40 @@ export function ContactForms({
             </div>
 
             {/* Họ và tên */}
-            <div>
-              <label htmlFor={`${id}-b2c-name`} className="block font-ui text-sm font-bold mb-1.5">
-                {vi.sm06.contactForms.nameLabel} <span className="text-bright-magenta">*</span>
-              </label>
-              <input
-                id={`${id}-b2c-name`}
-                type="text"
-                required
-                disabled={b2cStatusState === 'submitting'}
-                placeholder={vi.sm06.contactForms.namePlaceholder}
-                value={b2cName}
-                onChange={(e) => {
-                  setB2cName(e.target.value)
-                  if (b2cErrors.name) setB2cErrors((prev) => ({ ...prev, name: '' }))
-                }}
-                className={`w-full px-4 py-3 rounded-xl border font-ui text-base transition-colors focus:outline-none focus:ring-2 focus:ring-accent-pink ${inputBgClass} ${
-                  b2cErrors.name ? 'border-bright-magenta' : ''
-                }`}
-                aria-invalid={Boolean(b2cErrors.name)}
-                aria-describedby={b2cErrors.name ? `${id}-b2c-name-err` : undefined}
-              />
-              {b2cErrors.name && (
-                <p
-                  id={`${id}-b2c-name-err`}
-                  role="alert"
-                  className="mt-1 font-ui text-xs text-bright-magenta font-semibold"
-                >
-                  {b2cErrors.name}
-                </p>
-              )}
-            </div>
+            {showName && (
+              <div>
+                <label htmlFor={`${id}-b2c-name`} className="block font-ui text-sm font-bold mb-1.5">
+                  {vi.sm06.contactForms.nameLabel}{' '}
+                  {!isBrochure && <span className="text-bright-magenta">*</span>}
+                </label>
+                <input
+                  id={`${id}-b2c-name`}
+                  type="text"
+                  required={!isBrochure}
+                  disabled={b2cStatusState === 'submitting'}
+                  placeholder={vi.sm06.contactForms.namePlaceholder}
+                  value={b2cName}
+                  onChange={(e) => {
+                    setB2cName(e.target.value)
+                    if (b2cErrors.name) setB2cErrors((prev) => ({ ...prev, name: '' }))
+                  }}
+                  className={`w-full px-4 py-3 rounded-xl border font-ui text-base transition-colors focus:outline-none focus:ring-2 focus:ring-accent-pink ${inputBgClass} ${
+                    b2cErrors.name ? 'border-bright-magenta' : ''
+                  }`}
+                  aria-invalid={Boolean(b2cErrors.name)}
+                  aria-describedby={b2cErrors.name ? `${id}-b2c-name-err` : undefined}
+                />
+                {b2cErrors.name && (
+                  <p
+                    id={`${id}-b2c-name-err`}
+                    role="alert"
+                    className="mt-1 font-ui text-xs text-bright-magenta font-semibold"
+                  >
+                    {b2cErrors.name}
+                  </p>
+                )}
+              </div>
+            )}
 
             {/* Email & Phone */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -440,22 +524,120 @@ export function ContactForms({
                   htmlFor={`${id}-b2c-phone`}
                   className="block font-ui text-sm font-bold mb-1.5"
                 >
-                  {vi.sm06.contactForms.phoneLabel}
+                  {phoneRequired ? (
+                    <>
+                      Số điện thoại <span className="text-bright-magenta">*</span>
+                    </>
+                  ) : (
+                    vi.sm06.contactForms.phoneLabel
+                  )}
                 </label>
                 <input
                   id={`${id}-b2c-phone`}
                   type="tel"
+                  {...(phoneRequired
+                    ? {
+                        required: true,
+                        'aria-invalid': Boolean(b2cErrors.phone),
+                        'aria-describedby': b2cErrors.phone ? `${id}-b2c-phone-err` : undefined,
+                      }
+                    : {})}
                   disabled={b2cStatusState === 'submitting'}
                   placeholder={vi.sm06.contactForms.phonePlaceholder}
                   value={b2cPhone}
-                  onChange={(e) => setB2cPhone(e.target.value)}
-                  className={`w-full px-4 py-3 rounded-xl border font-ui text-base transition-colors focus:outline-none focus:ring-2 focus:ring-accent-pink ${inputBgClass}`}
+                  onChange={(e) => {
+                    setB2cPhone(e.target.value)
+                    if (b2cErrors.phone) setB2cErrors((prev) => ({ ...prev, phone: '' }))
+                  }}
+                  className={`w-full px-4 py-3 rounded-xl border font-ui text-base transition-colors focus:outline-none focus:ring-2 focus:ring-accent-pink ${inputBgClass}${
+                    phoneRequired && b2cErrors.phone ? ' border-bright-magenta' : ''
+                  }`}
                 />
+                {b2cErrors.phone && (
+                  <p
+                    id={`${id}-b2c-phone-err`}
+                    role="alert"
+                    className="mt-1 font-ui text-xs text-bright-magenta font-semibold"
+                  >
+                    {b2cErrors.phone}
+                  </p>
+                )}
               </div>
             </div>
 
             {/* Service & Current Status */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {showPathway && showStatus ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label
+                    htmlFor={`${id}-b2c-service`}
+                    className="block font-ui text-sm font-bold mb-1.5"
+                  >
+                    {layout === 'personal'
+                      ? vi.pk21?.contactForms?.pathwayLabel || 'Lộ trình bạn quan tâm'
+                      : vi.sm06.contactForms.serviceLabel}
+                  </label>
+                  <select
+                    id={`${id}-b2c-service`}
+                    disabled={b2cStatusState === 'submitting'}
+                    value={b2cService}
+                    onChange={(e) => setB2cService(e.target.value)}
+                    title={
+                      services.find((s) => String(s.id) === String(b2cService))?.name ||
+                      (b2cService
+                        ? ''
+                        : layout === 'personal'
+                          ? vi.pk21?.contactForms?.selectPathwayPlaceholder || '-- Chọn lộ trình --'
+                          : vi.sm06.contactForms.serviceUncertain)
+                    }
+                    className={`w-full max-w-full px-4 py-3 rounded-xl border font-ui text-base truncate transition-colors focus:outline-none focus:ring-2 focus:ring-accent-pink ${inputBgClass}`}
+                  >
+                    <option
+                      value=""
+                      title={
+                        layout === 'personal'
+                          ? vi.pk21?.contactForms?.selectPathwayPlaceholder || '-- Chọn lộ trình --'
+                          : vi.sm06.contactForms.serviceUncertain
+                      }
+                    >
+                      {layout === 'personal'
+                        ? vi.pk21?.contactForms?.selectPathwayPlaceholder || '-- Chọn lộ trình --'
+                        : vi.sm06.contactForms.serviceUncertain}
+                    </option>
+                    {services.map((s) => (
+                      <option key={s.id} value={s.id} title={s.name}>
+                        {s.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {leadStatusOptions.length > 0 && (
+                  <div>
+                    <label
+                      htmlFor={`${id}-b2c-status`}
+                      className="block font-ui text-sm font-bold mb-1.5"
+                    >
+                      {vi.sm06.contactForms.currentStatusLabel}
+                    </label>
+                    <select
+                      id={`${id}-b2c-status`}
+                      disabled={b2cStatusState === 'submitting'}
+                      value={b2cStatus}
+                      onChange={(e) => setB2cStatus(e.target.value)}
+                      className={`w-full px-4 py-3 rounded-xl border font-ui text-base transition-colors focus:outline-none focus:ring-2 focus:ring-accent-pink ${inputBgClass}`}
+                    >
+                      <option value="">{vi.sm06.contactForms.currentStatusPlaceholder}</option>
+                      {leadStatusOptions.map((opt, i) => (
+                        <option key={i} value={opt.label}>
+                          {opt.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+              </div>
+            ) : showPathway ? (
               <div>
                 <label
                   htmlFor={`${id}-b2c-service`}
@@ -499,77 +681,77 @@ export function ContactForms({
                   ))}
                 </select>
               </div>
-
-              {leadStatusOptions.length > 0 && (
-                <div>
-                  <label
-                    htmlFor={`${id}-b2c-status`}
-                    className="block font-ui text-sm font-bold mb-1.5"
-                  >
-                    {vi.sm06.contactForms.currentStatusLabel}
-                  </label>
-                  <select
-                    id={`${id}-b2c-status`}
-                    disabled={b2cStatusState === 'submitting'}
-                    value={b2cStatus}
-                    onChange={(e) => setB2cStatus(e.target.value)}
-                    className={`w-full px-4 py-3 rounded-xl border font-ui text-base transition-colors focus:outline-none focus:ring-2 focus:ring-accent-pink ${inputBgClass}`}
-                  >
-                    <option value="">{vi.sm06.contactForms.currentStatusPlaceholder}</option>
-                    {leadStatusOptions.map((opt, i) => (
-                      <option key={i} value={opt.label}>
-                        {opt.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              )}
-            </div>
+            ) : showStatus && leadStatusOptions.length > 0 ? (
+              <div>
+                <label
+                  htmlFor={`${id}-b2c-status`}
+                  className="block font-ui text-sm font-bold mb-1.5"
+                >
+                  {vi.sm06.contactForms.currentStatusLabel}
+                </label>
+                <select
+                  id={`${id}-b2c-status`}
+                  disabled={b2cStatusState === 'submitting'}
+                  value={b2cStatus}
+                  onChange={(e) => setB2cStatus(e.target.value)}
+                  className={`w-full px-4 py-3 rounded-xl border font-ui text-base transition-colors focus:outline-none focus:ring-2 focus:ring-accent-pink ${inputBgClass}`}
+                >
+                  <option value="">{vi.sm06.contactForms.currentStatusPlaceholder}</option>
+                  {leadStatusOptions.map((opt, i) => (
+                    <option key={i} value={opt.label}>
+                      {opt.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            ) : null}
 
             {/* Lời nhắn / trăn trở */}
-            <div>
-              <label
-                htmlFor={`${id}-b2c-message`}
-                className="block font-ui text-sm font-bold mb-1.5"
-              >
-                {layout === 'personal'
-                  ? vi.pk21?.contactForms?.concernsLabel || 'Điều bạn đang trăn trở'
-                  : vi.sm06.contactForms.messageB2CLabel}{' '}
-                <span className="text-bright-magenta">*</span>
-              </label>
-              <textarea
-                id={`${id}-b2c-message`}
-                required
-                rows={4}
-                maxLength={2000}
-                disabled={b2cStatusState === 'submitting'}
-                placeholder={
-                  layout === 'personal'
-                    ? vi.pk21?.contactForms?.concernsPlaceholder ||
-                      'Chia sẻ ngắn gọn điều bạn đang muốn tháo gỡ...'
-                    : vi.sm06.contactForms.messageB2CPlaceholder
-                }
-                value={b2cMessage}
-                onChange={(e) => {
-                  setB2cMessage(e.target.value)
-                  if (b2cErrors.message) setB2cErrors((prev) => ({ ...prev, message: '' }))
-                }}
-                className={`w-full px-4 py-3 rounded-xl border font-ui text-base transition-colors focus:outline-none focus:ring-2 focus:ring-accent-pink ${inputBgClass} ${
-                  b2cErrors.message ? 'border-bright-magenta' : ''
-                }`}
-                aria-invalid={Boolean(b2cErrors.message)}
-                aria-describedby={b2cErrors.message ? `${id}-b2c-msg-err` : undefined}
-              />
-              {b2cErrors.message && (
-                <p
-                  id={`${id}-b2c-msg-err`}
-                  role="alert"
-                  className="mt-1 font-ui text-xs text-bright-magenta font-semibold"
+            {showMessage && (
+              <div>
+                <label
+                  htmlFor={`${id}-b2c-message`}
+                  className="block font-ui text-sm font-bold mb-1.5"
                 >
-                  {b2cErrors.message}
-                </p>
-              )}
-            </div>
+                  {layout === 'personal'
+                    ? vi.pk21?.contactForms?.concernsLabel || 'Điều bạn đang trăn trở'
+                    : vi.sm06.contactForms.messageB2CLabel}{' '}
+                  <span className="text-bright-magenta">*</span>
+                </label>
+                <textarea
+                  id={`${id}-b2c-message`}
+                  required
+                  rows={4}
+                  maxLength={2000}
+                  disabled={b2cStatusState === 'submitting'}
+                  placeholder={
+                    layout === 'personal'
+                      ? vi.pk21?.contactForms?.concernsPlaceholder ||
+                        'Chia sẻ ngắn gọn điều bạn đang muốn tháo gỡ...'
+                      : vi.sm06.contactForms.messageB2CPlaceholder
+                  }
+                  value={b2cMessage}
+                  onChange={(e) => {
+                    setB2cMessage(e.target.value)
+                    if (b2cErrors.message) setB2cErrors((prev) => ({ ...prev, message: '' }))
+                  }}
+                  className={`w-full px-4 py-3 rounded-xl border font-ui text-base transition-colors focus:outline-none focus:ring-2 focus:ring-accent-pink ${inputBgClass} ${
+                    b2cErrors.message ? 'border-bright-magenta' : ''
+                  }`}
+                  aria-invalid={Boolean(b2cErrors.message)}
+                  aria-describedby={b2cErrors.message ? `${id}-b2c-msg-err` : undefined}
+                />
+                {b2cErrors.message && (
+                  <p
+                    id={`${id}-b2c-msg-err`}
+                    role="alert"
+                    className="mt-1 font-ui text-xs text-bright-magenta font-semibold"
+                  >
+                    {b2cErrors.message}
+                  </p>
+                )}
+              </div>
+            )}
 
             {/* Turnstile Widget */}
             {!isDemo && (
@@ -635,9 +817,11 @@ export function ContactForms({
                 {b2cStatusState === 'submitting'
                   ? vi.sm06.contactForms.submitting
                   : submitLabelB2C ||
-                    (layout === 'personal'
-                      ? vi.pk21?.contactForms?.submitPersonal || 'Đặt lịch Phiên Khám phá'
-                      : vi.sm06.contactForms.submitB2C)}
+                    (isBrochure
+                      ? 'Đăng ký nhận brochure'
+                      : layout === 'personal'
+                        ? vi.pk21?.contactForms?.submitPersonal || 'Đặt lịch Phiên Khám phá'
+                        : vi.sm06.contactForms.submitB2C)}
               </Button>
             </div>
           </form>
