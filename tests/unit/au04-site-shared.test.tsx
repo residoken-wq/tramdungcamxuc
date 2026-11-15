@@ -80,10 +80,15 @@ describe('AU-04: Nút đặt lịch dùng chung (Mục 4)', () => {
       expect(link.textContent).toContain('Đặt phiên trải nghiệm (149.000đ)')
     })
 
-    it('falls back to /dat-phien-trai-nghiem when no product is passed', () => {
-      render(<ExperienceBookingButton product={null} />)
+    it('falls back to defaultBookingProduct or hides on public when no product is passed', () => {
+      // BX-06: Khi không có sản phẩm nào đặt được trên trang công khai -> không render nút
+      const { container } = render(<ExperienceBookingButton product={null} />)
+      expect(container.firstChild).toBeNull()
+
+      // Khi có defaultBookingProduct khả dụng -> render link với sản phẩm mặc định
+      render(<ExperienceBookingButton product={null} defaultBookingProduct={mockCoachingProduct} />)
       const link = screen.getByRole('link', { name: /Đặt phiên trải nghiệm/ })
-      expect(link.getAttribute('href')).toBe('/dat-phien-trai-nghiem')
+      expect(link.getAttribute('href')).toBe('/dat-phien-trai-nghiem?san-pham=7')
     })
 
     it('tracks booking_clicked on click', () => {
