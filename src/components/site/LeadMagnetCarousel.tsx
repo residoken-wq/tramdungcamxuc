@@ -8,6 +8,7 @@ import { stripTitleHighlight } from '@/components/ui/TwoToneTitle'
 import { vi } from '@/lib/i18n/vi'
 import { track } from '@/lib/analytics/track'
 import { previewLeadMagnetsAction } from '@/puck/lead-magnet-actions'
+import type { TitleHighlightAnimation, TitleHighlightStyle } from '@/components/ui/TwoToneTitle'
 
 const ResourceRequestForm = dynamic(
   () => import('@/components/site/ResourceRequestForm').then((mod) => mod.ResourceRequestForm),
@@ -35,6 +36,8 @@ export interface LeadMagnetCarouselProps {
   seriesLabel?: string
   titleLine1?: string
   titleLine2?: string
+  titleHighlightStyle?: TitleHighlightStyle
+  titleHighlightAnimation?: TitleHighlightAnimation
   emotionLine?: string
   mode?: 'auto' | 'manual'
   manualProducts?: Array<{ productId?: string | number }>
@@ -72,6 +75,8 @@ export function LeadMagnetCarousel({
   seriesLabel,
   titleLine1 = vi.sm05.carousel.emptyEditor,
   titleLine2,
+  titleHighlightStyle,
+  titleHighlightAnimation,
   emotionLine,
   bgColor = 'warm-ivory',
   padding = 'md',
@@ -197,6 +202,8 @@ export function LeadMagnetCarousel({
           }
         >
           <SectionHeader
+            titleHighlightStyle={titleHighlightStyle}
+            titleHighlightAnimation={titleHighlightAnimation}
             seriesLabel={seriesLabel}
             titleLine1={titleLine1}
             titleLine2={titleLine2}

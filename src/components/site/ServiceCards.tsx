@@ -5,6 +5,7 @@ import { TwoToneTitle } from '@/components/ui/TwoToneTitle'
 import { vi } from '@/lib/i18n/vi'
 import { textTarget } from '@/puck/style/text-target'
 import { ServiceCardsProvider } from './service-cards-context'
+import type { TitleHighlightAnimation, TitleHighlightStyle } from '@/components/ui/TwoToneTitle'
 
 export interface ResolvedService {
   id: string | number
@@ -26,6 +27,8 @@ export interface ServiceCardsProps {
   seriesLabel?: string
   titleLine1?: string
   titleLine2?: string
+  titleHighlightStyle?: TitleHighlightStyle
+  titleHighlightAnimation?: TitleHighlightAnimation
   emotionLine?: string
   columns?: 1 | 2 | 3 | '1' | '2' | '3'
   cardAlign?: 'inherit' | 'left' | 'center'
@@ -69,6 +72,8 @@ export function ServiceCards({
   seriesLabel,
   titleLine1,
   titleLine2,
+  titleHighlightStyle,
+  titleHighlightAnimation,
   emotionLine,
   columns,
   cardAlign = 'inherit',
@@ -142,6 +147,8 @@ export function ServiceCards({
             {titleLine1 && (
               <h2 className="font-display text-3xl sm:text-4xl uppercase tracking-tight !leading-[var(--tdcx-title-lh,1.3)] mb-3">
                 <TwoToneTitle
+                  highlightStyle={titleHighlightStyle}
+                  highlightAnimation={titleHighlightAnimation}
                   id={id}
                   line1={titleLine1}
                   line2={titleLine2}

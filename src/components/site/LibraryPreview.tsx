@@ -8,6 +8,7 @@ import { PostCard } from '@/components/site/PostCard'
 import { resolveProductCta, type PublicProduct } from '@/lib/products'
 import type { LibraryTab } from '@/lib/library'
 import { PATHS } from '@/lib/paths'
+import type { TitleHighlightAnimation, TitleHighlightStyle } from '@/components/ui/TwoToneTitle'
 
 export interface LibraryPreviewItemPost {
   id: string | number
@@ -35,6 +36,8 @@ export interface LibraryPreviewProps {
   seriesLabel?: string
   titleLine1?: string
   titleLine2?: string
+  titleHighlightStyle?: TitleHighlightStyle
+  titleHighlightAnimation?: TitleHighlightAnimation
   emotionLine?: string
   tab?: LibraryTab
   limit?: number
@@ -50,6 +53,8 @@ export function LibraryPreview({
   seriesLabel = '[MẪU] Khám phá tri thức',
   titleLine1 = '[MẪU] THƯ VIỆN',
   titleLine2 = '[MẪU] CẢM XÚC & BÀI HỌC',
+  titleHighlightStyle,
+  titleHighlightAnimation,
   emotionLine = '[MẪU] Những tài nguyên, bài học và công cụ được đúc kết từ thực tiễn.',
   tab = 'khoa-hoc',
   bgColor = 'warm-ivory',
@@ -125,6 +130,8 @@ export function LibraryPreview({
     <section className={`w-full bg-${bgColor} ${paddingClasses}`}>
       <div className="max-w-6xl mx-auto space-y-10">
         <SectionHeader
+          titleHighlightStyle={titleHighlightStyle}
+          titleHighlightAnimation={titleHighlightAnimation}
           seriesLabel={seriesLabel}
           titleLine1={titleLine1}
           titleLine2={titleLine2}

@@ -6,7 +6,7 @@ import { vi } from '@/lib/i18n/vi'
 import { FaqAccordionList, type FAQItem } from './FaqAccordionList'
 import { FaqItemView } from './FaqItemView'
 import { EmptySlotHint } from '@/components/ui/EmptySlotHint'
-import { TwoToneTitle } from '@/components/ui/TwoToneTitle'
+import { TwoToneTitle, type TitleHighlightAnimation, type TitleHighlightStyle } from '@/components/ui/TwoToneTitle'
 import { FaqContactAvatar } from './FaqContactAvatar'
 import { FaqStyleProvider } from './faq-style-context'
 import { pickCopy, hasCopy } from '@/lib/copy'
@@ -26,6 +26,8 @@ export interface FAQProps {
   seriesLabelStyle?: 'text' | 'pill'
   titleLine1?: string
   titleLine2?: string
+  titleHighlightStyle?: TitleHighlightStyle
+  titleHighlightAnimation?: TitleHighlightAnimation
   description?: string
   items?: React.ReactNode | React.ComponentType<{ className?: string }> | FAQItem[] | unknown[]
   numbered?: boolean
@@ -94,6 +96,8 @@ export function FAQ({
   seriesLabelStyle = 'text',
   titleLine1 = '[MẪU] CÂU HỎI THƯỜNG GẶP',
   titleLine2 = '[MẪU] GIẢI ĐÁP BĂN KHOĂN',
+  titleHighlightStyle,
+  titleHighlightAnimation,
   description,
   items = [],
   numbered = false,
@@ -359,6 +363,8 @@ export function FAQ({
                 className={`${headingId ? 'scroll-mt-24 ' : ''}font-display text-3xl sm:text-4xl lg:text-5xl uppercase tracking-tight !leading-[var(--tdcx-title-lh,1.3)]`}
               >
                 <TwoToneTitle
+                  highlightStyle={titleHighlightStyle}
+                  highlightAnimation={titleHighlightAnimation}
                   line1={effectiveTitle1}
                   line2={effectiveTitle2}
                   line1ClassName={isDeepNavy ? 'text-white' : 'text-deep-navy'}

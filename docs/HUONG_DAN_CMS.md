@@ -3462,7 +3462,7 @@ Bản cập nhật CD-04 bổ sung 5 tùy chọn tinh chỉnh giao diện trực
 Bản cập nhật AU-04 hoàn thiện các tiện ích cốt lõi dùng chung trên toàn hệ thống trang web:
 
 1. **Tô màu, gạch chân, tạo nền và gạch ngang chữ trong tiêu đề (BX-04)**:
-   - **Áp dụng cho**: Các khối có tiêu đề 2 tầng (`HeroTwoEntries`, `HeroImage`, `CTASection`, `SectionHeader`...).
+   - **Áp dụng cho**: mọi khối có tiêu đề 2 dòng (Hero 2 lối vào, Hero ảnh, Tiêu đề phân đoạn, CTA, Khối các gói Growth Mirror, FAQ, Câu chuyện Hana, Lộ trình, Lưới thẻ, Thư viện, Bảng so sánh, Thẻ dịch vụ, Hệ sinh thái giải pháp, Đội ngũ, Lời chia sẻ, Tầm nhìn – sứ mệnh, Thông tin liên hệ, Thư viện ảnh, Quiz, Dùng thử, Cột…). Riêng khối "Câu chuyện mở đầu" (StoryLead) không có.
    - **Bấm chip để chọn chữ nhanh**: Dưới ô nhập tiêu đề có sẵn một dãy chip từng chữ. Hana không cần gõ dấu tay:
      - **Bấm 1 lần**: Nhấn chữ (`*từ*`) – chip chuyển sang màu hồng sen.
      - **Bấm lần 2**: Gạch ngang tương phản (`~từ~`) – chip chuyển sang gạch ngang.

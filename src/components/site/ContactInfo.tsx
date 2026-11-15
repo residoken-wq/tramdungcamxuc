@@ -5,6 +5,7 @@ import { safeHref } from '@/lib/safe-href'
 import { vi } from '@/lib/i18n/vi'
 import { TwoToneTitle } from '@/components/ui/TwoToneTitle'
 import { SocialIcon } from '@/components/brand'
+import type { TitleHighlightAnimation, TitleHighlightStyle } from '@/components/ui/TwoToneTitle'
 
 export interface PublicContactInfo {
   email?: string | null
@@ -22,6 +23,8 @@ export interface ContactInfoProps {
   seriesLabel?: string
   titleLine1?: string
   titleLine2?: string
+  titleHighlightStyle?: TitleHighlightStyle
+  titleHighlightAnimation?: TitleHighlightAnimation
   emotionLine?: string
   showEmail?: boolean
   showHotline?: boolean
@@ -57,6 +60,8 @@ export function ContactInfo({
   seriesLabel = vi.sm06.contactInfo.defaultSeriesLabel,
   titleLine1 = vi.sm06.contactInfo.defaultTitleLine1,
   titleLine2 = vi.sm06.contactInfo.defaultTitleLine2,
+  titleHighlightStyle,
+  titleHighlightAnimation,
   emotionLine = vi.sm06.contactInfo.defaultEmotionLine,
   showEmail = true,
   showHotline = true,
@@ -164,6 +169,8 @@ export function ContactInfo({
             {(titleLine1 || titleLine2) && (
               <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl uppercase tracking-tight !leading-[var(--tdcx-title-lh,1.3)]">
                 <TwoToneTitle
+                  highlightStyle={titleHighlightStyle}
+                  highlightAnimation={titleHighlightAnimation}
                   line1={titleLine1}
                   line2={titleLine2}
                   line1ClassName={isDeepNavy ? 'text-white' : 'text-deep-navy'}
