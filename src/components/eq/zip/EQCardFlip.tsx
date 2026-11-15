@@ -10,8 +10,8 @@ export interface EQCardFlipProps {
   isFlipped: boolean
   onToggleFlip: () => void
   totalPublishedCards?: number
-  reflectionHeading?: string
-  cardBackQuote?: string
+  reflectionHeading?: string | null
+  cardBackQuote?: string | null
 }
 
 export function EQCardFlip({
@@ -19,9 +19,13 @@ export function EQCardFlip({
   isFlipped,
   onToggleFlip,
   totalPublishedCards: _totalPublishedCards = 26,
-  reflectionHeading = vi.au02.reflectionHeading,
-  cardBackQuote = vi.au02.cardBackQuote,
+  reflectionHeading,
+  cardBackQuote,
 }: EQCardFlipProps) {
+  const effectiveReflectionHeading =
+    reflectionHeading === undefined ? vi.au02.reflectionHeading : reflectionHeading
+  const effectiveCardBackQuote =
+    cardBackQuote === undefined ? vi.au02.cardBackQuote : cardBackQuote
   const gradientTheme = card.gradientTheme || 'from-[#FDE6F6] via-[#FAF7F4] to-[#E9DDF9]'
   const keywordVi = card.keywordVi || 'Việt'
   const displayKeyword = card.keywordEn || card.keywordVi || ''
@@ -123,9 +127,11 @@ export function EQCardFlip({
 
           {/* Danh sách 3 câu hỏi Reflection */}
           <div className="space-y-2 my-auto relative z-10 overflow-y-auto max-h-[290px] pr-0.5 font-ui">
-            <span className="text-[10px] sm:text-[11px] text-deep-navy/60 font-semibold uppercase tracking-wider block">
-              {reflectionHeading}
-            </span>
+            {effectiveReflectionHeading && (
+              <span className="text-[10px] sm:text-[11px] text-deep-navy/60 font-semibold uppercase tracking-wider block">
+                {effectiveReflectionHeading}
+              </span>
+            )}
 
             <div className="space-y-1.5 sm:space-y-2">
               {prompts.map((p, pIdx) => (
@@ -148,11 +154,13 @@ export function EQCardFlip({
           </div>
 
           {/* Bottom mặt sau - Câu nghiêng cuối thẻ */}
-          <div className="text-[11px] text-deep-navy/70 text-center relative z-10 border-t border-deep-navy/5 pt-2">
-            <span className="font-quote italic text-bright-magenta font-semibold block">
-              {cardBackQuote}
-            </span>
-          </div>
+          {effectiveCardBackQuote && (
+            <div className="text-[11px] text-deep-navy/70 text-center relative z-10 border-t border-deep-navy/5 pt-2">
+              <span className="font-quote italic text-bright-magenta font-semibold block">
+                {effectiveCardBackQuote}
+              </span>
+            </div>
+          )}
         </div>
       </div>
     </div>

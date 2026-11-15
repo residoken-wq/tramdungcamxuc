@@ -37,6 +37,12 @@ export interface SectionHeaderProps {
   showAccentBar?: boolean
 }
 
+function hasHeaderContent(val: React.ReactNode): boolean {
+  if (val === null || val === undefined) return false
+  if (typeof val === 'string') return val.trim().length > 0
+  return true
+}
+
 export function SectionHeader({
   id,
   seriesLabel,
@@ -67,10 +73,19 @@ export function SectionHeader({
   const emotionColorStyle = emotionColorClass(emotionColor)
   const emotionSizeStyle = fontSizeClass('quote', emotionSize)
 
+  const hasSeries = hasHeaderContent(seriesLabel)
+  const hasL1 = hasHeaderContent(titleLine1)
+  const hasL2 = hasHeaderContent(titleLine2)
+  const hasEmotion = hasHeaderContent(emotionLine)
+
+  if (!hasSeries && !hasL1 && !hasL2 && !hasEmotion) {
+    return null
+  }
+
   return (
     <header className={`flex flex-col ${alignClass} ${className}`}>
       {/* Series Label (Montserrat SemiBold/Bold, WCAG AA compliant on light background) */}
-      {seriesLabel && (
+      {hasSeries && (
         <span
           {...textTarget(id, 'seriesLabel')}
           className={`mb-[var(--tdcx-eyebrow-gap,1rem)] font-ui text-xs font-bold uppercase tracking-widest ${eyebrowColorClass}`}
@@ -80,26 +95,30 @@ export function SectionHeader({
       )}
 
       {/* Signature Two-Tone Heading (Anton: line 1 deep-navy, line 2 bright-magenta by default) */}
-      <HeadingTag
-        className={`font-display ${titleCase === 'none' ? '' : 'uppercase'} tracking-tight !leading-[var(--tdcx-title-lh,1.3)] ${headingSizeClasses}`}
-      >
-        <span {...textTarget(id, 'titleLine1')} className={`block ${line1ColorClass}`}>
-          {renderHighlightedTitle(titleLine1, {
-            isDark: line1Color === 'soft-pink',
-            style: titleHighlightStyle,
-            animation: titleHighlightAnimation,
-          })}
-        </span>
-        {titleLine2 && (
-          <span {...textTarget(id, 'titleLine2')} className={`block ${line2ColorClass}`}>
-            {renderHighlightedTitle(titleLine2, {
-              isDark: line2Color === 'soft-pink',
-              style: titleHighlightStyle,
-              animation: titleHighlightAnimation,
-            })}
-          </span>
-        )}
-      </HeadingTag>
+      {(hasL1 || hasL2) && (
+        <HeadingTag
+          className={`font-display ${titleCase === 'none' ? '' : 'uppercase'} tracking-tight !leading-[var(--tdcx-title-lh,1.3)] ${headingSizeClasses}`}
+        >
+          {hasL1 && (
+            <span {...textTarget(id, 'titleLine1')} className={`block ${line1ColorClass}`}>
+              {renderHighlightedTitle(titleLine1, {
+                isDark: line1Color === 'soft-pink',
+                style: titleHighlightStyle,
+                animation: titleHighlightAnimation,
+              })}
+            </span>
+          )}
+          {hasL2 && (
+            <span {...textTarget(id, 'titleLine2')} className={`block ${line2ColorClass}`}>
+              {renderHighlightedTitle(titleLine2, {
+                isDark: line2Color === 'soft-pink',
+                style: titleHighlightStyle,
+                animation: titleHighlightAnimation,
+              })}
+            </span>
+          )}
+        </HeadingTag>
+      )}
 
       {(accentBar || showAccentBar) && (
         <span
@@ -109,7 +128,7 @@ export function SectionHeader({
       )}
 
       {/* Emotion Line (Playfair Display Italic) */}
-      {emotionLine && (
+      {hasEmotion && (
         <p
           {...textTarget(id, 'emotionLine')}
           className={`mt-[var(--tdcx-emotion-gap,0.875rem)] font-quote ${emotionSizeStyle} italic ${emotionColorStyle} max-w-2xl`}

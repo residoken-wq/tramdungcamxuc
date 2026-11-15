@@ -196,6 +196,29 @@ Khi chuyển từ môi trường thử nghiệm sang môi trường production c
 - **Yêu cầu mạng máy chủ (Network Egress)**: Container / máy chủ ứng dụng **bắt buộc phải kết nối được ra Internet tới `plausible.io:443`** (HTTPS). Nếu server nằm trong mạng nội bộ có firewall chặn kết nối chiều ra, cần mở egress cho domain `plausible.io` cổng 443. Nếu không kết nối được, hàm `trackServer` sẽ timeout sau 2 giây và ghi `console.warn` mà không làm gián đoạn luồng nghiệp vụ chính.
 - **Bảo mật và riêng tư**: Mọi sự kiện từ server đều được làm sạch qua `sanitizeAnalyticsProps`, loại bỏ hoàn toàn PII (email, họ tên, điện thoại) và dữ liệu cảm xúc/suy ngẫm; URL sự kiện không chứa token, mã đơn hay thông tin định danh cá nhân.
 
+### 6. Báo cáo kiểm tra các ô CMS để trống trước khi deploy (BX-05)
+
+Từ đợt cập nhật BX-05, quy tắc hiển thị là: **ô nội dung trong CMS để trống thì ngoài trang công khai sẽ ẩn đi**, trừ khi nhóm đó có bật checkbox *"Dùng chữ mặc định cho ô để trống"*.
+
+Script **chỉ đọc**, không in dữ liệu cá nhân (chỉ tên trang / phần / ô). Nó chạy được cả khi DB **chưa có** cột của BX-05: cờ "Dùng chữ mặc định" chưa có thì coi là tắt, đúng như ngay sau khi deploy.
+
+**Trước khi deploy BX-05 lên site thật (bắt buộc)** – theo đúng thứ tự:
+
+1. BX-05 đã merge vào `main` và CI trên `main` xanh (đã đẩy image `latest` + `tools-latest` mới).
+2. Trên server, kéo image **tools** mới và chạy script (container `app` đang chạy là bản cũ, chạy Next gọn – không có thư mục `scripts/`, nên không dùng `exec app`):
+   ```bash
+   cd /opt/tdcx
+   docker compose -p tdcx -f docker-compose.prod.yml --profile tools pull seed < /dev/null
+   docker compose -p tdcx -f docker-compose.prod.yml --profile tools run --rm seed pnpm report:empty-copy
+   ```
+3. Gửi bảng in ra cho Hana. Các dòng *"Sẽ ẩn khi deploy (Tắt)"* là phần đang hiện chữ mẫu của hệ thống và sẽ **ẩn ngay** sau deploy.
+4. Chạy `./scripts/deploy.sh` như thường lệ.
+5. Phần nào Hana muốn giữ: bật *"Dùng chữ mặc định cho ô để trống"* ở đúng phần đó (CMS hoặc builder), hoặc điền chữ thật.
+
+**Chạy trên máy dev:** `pnpm report:empty-copy`.
+
+Script sẽ in bảng tổng kết chi tiết gồm: Nguồn/Trang, Nhóm/Phần, Danh sách các ô đang để trống, và Trạng thái tương ứng (*Sẽ ẩn khi deploy (Tắt)* hoặc *Hiện chữ mặc định (Bật)*).
+
 ---
 
 ## Deploy bản demo trên server riêng

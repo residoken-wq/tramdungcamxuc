@@ -152,13 +152,19 @@ export function renderHighlightedTitle(
 
 export interface TwoToneTitleProps {
   id?: string
-  line1?: string
-  line2?: string
+  line1?: string | null
+  line2?: string | null
   line1ClassName?: string
   line2ClassName?: string
   isDark?: boolean
   highlightStyle?: TitleHighlightStyle
   highlightAnimation?: TitleHighlightAnimation
+}
+
+function hasTitleContent(val: React.ReactNode): boolean {
+  if (val === null || val === undefined) return false
+  if (typeof val === 'string') return val.trim().length > 0
+  return true
 }
 
 export function TwoToneTitle({
@@ -171,6 +177,11 @@ export function TwoToneTitle({
   highlightStyle,
   highlightAnimation,
 }: TwoToneTitleProps) {
+  const hasL1 = hasTitleContent(line1)
+  const hasL2 = hasTitleContent(line2)
+
+  if (!hasL1 && !hasL2) return null
+
   const l1Class = line1ClassName ? `block ${line1ClassName}` : 'block'
   const l2Class = line2ClassName ? `block ${line2ClassName}` : 'block'
 
@@ -191,16 +202,18 @@ export function TwoToneTitle({
 
   return (
     <>
-      <span {...textTarget(id, 'titleLine1')} className={l1Class}>
-        {renderHighlightedTitle(line1, {
-          isDark: l1Dark,
-          style: highlightStyle,
-          animation: highlightAnimation,
-        })}
-      </span>
-      {line2 ? (
+      {hasL1 && (
+        <span {...textTarget(id, 'titleLine1')} className={l1Class}>
+          {renderHighlightedTitle(line1, {
+            isDark: l1Dark,
+            style: highlightStyle,
+            animation: highlightAnimation,
+          })}
+        </span>
+      )}
+      {hasL2 ? (
         <>
-          {' '}
+          {hasL1 ? ' ' : null}
           <span {...textTarget(id, 'titleLine2')} className={l2Class}>
             {renderHighlightedTitle(line2, {
               isDark: l2Dark,

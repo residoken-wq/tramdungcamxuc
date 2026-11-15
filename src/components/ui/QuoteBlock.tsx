@@ -5,8 +5,8 @@ import { textTarget } from '@/puck/style/text-target'
 
 export interface QuoteBlockProps {
   quote: string
-  cite?: string
-  roleOrContext?: string
+  cite?: string | null
+  roleOrContext?: string | null
   className?: string
   theme?: 'light' | 'dark'
   /** PK-10 format presets. */

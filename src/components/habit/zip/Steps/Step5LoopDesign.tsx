@@ -187,18 +187,23 @@ export function Step5LoopDesign({
 
       {/* 2. Card lý thuyết: Vòng lặp thói quen · The Habit Loop */}
       <div className="bg-white rounded-2xl border border-lavender-mist shadow-soft p-5 sm:p-7 space-y-4">
-        <div>
-          <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-bright-magenta" />
-            <h2 className="font-ui font-bold text-lg sm:text-xl text-deep-navy">
-              {step5Content.theoryTitle || 'Vòng lặp thói quen · The Habit Loop'}
-            </h2>
+        {(step5Content.theoryTitle || step5Content.theoryDesc) && (
+          <div>
+            {step5Content.theoryTitle && (
+              <div className="flex items-center gap-2">
+                <span className="w-2.5 h-2.5 rounded-full bg-bright-magenta" />
+                <h2 className="font-ui font-bold text-lg sm:text-xl text-deep-navy">
+                  {step5Content.theoryTitle}
+                </h2>
+              </div>
+            )}
+            {step5Content.theoryDesc && (
+              <p className="text-xs sm:text-sm text-deep-navy/70 font-ui mt-1 leading-relaxed">
+                {step5Content.theoryDesc}
+              </p>
+            )}
           </div>
-          <p className="text-xs sm:text-sm text-deep-navy/70 font-ui mt-1 leading-relaxed">
-            {step5Content.theoryDesc ||
-              'Mọi thói quen, tốt hay xấu, đều chạy qua bốn giai đoạn khép kín này — lặp đi lặp lại thành một vòng tròn.'}
-          </p>
-        </div>
+        )}
 
         {/* Bố cục 2 cột (trên desktop) */}
         <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center pt-2">
@@ -489,15 +494,11 @@ export function Step5LoopDesign({
       </div>
 
       {/* Dòng hướng dẫn trên 4 quy luật */}
-      <div className="p-4 rounded-2xl bg-warm-ivory border border-lavender-mist text-xs sm:text-sm text-deep-navy/80 font-ui leading-relaxed">
-        {step5Content.leadIn || (
-          <>
-            Khối có nhãn <strong className="text-bright-magenta font-bold">Toa của bạn</strong> là
-            lỗ hổng bạn tìm ra ở bước 1 — bắt đầu từ đó. Đánh dấu kỹ thuật bạn sẽ dùng; chỉ những kỹ
-            thuật được đánh dấu mới hiện trên Habit Boarding Pass.
-          </>
-        )}
-      </div>
+      {step5Content.leadIn && (
+        <div className="p-4 rounded-2xl bg-warm-ivory border border-lavender-mist text-xs sm:text-sm text-deep-navy/80 font-ui leading-relaxed">
+          {step5Content.leadIn}
+        </div>
+      )}
 
       {/* 3. BỐN KHỐI QUY LUẬT (HIỂN THỊ MỞ CẢ 4 KHỐI) */}
       <div className="space-y-6">

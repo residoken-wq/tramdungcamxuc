@@ -29,8 +29,14 @@ describe('PK-30: Habit Offer CMS & Field Customization', () => {
   }
 
   describe('HabitOfferClient rendering & fallbacks', () => {
-    it('khi không có field mới: rơi về chữ mặc định trong vi.habit.offer (HTML giống trước)', () => {
-      const { container } = render(<HabitOfferClient product={baseProduct} journeyDays={28} />)
+    it('khi bật useDefaultCopy: rơi về chữ mặc định trong vi.habit.offer', () => {
+      const productWithDefaults: HabitProductData = {
+        ...baseProduct,
+        useDefaultCopyHero: true,
+        useDefaultCopyCurriculum: true,
+        useDefaultCopyBottom: true,
+      }
+      const { container } = render(<HabitOfferClient product={productWithDefaults} journeyDays={28} />)
 
       // Hero header mặc định
       expect(screen.getByText(vi.habit.offer.badge)).toBeDefined()
@@ -59,6 +65,20 @@ describe('PK-30: Habit Offer CMS & Field Customization', () => {
       // Bottom CTA mặc định
       expect(screen.getByText(vi.habit.offer.bottomTitle(28))).toBeDefined()
       expect(screen.getByText(vi.habit.offer.bottomDesc(20, 11))).toBeDefined()
+    })
+
+    it('BX-05: khi không bật useDefaultCopy và ô trống: ẩn chữ, không hiện mặc định', () => {
+      render(<HabitOfferClient product={baseProduct} journeyDays={28} />)
+
+      // Hero header trống thì không hiện chữ mặc định
+      expect(screen.queryByText(vi.habit.offer.badge)).toBeNull()
+      expect(screen.queryByText(vi.habit.offer.titleLine1)).toBeNull()
+      expect(screen.queryByText(vi.habit.offer.titleLine2)).toBeNull()
+      expect(screen.queryByText(vi.habit.offer.emotionalLine)).toBeNull()
+
+      // Lộ trình trống thì ẩn
+      expect(screen.queryByText(vi.habit.offer.curriculum.heading)).toBeNull()
+      expect(screen.queryByText(vi.habit.offer.bottomTitle(28))).toBeNull()
     })
 
     it('khi có field mới từ CMS: hiển thị đúng chữ tùy biến và cập nhật số lượng module động', () => {
