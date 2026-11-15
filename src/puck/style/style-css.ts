@@ -108,11 +108,39 @@ function boxDeclarations(
   )
 }
 
+/** Brand book: outer gutter on phones is 24px. */
+const MOBILE_MAX_INHERITED_GUTTER = '1.5rem'
+
+/**
+ * A large left/right padding set for desktop (e.g. 12rem to narrow hero entry cards) cascades to
+ * phones, where it squeezes the block to a sliver. On mobile, a horizontal padding that is only
+ * inherited from tablet/desktop is capped at the brand gutter. A value set for mobile wins as-is.
+ */
+function exceedsMobileGutter(value: string): boolean {
+  if (value === 'none' || value === 'sm' || value === 'md') return false
+  if (value === 'lg' || value === 'xl') return true
+  const match = /^(\d*\.?\d+)(px|rem)$/.exec(value)
+  if (!match) return value !== '0' // %, vw, em…: cap to stay safe
+  const px = Number(match[1]) * (match[2] === 'rem' ? 16 : 1)
+  return px > 24
+}
+
+function mobileInheritedPaddingCap(style: BlockStyle): string[] {
+  const own = style.padding?.mobile
+  return (['right', 'left'] as const).flatMap((side) => {
+    if (own?.[side]) return []
+    const inherited = style.padding?.tablet?.[side] || style.padding?.desktop?.[side]
+    if (!inherited || !exceedsMobileGutter(inherited)) return []
+    return [`padding-${side}:min(${length(inherited, SPACING)}, ${MOBILE_MAX_INHERITED_GUTTER})`]
+  })
+}
+
 function deviceDeclarations(style: BlockStyle, device: Device, isContainer = false): string[] {
   const fontSize = style.fontSize?.[device]
   const textAlign = style.textAlign?.[device]
   const paddingSides: readonly Side[] = isContainer ? SIDES : ['right', 'left']
   return [
+    ...(device === 'mobile' ? mobileInheritedPaddingCap(style) : []),
     ...boxDeclarations('padding', style.padding?.[device], paddingSides),
     ...boxDeclarations('margin', style.margin?.[device]),
     ...(fontSize ? [`font-size:${length(fontSize, FONT_SIZE)}`] : []),

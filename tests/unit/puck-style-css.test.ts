@@ -137,3 +137,49 @@ describe('EB-04: collectPageStyles', () => {
     expect(collectPageStyles(data, locked)).toEqual({ css: '', fonts: [] })
   })
 })
+
+describe('Mobile cap for inherited horizontal padding', () => {
+  it('caps a desktop-only left/right padding at the 24px brand gutter on phones', () => {
+    const css = blockStyleCss('Entry-1', { padding: { desktop: { right: '12rem' } } })
+    expect(css).toContain('[data-eb-id="Entry-1"]{padding-right:12rem}')
+    expect(css).toContain(
+      '@media (max-width: 767px){[data-eb-id="Entry-1"]{padding-right:min(12rem, 1.5rem)}}',
+    )
+  })
+
+  it('uses the tablet value as the inherited one when set', () => {
+    const css = blockStyleCss('Entry-2', {
+      padding: { desktop: { left: '12rem' }, tablet: { left: '4rem' } },
+    })
+    expect(css).toContain('padding-left:min(4rem, 1.5rem)')
+  })
+
+  it('keeps a padding set explicitly for mobile as-is', () => {
+    const css = blockStyleCss('Entry-3', {
+      padding: { desktop: { right: '12rem' }, mobile: { right: '3rem' } },
+    })
+    expect(css).not.toContain('min(')
+    expect(css).toContain('@media (max-width: 767px){[data-eb-id="Entry-3"]{padding-right:3rem}}')
+  })
+
+  it('adds nothing for top/bottom or when no horizontal padding is set', () => {
+    const css = blockStyleCss('Entry-4', { padding: { desktop: { top: 'lg' } } })
+    expect(css).not.toContain('min(')
+  })
+})
+
+describe('Mobile cap leaves small paddings untouched', () => {
+  it('does not add a cap for paddings within the 24px gutter', () => {
+    const css = blockStyleCss('Entry-5', {
+      padding: { desktop: { left: 'sm', right: 'md' } },
+    })
+    expect(css).not.toContain('min(')
+    const px = blockStyleCss('Entry-6', { padding: { desktop: { right: '20px' } } })
+    expect(px).not.toContain('min(')
+  })
+
+  it('caps the large presets', () => {
+    const css = blockStyleCss('Entry-7', { padding: { desktop: { right: 'xl' } } })
+    expect(css).toContain('padding-right:min(calc(var(--space-breath-lg, 32px) * 2), 1.5rem)')
+  })
+})
