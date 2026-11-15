@@ -86,12 +86,14 @@ export function Step4IdentityHabit({
       />
 
       {/* Lead-in Text */}
-      <p className="text-center text-deep-navy/60 text-sm md:text-base max-w-2xl mx-auto mt-4 mb-8 leading-relaxed font-ui">
-        {step4Content.leadIn}{' '}
-        {step4Content.leadInEmphasis && (
-          <strong className="text-deep-navy font-bold">{step4Content.leadInEmphasis}</strong>
-        )}
-      </p>
+      {(step4Content.leadIn || step4Content.leadInEmphasis) && (
+        <p className="text-center text-deep-navy/60 text-sm md:text-base max-w-2xl mx-auto mt-4 mb-8 leading-relaxed font-ui">
+          {step4Content.leadIn}{' '}
+          {step4Content.leadInEmphasis && (
+            <strong className="text-deep-navy font-bold">{step4Content.leadInEmphasis}</strong>
+          )}
+        </p>
+      )}
 
       {/* 2. Khối 1: Tuyên ngôn về thói quen */}
       <div className="bg-white rounded-[20px] border border-lavender-mist shadow-soft p-5 sm:p-7 space-y-5">

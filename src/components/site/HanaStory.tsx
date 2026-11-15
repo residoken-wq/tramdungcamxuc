@@ -6,9 +6,9 @@ import { HeartLine } from '@/components/brand/HeartLine'
 import { safeHref } from '@/lib/safe-href'
 import { textTarget } from '@/puck/style/text-target'
 import { stripWrappingQuotes } from '@/lib/text/quotes'
-import { TwoToneTitle } from '@/components/ui/TwoToneTitle'
+import { TwoToneTitle, type TitleHighlightAnimation, type TitleHighlightStyle } from '@/components/ui/TwoToneTitle'
 import { StoryHighlights } from './StoryHighlights'
-import type { TitleHighlightAnimation, TitleHighlightStyle } from '@/components/ui/TwoToneTitle'
+import { pickCopy, hasCopy } from '@/lib/copy'
 
 export interface HanaStoryChipItem {
   text?: string
@@ -50,6 +50,7 @@ export interface HanaStoryProps {
   bgColor?:
     'warm-ivory' | 'soft-pink' | 'lavender-mist' | 'mint-haze' | 'butter-cream' | 'deep-navy'
   padding?: 'sm' | 'md' | 'lg'
+  useDefaultCopy?: boolean
   _resolved?: {
     founderSignatureUrl?: string | null
     founderSignatureAlt?: string | null
@@ -100,10 +101,13 @@ export function HanaStory({
   buttonLink,
   buttonBgColor,
   buttonTextColor,
+  useDefaultCopy = false,
   bgColor = 'warm-ivory',
   padding = 'md',
   _resolved,
+  puck,
 }: HanaStoryProps & { id?: string }) {
+  const isEditing = Boolean(puck?.isEditing)
   const isDarkTone = tone === 'dark'
   const isDarkOrNavy = isDarkTone || bgColor === 'deep-navy'
   const safeButtonHref = buttonLink ? safeHref(buttonLink) : null
@@ -111,8 +115,24 @@ export function HanaStory({
   const resolvedSignatureUrl = _resolved?.founderSignatureUrl ?? directSigUrl
   const resolvedSignatureAlt = _resolved?.founderSignatureAlt ?? directSigAlt
 
+  const effectiveSeriesLabel = pickCopy(seriesLabel, '[MẪU] Về người đồng hành', useDefaultCopy)
+  const effectiveTitle1 = pickCopy(titleLine1, '[MẪU] HÀNH TRÌNH ĐỒNG HÀNH', useDefaultCopy)
+  const effectiveTitle2 = pickCopy(titleLine2, '[MẪU] THẤU CẢM & CHUYỂN HÓA', useDefaultCopy)
+  const effectiveStoryContent = pickCopy(
+    storyContent,
+    '[MẪU] Đoạn văn bản thứ nhất kể về hành trình và chiêm nghiệm.\n\n[MẪU] Đoạn văn bản thứ hai làm rõ hơn giá trị và sự đồng hành.',
+    useDefaultCopy,
+  )
+  const effectiveQuoteLine = pickCopy(
+    quoteLine,
+    '[MẪU] Dòng cảm xúc trích dẫn chạm đến trái tim người đọc.',
+    useDefaultCopy,
+  )
+  const cleanQuoteLine = stripWrappingQuotes(effectiveQuoteLine)
+  const effectiveButtonText = pickCopy(buttonText, '', useDefaultCopy)
+
   // Split multi-paragraph text
-  const paragraphs = storyContent ? storyContent.split('\n\n').filter(Boolean) : []
+  const paragraphs = effectiveStoryContent ? effectiveStoryContent.split('\n\n').filter(Boolean) : []
 
   const chipList = Array.isArray(chips)
     ? chips
@@ -123,7 +143,20 @@ export function HanaStory({
 
   const isImageRight = imagePosition === 'right'
   const isSpotlight = layout === 'spotlight'
-  const cleanQuoteLine = stripWrappingQuotes(quoteLine)
+
+  if (
+    !isEditing &&
+    !effectiveSeriesLabel &&
+    !effectiveTitle1 &&
+    !effectiveTitle2 &&
+    !effectiveStoryContent &&
+    !cleanQuoteLine &&
+    !imageUrl &&
+    chipList.length === 0 &&
+    highlights.length === 0
+  ) {
+    return null
+  }
 
   const sectionBgClass = isDarkTone ? 'bg-deep-navy text-white' : BG_COLORS[bgColor]
   const quoteBgClass = isDarkOrNavy
@@ -146,30 +179,32 @@ export function HanaStory({
               isImageRight ? 'order-2 lg:order-1' : 'order-2 lg:order-2'
             }`}
           >
-            {(seriesLabel || titleLine1 || titleLine2) && (
+            {(effectiveSeriesLabel || effectiveTitle1 || effectiveTitle2) && (
               <header className="mb-4 flex flex-col text-left items-start">
-                {seriesLabel && (
+                {effectiveSeriesLabel && (
                   <span
                     {...textTarget(id, 'seriesLabel')}
                     className={`mb-[var(--tdcx-eyebrow-gap,1rem)] font-ui text-xs font-bold uppercase tracking-widest ${
                       isDarkOrNavy ? 'text-soft-pink' : 'text-bright-magenta'
                     }`}
                   >
-                    {seriesLabel}
+                    {effectiveSeriesLabel}
                   </span>
                 )}
-                <h2 className="font-display uppercase tracking-tight !leading-[var(--tdcx-title-lh,1.3)] text-3xl sm:text-4xl lg:text-5xl">
-                  {/* QA PK-17c: shared TwoToneTitle (PK-16) keeps the space between the lines. */}
-                  <TwoToneTitle
-                    highlightStyle={titleHighlightStyle}
-                    highlightAnimation={titleHighlightAnimation}
-                    id={id}
-                    line1={titleLine1}
-                    line2={titleLine2}
-                    line1ClassName={isDarkOrNavy ? 'text-white' : 'text-deep-navy'}
-                    line2ClassName={isDarkOrNavy ? 'text-soft-pink' : 'text-bright-magenta'}
-                  />
-                </h2>
+                {(effectiveTitle1 || effectiveTitle2) && (
+                  <h2 className="font-display uppercase tracking-tight !leading-[var(--tdcx-title-lh,1.3)] text-3xl sm:text-4xl lg:text-5xl">
+                    {/* QA PK-17c: shared TwoToneTitle (PK-16) keeps the space between the lines. */}
+                    <TwoToneTitle
+                      highlightStyle={titleHighlightStyle}
+                      highlightAnimation={titleHighlightAnimation}
+                      id={id}
+                      line1={effectiveTitle1}
+                      line2={effectiveTitle2}
+                      line1ClassName={isDarkOrNavy ? 'text-white' : 'text-deep-navy'}
+                      line2ClassName={isDarkOrNavy ? 'text-soft-pink' : 'text-bright-magenta'}
+                    />
+                  </h2>
+                )}
               </header>
             )}
 
@@ -331,36 +366,38 @@ export function HanaStory({
           <div
             className={`lg:col-span-7 flex flex-col ${isImageRight ? 'lg:order-1' : 'lg:order-2'}`}
           >
-            {(seriesLabel || titleLine1 || titleLine2) && (
+            {(effectiveSeriesLabel || effectiveTitle1 || effectiveTitle2) && (
               <header className="mb-6 flex flex-col text-left items-start">
-                {seriesLabel && (
+                {effectiveSeriesLabel && (
                   <span
                     {...textTarget(id, 'seriesLabel')}
                     className={`mb-[var(--tdcx-eyebrow-gap,1rem)] font-ui text-xs font-bold uppercase tracking-widest ${
                       isDarkOrNavy ? 'text-soft-pink' : 'text-bright-magenta'
                     }`}
                   >
-                    {seriesLabel}
+                    {effectiveSeriesLabel}
                   </span>
                 )}
-                <h2 className="font-display uppercase tracking-tight !leading-[var(--tdcx-title-lh,1.3)] text-3xl sm:text-4xl lg:text-5xl">
-                  {titleLine1 && (
-                    <span
-                      {...textTarget(id, 'titleLine1')}
-                      className={`block ${isDarkOrNavy ? 'text-white' : 'text-deep-navy'}`}
-                    >
-                      {titleLine1}
-                    </span>
-                  )}
-                  {titleLine2 && (
-                    <span
-                      {...textTarget(id, 'titleLine2')}
-                      className={`block ${isDarkOrNavy ? 'text-soft-pink' : 'text-bright-magenta'}`}
-                    >
-                      {titleLine2}
-                    </span>
-                  )}
-                </h2>
+                {(effectiveTitle1 || effectiveTitle2) && (
+                  <h2 className="font-display uppercase tracking-tight !leading-[var(--tdcx-title-lh,1.3)] text-3xl sm:text-4xl lg:text-5xl">
+                    {effectiveTitle1 && (
+                      <span
+                        {...textTarget(id, 'titleLine1')}
+                        className={`block ${isDarkOrNavy ? 'text-white' : 'text-deep-navy'}`}
+                      >
+                        {effectiveTitle1}
+                      </span>
+                    )}
+                    {effectiveTitle2 && (
+                      <span
+                        {...textTarget(id, 'titleLine2')}
+                        className={`block ${isDarkOrNavy ? 'text-soft-pink' : 'text-bright-magenta'}`}
+                      >
+                        {effectiveTitle2}
+                      </span>
+                    )}
+                  </h2>
+                )}
               </header>
             )}
 
@@ -491,7 +528,7 @@ export function HanaStory({
             )}
 
             {/* Optional CTA Button */}
-            {buttonText && safeButtonHref && (
+            {effectiveButtonText && safeButtonHref && (
               <div className="mt-8">
                 {/* PK-15: the old dark-tone default was a navy button on a navy section (invisible). */}
                 <Button
@@ -504,7 +541,7 @@ export function HanaStory({
                     isDarkTone ? 'deep-navy' : bgColor,
                   )}
                 >
-                  {buttonText}
+                  {effectiveButtonText}
                 </Button>
               </div>
             )}

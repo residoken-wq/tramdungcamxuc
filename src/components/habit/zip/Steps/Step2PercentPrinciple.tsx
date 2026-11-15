@@ -57,9 +57,11 @@ export function Step2PercentPrinciple({
       />
 
       {/* Lead-in Text */}
-      <p className="text-center text-deep-navy/60 text-sm md:text-base max-w-2xl mx-auto mt-4 mb-8 leading-relaxed font-ui">
-        {step2Content.leadIn}
-      </p>
+      {step2Content.leadIn && (
+        <p className="text-center text-deep-navy/60 text-sm md:text-base max-w-2xl mx-auto mt-4 mb-8 leading-relaxed font-ui">
+          {step2Content.leadIn}
+        </p>
+      )}
 
       {/* 2. Biểu đồ "Vùng năng lực tiềm ẩn" */}
       <div className="bg-white rounded-[20px] border border-lavender-mist shadow-soft p-5 sm:p-7 space-y-4">

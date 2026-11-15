@@ -216,7 +216,7 @@ export const DEFAULT_DP01_CONTENT: Dp01AllContent = {
   },
 }
 
-function parseLines(val: unknown, fallback: string[]): string[] {
+function parseLines(val: unknown, fallback: string[], useDefault = true): string[] {
   if (Array.isArray(val)) {
     const list = val
       .map((x) =>
@@ -236,11 +236,11 @@ function parseLines(val: unknown, fallback: string[]): string[] {
       .filter(Boolean)
     return list.length > 0 ? list : fallback
   }
-  return fallback
+  return useDefault ? fallback : []
 }
 
-function pickString(val: unknown, fallback: string): string {
-  return typeof val === 'string' && val.trim().length > 0 ? val.trim() : fallback
+function pickString(val: unknown, fallback: string, useDefault = true): string {
+  return typeof val === 'string' && val.trim().length > 0 ? val.trim() : useDefault ? fallback : ''
 }
 
 /**
@@ -250,6 +250,7 @@ function pickString(val: unknown, fallback: string): string {
 export function withDp01Defaults(
   cmsContent?: Partial<Dp01AllContent> | Record<string, unknown> | null,
 ): Dp01AllContent {
+  const hasCms = Boolean(cmsContent)
   const c = (cmsContent || {}) as Record<string, Record<string, unknown> | undefined>
 
   const header = c.header || {}
@@ -264,136 +265,165 @@ export function withDp01Defaults(
   const tracker =
     ((c as Record<string, unknown>).tracker as Record<string, unknown> | undefined) || {}
 
+  const root = c as Record<string, unknown>
+  const useDefaultHeader = hasCms ? Boolean(header.useDefaultCopyHeader ?? root.useDefaultCopyHeader) : true
+  const useDefaultStep1 = hasCms ? Boolean(step1.useDefaultCopyStep1 ?? root.useDefaultCopyStep1) : true
+  const useDefaultStep2 = hasCms ? Boolean(step2.useDefaultCopyStep2 ?? root.useDefaultCopyStep2) : true
+  const useDefaultStep3 = hasCms ? Boolean(step3.useDefaultCopyStep3 ?? root.useDefaultCopyStep3) : true
+  const useDefaultStep4 = hasCms ? Boolean(step4.useDefaultCopyStep4 ?? root.useDefaultCopyStep4) : true
+  const useDefaultStep5 = hasCms ? Boolean(step5.useDefaultCopyStep5 ?? root.useDefaultCopyStep5) : true
+  const useDefaultStep6 = hasCms ? Boolean(step6.useDefaultCopyStep6 ?? root.useDefaultCopyStep6) : true
+  const useDefaultTracker = hasCms ? Boolean(tracker.useDefaultCopyTracker ?? root.useDefaultCopyTracker) : true
+  const useDefaultCheckIn = hasCms ? Boolean(checkIn.useDefaultCopyCheckIn ?? root.useDefaultCopyCheckIn) : true
+  const useDefaultFooter = hasCms ? Boolean(footer.useDefaultCopyFooter ?? root.useDefaultCopyFooter) : true
+
   return {
     header: {
-      badgeText: pickString(header.badgeText, DEFAULT_DP01_CONTENT.header.badgeText),
-      titleLine1: pickString(header.titleLine1, DEFAULT_DP01_CONTENT.header.titleLine1),
-      titleLine2: pickString(header.titleLine2, DEFAULT_DP01_CONTENT.header.titleLine2),
-      seriesBadge: pickString(header.seriesBadge, DEFAULT_DP01_CONTENT.header.seriesBadge),
-      tagline: pickString(header.tagline, DEFAULT_DP01_CONTENT.header.tagline),
-      introText: pickString(header.introText, DEFAULT_DP01_CONTENT.header.introText),
-      stage1Title: pickString(header.stage1Title, DEFAULT_DP01_CONTENT.header.stage1Title),
-      stage1Desc: pickString(header.stage1Desc, DEFAULT_DP01_CONTENT.header.stage1Desc),
-      stage2Title: pickString(header.stage2Title, DEFAULT_DP01_CONTENT.header.stage2Title),
-      stage2Desc: pickString(header.stage2Desc, DEFAULT_DP01_CONTENT.header.stage2Desc),
-      stage3Title: pickString(header.stage3Title, DEFAULT_DP01_CONTENT.header.stage3Title),
-      stage3Desc: pickString(header.stage3Desc, DEFAULT_DP01_CONTENT.header.stage3Desc),
+      badgeText: pickString(header.badgeText, DEFAULT_DP01_CONTENT.header.badgeText, useDefaultHeader),
+      titleLine1: pickString(header.titleLine1, DEFAULT_DP01_CONTENT.header.titleLine1, useDefaultHeader),
+      titleLine2: pickString(header.titleLine2, DEFAULT_DP01_CONTENT.header.titleLine2, useDefaultHeader),
+      seriesBadge: pickString(header.seriesBadge, DEFAULT_DP01_CONTENT.header.seriesBadge, useDefaultHeader),
+      tagline: pickString(header.tagline, DEFAULT_DP01_CONTENT.header.tagline, useDefaultHeader),
+      introText: pickString(header.introText, DEFAULT_DP01_CONTENT.header.introText, useDefaultHeader),
+      stage1Title: pickString(header.stage1Title, DEFAULT_DP01_CONTENT.header.stage1Title, useDefaultHeader),
+      stage1Desc: pickString(header.stage1Desc, DEFAULT_DP01_CONTENT.header.stage1Desc, useDefaultHeader),
+      stage2Title: pickString(header.stage2Title, DEFAULT_DP01_CONTENT.header.stage2Title, useDefaultHeader),
+      stage2Desc: pickString(header.stage2Desc, DEFAULT_DP01_CONTENT.header.stage2Desc, useDefaultHeader),
+      stage3Title: pickString(header.stage3Title, DEFAULT_DP01_CONTENT.header.stage3Title, useDefaultHeader),
+      stage3Desc: pickString(header.stage3Desc, DEFAULT_DP01_CONTENT.header.stage3Desc, useDefaultHeader),
     },
     step1: {
-      leadIn: pickString(step1.leadIn, DEFAULT_DP01_CONTENT.step1.leadIn),
-      cueDiagnosis: pickString(step1.cueDiagnosis, DEFAULT_DP01_CONTENT.step1.cueDiagnosis),
+      leadIn: pickString(step1.leadIn, DEFAULT_DP01_CONTENT.step1.leadIn, useDefaultStep1),
+      cueDiagnosis: pickString(step1.cueDiagnosis, DEFAULT_DP01_CONTENT.step1.cueDiagnosis, useDefaultStep1),
       cravingDiagnosis: pickString(
         step1.cravingDiagnosis,
         DEFAULT_DP01_CONTENT.step1.cravingDiagnosis,
+        useDefaultStep1,
       ),
       responseDiagnosis: pickString(
         step1.responseDiagnosis,
         DEFAULT_DP01_CONTENT.step1.responseDiagnosis,
+        useDefaultStep1,
       ),
       rewardDiagnosis: pickString(
         step1.rewardDiagnosis,
         DEFAULT_DP01_CONTENT.step1.rewardDiagnosis,
+        useDefaultStep1,
       ),
     },
     step2: {
-      leadIn: pickString(step2.leadIn, DEFAULT_DP01_CONTENT.step2.leadIn),
-      chartTitle: pickString(step2.chartTitle, DEFAULT_DP01_CONTENT.step2.chartTitle),
-      chartSubtitle: pickString(step2.chartSubtitle, DEFAULT_DP01_CONTENT.step2.chartSubtitle),
+      leadIn: pickString(step2.leadIn, DEFAULT_DP01_CONTENT.step2.leadIn, useDefaultStep2),
+      chartTitle: pickString(step2.chartTitle, DEFAULT_DP01_CONTENT.step2.chartTitle, useDefaultStep2),
+      chartSubtitle: pickString(step2.chartSubtitle, DEFAULT_DP01_CONTENT.step2.chartSubtitle, useDefaultStep2),
     },
     step3: {
-      leadIn: pickString(step3.leadIn, DEFAULT_DP01_CONTENT.step3.leadIn),
-      scorecardTitle: pickString(step3.scorecardTitle, DEFAULT_DP01_CONTENT.step3.scorecardTitle),
-      scorecardDesc: pickString(step3.scorecardDesc, DEFAULT_DP01_CONTENT.step3.scorecardDesc),
-      mentorTitle: pickString(step3.mentorTitle, DEFAULT_DP01_CONTENT.step3.mentorTitle),
-      mentorDesc: pickString(step3.mentorDesc, DEFAULT_DP01_CONTENT.step3.mentorDesc),
+      leadIn: pickString(step3.leadIn, DEFAULT_DP01_CONTENT.step3.leadIn, useDefaultStep3),
+      scorecardTitle: pickString(step3.scorecardTitle, DEFAULT_DP01_CONTENT.step3.scorecardTitle, useDefaultStep3),
+      scorecardDesc: pickString(step3.scorecardDesc, DEFAULT_DP01_CONTENT.step3.scorecardDesc, useDefaultStep3),
+      mentorTitle: pickString(step3.mentorTitle, DEFAULT_DP01_CONTENT.step3.mentorTitle, useDefaultStep3),
+      mentorDesc: pickString(step3.mentorDesc, DEFAULT_DP01_CONTENT.step3.mentorDesc, useDefaultStep3),
       emptyMentorHint: pickString(
         step3.emptyMentorHint,
         DEFAULT_DP01_CONTENT.step3.emptyMentorHint,
+        useDefaultStep3,
       ),
       mentorTimeLabel: pickString(
         step3.mentorTimeLabel,
         DEFAULT_DP01_CONTENT.step3.mentorTimeLabel,
+        useDefaultStep3,
       ),
       mentorSuccessHint: pickString(
         step3.mentorSuccessHint,
         DEFAULT_DP01_CONTENT.step3.mentorSuccessHint,
+        useDefaultStep3,
       ),
     },
     step4: {
-      leadIn: pickString(step4.leadIn, DEFAULT_DP01_CONTENT.step4.leadIn),
-      leadInEmphasis: pickString(step4.leadInEmphasis, DEFAULT_DP01_CONTENT.step4.leadInEmphasis),
-      statementTitle: pickString(step4.statementTitle, DEFAULT_DP01_CONTENT.step4.statementTitle),
-      statementDesc: pickString(step4.statementDesc, DEFAULT_DP01_CONTENT.step4.statementDesc),
-      suggestedRoles: parseLines(step4.suggestedRoles, DEFAULT_DP01_CONTENT.step4.suggestedRoles),
-      rhythmTitle: pickString(step4.rhythmTitle, DEFAULT_DP01_CONTENT.step4.rhythmTitle),
-      rhythmDesc: pickString(step4.rhythmDesc, DEFAULT_DP01_CONTENT.step4.rhythmDesc),
-      rhythmNote: pickString(step4.rhythmNote, DEFAULT_DP01_CONTENT.step4.rhythmNote),
+      leadIn: pickString(step4.leadIn, DEFAULT_DP01_CONTENT.step4.leadIn, useDefaultStep4),
+      leadInEmphasis: pickString(step4.leadInEmphasis, DEFAULT_DP01_CONTENT.step4.leadInEmphasis, useDefaultStep4),
+      statementTitle: pickString(step4.statementTitle, DEFAULT_DP01_CONTENT.step4.statementTitle, useDefaultStep4),
+      statementDesc: pickString(step4.statementDesc, DEFAULT_DP01_CONTENT.step4.statementDesc, useDefaultStep4),
+      suggestedRoles: parseLines(step4.suggestedRoles, DEFAULT_DP01_CONTENT.step4.suggestedRoles, useDefaultStep4),
+      rhythmTitle: pickString(step4.rhythmTitle, DEFAULT_DP01_CONTENT.step4.rhythmTitle, useDefaultStep4),
+      rhythmDesc: pickString(step4.rhythmDesc, DEFAULT_DP01_CONTENT.step4.rhythmDesc, useDefaultStep4),
+      rhythmNote: pickString(step4.rhythmNote, DEFAULT_DP01_CONTENT.step4.rhythmNote, useDefaultStep4),
       atomicHabitTitle: pickString(
         step4.atomicHabitTitle,
         DEFAULT_DP01_CONTENT.step4.atomicHabitTitle,
+        useDefaultStep4,
       ),
       atomicHabitDesc: pickString(
         step4.atomicHabitDesc,
         DEFAULT_DP01_CONTENT.step4.atomicHabitDesc,
+        useDefaultStep4,
       ),
       suggestedAtomicHabits: parseLines(
         step4.suggestedAtomicHabits,
         DEFAULT_DP01_CONTENT.step4.suggestedAtomicHabits,
+        useDefaultStep4,
       ),
       commitmentTitle: pickString(
         step4.commitmentTitle,
         DEFAULT_DP01_CONTENT.step4.commitmentTitle,
+        useDefaultStep4,
       ),
       whyImportantLabel: pickString(
         step4.whyImportantLabel,
         DEFAULT_DP01_CONTENT.step4.whyImportantLabel,
+        useDefaultStep4,
       ),
       whyImportantPlaceholder: pickString(
         step4.whyImportantPlaceholder,
         DEFAULT_DP01_CONTENT.step4.whyImportantPlaceholder,
+        true, // nhãn chức năng
       ),
       whyImportantNote: pickString(
         step4.whyImportantNote,
         DEFAULT_DP01_CONTENT.step4.whyImportantNote,
+        useDefaultStep4,
       ),
     },
     step5: {
-      leadIn: pickString(step5.leadIn, DEFAULT_DP01_CONTENT.step5.leadIn),
-      theoryTitle: pickString(step5.theoryTitle, DEFAULT_DP01_CONTENT.step5.theoryTitle),
-      theoryDesc: pickString(step5.theoryDesc, DEFAULT_DP01_CONTENT.step5.theoryDesc),
+      leadIn: pickString(step5.leadIn, DEFAULT_DP01_CONTENT.step5.leadIn, useDefaultStep5),
+      theoryTitle: pickString(step5.theoryTitle, DEFAULT_DP01_CONTENT.step5.theoryTitle, useDefaultStep5),
+      theoryDesc: pickString(step5.theoryDesc, DEFAULT_DP01_CONTENT.step5.theoryDesc, useDefaultStep5),
       customActionPlaceholder: pickString(
         step5.customActionPlaceholder,
         DEFAULT_DP01_CONTENT.step5.customActionPlaceholder,
+        true, // nhãn chức năng
       ),
     },
     step6: {
-      leadIn: pickString(step6.leadIn, DEFAULT_DP01_CONTENT.step6.leadIn),
-      passTitle: pickString(step6.passTitle, DEFAULT_DP01_CONTENT.step6.passTitle),
-      passSubtitle: pickString(step6.passSubtitle, DEFAULT_DP01_CONTENT.step6.passSubtitle),
-      termsText: pickString(step6.termsText, DEFAULT_DP01_CONTENT.step6.termsText),
+      leadIn: pickString(step6.leadIn, DEFAULT_DP01_CONTENT.step6.leadIn, useDefaultStep6),
+      passTitle: pickString(step6.passTitle, DEFAULT_DP01_CONTENT.step6.passTitle, useDefaultStep6),
+      passSubtitle: pickString(step6.passSubtitle, DEFAULT_DP01_CONTENT.step6.passSubtitle, useDefaultStep6),
+      termsText: pickString(step6.termsText, DEFAULT_DP01_CONTENT.step6.termsText, useDefaultStep6),
     },
     tracker: {
       myDataTitle: pickString(
         tracker.myDataTitle as string | undefined,
         DEFAULT_DP01_CONTENT.tracker.myDataTitle,
+        useDefaultTracker,
       ),
       myDataDesc: pickString(
         tracker.myDataDesc as string | undefined,
         DEFAULT_DP01_CONTENT.tracker.myDataDesc,
+        useDefaultTracker,
       ),
     },
     checkIn: {
-      postDayHint: pickString(checkIn.postDayHint, DEFAULT_DP01_CONTENT.checkIn.postDayHint),
-      restDayHint: pickString(checkIn.restDayHint, DEFAULT_DP01_CONTENT.checkIn.restDayHint),
+      postDayHint: pickString(checkIn.postDayHint, DEFAULT_DP01_CONTENT.checkIn.postDayHint, useDefaultCheckIn),
+      restDayHint: pickString(checkIn.restDayHint, DEFAULT_DP01_CONTENT.checkIn.restDayHint, useDefaultCheckIn),
       notePlaceholder: pickString(
         checkIn.notePlaceholder,
         DEFAULT_DP01_CONTENT.checkIn.notePlaceholder,
+        true, // nhãn chức năng
       ),
     },
     footer: {
-      slogan: pickString(footer.slogan, DEFAULT_DP01_CONTENT.footer.slogan),
-      authorInfo: pickString(footer.authorInfo, DEFAULT_DP01_CONTENT.footer.authorInfo),
-      bookCredits: pickString(footer.bookCredits, DEFAULT_DP01_CONTENT.footer.bookCredits),
+      slogan: pickString(footer.slogan, DEFAULT_DP01_CONTENT.footer.slogan, useDefaultFooter),
+      authorInfo: pickString(footer.authorInfo, DEFAULT_DP01_CONTENT.footer.authorInfo, useDefaultFooter),
+      bookCredits: pickString(footer.bookCredits, DEFAULT_DP01_CONTENT.footer.bookCredits, useDefaultFooter),
     },
   }
 }

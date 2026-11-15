@@ -26,8 +26,12 @@ describe('DP-01d B2: Habit Copy in CMS & withDp01Defaults', () => {
     expect(res.footer.slogan).toBe('Dừng lại • Lắng nghe • Sống trọn vẹn hơn')
   })
 
-  it('withDp01Defaults: custom CMS copy overrides defaults without losing un-edited fields', () => {
+  it('withDp01Defaults: custom CMS copy overrides defaults without losing un-edited fields when useDefaultCopy is enabled', () => {
     const custom = withDp01Defaults({
+      useDefaultCopyHeader: true,
+      useDefaultCopyStep3: true,
+      useDefaultCopyStep4: true,
+      useDefaultCopyFooter: true,
       header: {
         titleLine1: 'Rèn Luyện Bản Lĩnh',
         titleLine2: 'Định Vị Tương Lai',
@@ -45,7 +49,7 @@ describe('DP-01d B2: Habit Copy in CMS & withDp01Defaults', () => {
 
     expect(custom.header.titleLine1).toBe('Rèn Luyện Bản Lĩnh')
     expect(custom.header.titleLine2).toBe('Định Vị Tương Lai')
-    // Unedited field retains default
+    // Unedited field retains default when useDefaultCopy is enabled
     expect(custom.header.tagline).toBe(DEFAULT_DP01_CONTENT.header.tagline)
     expect(custom.step3.mentorTitle).toBe('Chọn Người Dẫn Đường')
     expect(custom.step4.suggestedRoles).toEqual([
@@ -54,6 +58,21 @@ describe('DP-01d B2: Habit Copy in CMS & withDp01Defaults', () => {
       'người đọc sách',
     ])
     expect(custom.footer.slogan).toBe('Hành trình vạn dặm bắt đầu từ một bước chân')
+  })
+
+  it('withDp01Defaults: unedited fields are empty when useDefaultCopy is disabled (BX-05)', () => {
+    const custom = withDp01Defaults({
+      useDefaultCopyHeader: false,
+      header: {
+        titleLine1: 'Rèn Luyện Bản Lĩnh',
+        titleLine2: 'Định Vị Tương Lai',
+      },
+    })
+
+    expect(custom.header.titleLine1).toBe('Rèn Luyện Bản Lĩnh')
+    expect(custom.header.titleLine2).toBe('Định Vị Tương Lai')
+    expect(custom.header.tagline).toBe('')
+    expect(custom.header.introText).toBe('')
   })
 
   it('HabitTrackerHeader: renders defaults when prop is omitted, and custom text when provided; no "Bước x / 6" badge', () => {
