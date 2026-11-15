@@ -67,6 +67,7 @@ test.describe('DP-01a: Habit Zip Flow & 28-Day Tracker', () => {
 
     let adminId: number | undefined
     let createdProductId: number | undefined
+    let createdCoachingId: number | undefined
     let createdCustomerId: number | undefined
     let coffeeMediaId: number | string | undefined
     let settingsBefore: Record<string, unknown> | undefined
@@ -151,6 +152,23 @@ test.describe('DP-01a: Habit Zip Flow & 28-Day Tracker', () => {
         expect(prodRes.ok()).toBe(true)
         createdProductId = (await prodRes.json()).doc?.id
       }
+
+      // 1b. BX-06: nút "Cần coach đồng hành 1:1" chỉ hiện khi có phiên trải nghiệm đặt được
+      // (coaching_trial + đã xuất bản + Đang bán + giá > 0). Tạo một phiên [MẪU] cho lần chạy này.
+      const coachingRes = await page.request.post('/api/products', {
+        data: {
+          name: `[MẪU] Phiên trải nghiệm DP-01a ${suffix}`,
+          slug: `mau-phien-trai-nghiem-dp01a-${suffix}`,
+          web: 'site',
+          type: 'coaching_trial',
+          price: 149000,
+          saleStatus: 'on_sale',
+          isSample: true,
+          _status: 'published',
+        },
+      })
+      expect(coachingRes.ok(), await coachingRes.text()).toBe(true)
+      createdCoachingId = (await coachingRes.json()).doc?.id
 
       // 2. Tạo 3 kỹ thuật Cue riêng cho lần chạy này
       const cueNames: string[] = []
@@ -290,9 +308,10 @@ test.describe('DP-01a: Habit Zip Flow & 28-Day Tracker', () => {
         guestPage.getByText('Để lại email để bắt đầu hành trình 28 ngày hình thành thói quen'),
       ).toBeVisible()
       await expect(guestPage.getByRole('link', { name: /Trở thành VIP Member/i })).toBeVisible()
-      await expect(
-        guestPage.getByRole('link', { name: /Cần coach đồng hành 1:1/i }),
-      ).toBeVisible()
+      const coachLink = guestPage.getByRole('link', { name: /Cần coach đồng hành 1:1/i })
+      await expect(coachLink).toBeVisible()
+      // BX-06: link luôn có id phiên trải nghiệm đặt được (không còn /dat-phien-trai-nghiem trơn → 404)
+      await expect(coachLink).toHaveAttribute('href', /\/dat-phien-trai-nghiem\?san-pham=\d+/)
       await guestPage.emulateMedia({ reducedMotion: 'reduce' })
       await expectNoSeriousA11y(guestPage, '/habit/5-phut Boarding Pass')
       await guestPage.emulateMedia({ reducedMotion: 'no-preference' })
@@ -520,6 +539,9 @@ test.describe('DP-01a: Habit Zip Flow & 28-Day Tracker', () => {
       }
       if (createdProductId) {
         await zip.deleteTestProduct(page, createdProductId)
+      }
+      if (createdCoachingId) {
+        await page.request.delete(`/api/products/${createdCoachingId}`).catch(() => {})
       }
       if (adminId) {
         await page.request.delete(`/api/users/${adminId}`).catch(() => {})
