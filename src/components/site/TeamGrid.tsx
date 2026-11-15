@@ -5,6 +5,7 @@ import Image from 'next/image'
 import { SectionHeader } from '@/components/ui/SectionHeader'
 import { useClientTeamMembers, type PublicTeamMember } from '@/puck/client-preview'
 import { vi } from '@/lib/i18n/vi'
+import type { TitleHighlightAnimation, TitleHighlightStyle } from '@/components/ui/TwoToneTitle'
 
 export type { PublicTeamMember }
 
@@ -13,6 +14,8 @@ export interface TeamGridProps {
   seriesLabel?: string
   titleLine1: string
   titleLine2?: string
+  titleHighlightStyle?: TitleHighlightStyle
+  titleHighlightAnimation?: TitleHighlightAnimation
   emotionLine?: string
   bgColor?:
     'warm-ivory' | 'soft-pink' | 'lavender-mist' | 'mint-haze' | 'butter-cream' | 'deep-navy'
@@ -44,6 +47,8 @@ export function TeamGrid({
   seriesLabel,
   titleLine1,
   titleLine2,
+  titleHighlightStyle,
+  titleHighlightAnimation,
   emotionLine,
   bgColor = 'warm-ivory',
   padding = 'md',
@@ -100,6 +105,8 @@ export function TeamGrid({
     >
       <div className="mx-auto max-w-6xl">
         <SectionHeader
+          titleHighlightStyle={titleHighlightStyle}
+          titleHighlightAnimation={titleHighlightAnimation}
           seriesLabel={seriesLabel}
           titleLine1={titleLine1}
           titleLine2={titleLine2}

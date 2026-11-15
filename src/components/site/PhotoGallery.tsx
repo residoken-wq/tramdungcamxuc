@@ -6,6 +6,7 @@ import { SectionHeader } from '@/components/ui/SectionHeader'
 import { stripTitleHighlight } from '@/components/ui/TwoToneTitle'
 import { CarouselNavButtons } from '@/components/ui/CarouselNavButtons'
 import { vi } from '@/lib/i18n/vi'
+import type { TitleHighlightAnimation, TitleHighlightStyle } from '@/components/ui/TwoToneTitle'
 
 export interface PhotoGalleryItem {
   mediaId?: string | number
@@ -19,6 +20,8 @@ export interface PhotoGalleryProps {
   seriesLabel?: string
   titleLine1?: string
   titleLine2?: string
+  titleHighlightStyle?: TitleHighlightStyle
+  titleHighlightAnimation?: TitleHighlightAnimation
   emotionLine?: string
   headerAlign?: 'left' | 'center'
   layout?: 'mosaic' | 'grid'
@@ -60,6 +63,8 @@ export function PhotoGallery({
   seriesLabel,
   titleLine1,
   titleLine2,
+  titleHighlightStyle,
+  titleHighlightAnimation,
   emotionLine,
   headerAlign = 'left',
   layout = 'mosaic',
@@ -208,6 +213,8 @@ export function PhotoGallery({
           >
             {hasHeader && (
               <SectionHeader
+                titleHighlightStyle={titleHighlightStyle}
+                titleHighlightAnimation={titleHighlightAnimation}
                 id={id}
                 seriesLabel={seriesLabel}
                 titleLine1={titleLine1 || ''}

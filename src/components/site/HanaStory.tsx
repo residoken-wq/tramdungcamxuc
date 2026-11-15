@@ -8,6 +8,7 @@ import { textTarget } from '@/puck/style/text-target'
 import { stripWrappingQuotes } from '@/lib/text/quotes'
 import { TwoToneTitle } from '@/components/ui/TwoToneTitle'
 import { StoryHighlights } from './StoryHighlights'
+import type { TitleHighlightAnimation, TitleHighlightStyle } from '@/components/ui/TwoToneTitle'
 
 export interface HanaStoryChipItem {
   text?: string
@@ -32,6 +33,8 @@ export interface HanaStoryProps {
   seriesLabel?: string
   titleLine1?: string
   titleLine2?: string
+  titleHighlightStyle?: TitleHighlightStyle
+  titleHighlightAnimation?: TitleHighlightAnimation
   storyContent?: string
   quoteLine?: string
   mediaId?: string | number
@@ -85,6 +88,8 @@ export function HanaStory({
   seriesLabel,
   titleLine1,
   titleLine2,
+  titleHighlightStyle,
+  titleHighlightAnimation,
   storyContent,
   quoteLine,
   imageUrl,
@@ -156,6 +161,8 @@ export function HanaStory({
                 <h2 className="font-display uppercase tracking-tight !leading-[var(--tdcx-title-lh,1.3)] text-3xl sm:text-4xl lg:text-5xl">
                   {/* QA PK-17c: shared TwoToneTitle (PK-16) keeps the space between the lines. */}
                   <TwoToneTitle
+                    highlightStyle={titleHighlightStyle}
+                    highlightAnimation={titleHighlightAnimation}
                     id={id}
                     line1={titleLine1}
                     line2={titleLine2}

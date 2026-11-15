@@ -6,12 +6,15 @@ import { VisionCardItem, type VisionCardItemProps } from './VisionCardItem'
 import { EmptySlotHint } from '@/components/ui/EmptySlotHint'
 import { TwoToneTitle } from '@/components/ui/TwoToneTitle'
 import { textTarget } from '@/puck/style/text-target'
+import type { TitleHighlightAnimation, TitleHighlightStyle } from '@/components/ui/TwoToneTitle'
 
 export interface VisionMissionProps {
   version?: number
   seriesLabel?: string
   titleLine1?: string
   titleLine2?: string
+  titleHighlightStyle?: TitleHighlightStyle
+  titleHighlightAnimation?: TitleHighlightAnimation
   quote?: string
   visionTitle?: string
   visionContent?: string
@@ -63,6 +66,8 @@ export function VisionMission({
   seriesLabel,
   titleLine1,
   titleLine2,
+  titleHighlightStyle,
+  titleHighlightAnimation,
   quote,
   visionTitle,
   visionContent,
@@ -119,6 +124,8 @@ export function VisionMission({
                 className={`font-display ${TITLE_SIZES[titleSize] ?? TITLE_SIZES.md} uppercase tracking-tight !leading-[var(--tdcx-title-lh,1.3)]`}
               >
                 <TwoToneTitle
+                  highlightStyle={titleHighlightStyle}
+                  highlightAnimation={titleHighlightAnimation}
                   id={id}
                   line1={titleLine1}
                   line2={titleLine2}

@@ -9,6 +9,7 @@ import { PATHS_GRID } from './two-path-cards-grid'
 import { EmptySlotHint } from '@/components/ui/EmptySlotHint'
 import { TwoToneTitle } from '@/components/ui/TwoToneTitle'
 import { textTarget } from '@/puck/style/text-target'
+import type { TitleHighlightAnimation, TitleHighlightStyle } from '@/components/ui/TwoToneTitle'
 
 export interface TwoPathCardsProps {
   /** Slot already rendered on the server (public pages); see the Puck block. */
@@ -17,6 +18,8 @@ export interface TwoPathCardsProps {
   seriesLabel?: string
   titleLine1?: string
   titleLine2?: string
+  titleHighlightStyle?: TitleHighlightStyle
+  titleHighlightAnimation?: TitleHighlightAnimation
   path1GroupLabel?: string
   path1Title?: string
   path1Description?: string
@@ -81,6 +84,8 @@ export function TwoPathCards({
   seriesLabel,
   titleLine1,
   titleLine2,
+  titleHighlightStyle,
+  titleHighlightAnimation,
   path1GroupLabel,
   path1Title,
   path1Description,
@@ -153,6 +158,8 @@ export function TwoPathCards({
                 className={`font-display uppercase tracking-tight !leading-[var(--tdcx-title-lh,1.3)] ${TITLE_SIZES[titleSize] ?? TITLE_SIZES.md}`}
               >
                 <TwoToneTitle
+                  highlightStyle={titleHighlightStyle}
+                  highlightAnimation={titleHighlightAnimation}
                   id={id}
                   line1={titleLine1}
                   line2={titleLine2}

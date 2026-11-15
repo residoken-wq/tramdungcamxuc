@@ -1,11 +1,14 @@
 import React, { type ReactNode } from 'react'
 import { SectionHeader } from '@/components/ui/SectionHeader'
+import type { TitleHighlightAnimation, TitleHighlightStyle } from '@/components/ui/TwoToneTitle'
 
 export interface ColumnsProps {
   version?: number
   seriesLabel?: string
   titleLine1?: string
   titleLine2?: string
+  titleHighlightStyle?: TitleHighlightStyle
+  titleHighlightAnimation?: TitleHighlightAnimation
   emotionLine?: string
   numColumns?: '2' | '3' | 2 | 3
   equalHeight?: boolean
@@ -53,6 +56,8 @@ export function Columns({
   seriesLabel,
   titleLine1,
   titleLine2,
+  titleHighlightStyle,
+  titleHighlightAnimation,
   emotionLine,
   numColumns = '2',
   equalHeight = false,
@@ -83,6 +88,8 @@ export function Columns({
         {hasHeader && (
           <div className="mb-8 sm:mb-12">
             <SectionHeader
+              titleHighlightStyle={titleHighlightStyle}
+              titleHighlightAnimation={titleHighlightAnimation}
               id={id}
               seriesLabel={seriesLabel}
               titleLine1={titleLine1 || ''}

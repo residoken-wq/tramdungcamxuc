@@ -6,12 +6,15 @@ import { TwoToneTitle } from '@/components/ui/TwoToneTitle'
 import type { PublicProduct } from '@/lib/products'
 import { vi } from '@/lib/i18n/vi'
 import { textTarget } from '@/puck/style/text-target'
+import type { TitleHighlightAnimation, TitleHighlightStyle } from '@/components/ui/TwoToneTitle'
 
 export interface PackageCardsProps {
   version?: number
   seriesLabel?: string
   titleLine1?: string
   titleLine2?: string
+  titleHighlightStyle?: TitleHighlightStyle
+  titleHighlightAnimation?: TitleHighlightAnimation
   emotionLine?: string
   description?: string
   style?: 'icon' | 'numbered'
@@ -62,6 +65,8 @@ export function PackageCards({
   seriesLabel,
   titleLine1,
   titleLine2,
+  titleHighlightStyle,
+  titleHighlightAnimation,
   emotionLine,
   description,
   style = 'icon',
@@ -139,6 +144,8 @@ export function PackageCards({
             {titleLine1 && (
               <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl uppercase tracking-tight !leading-[var(--tdcx-title-lh,1.3)]">
                 <TwoToneTitle
+                  highlightStyle={titleHighlightStyle}
+                  highlightAnimation={titleHighlightAnimation}
                   id={id}
                   line1={titleLine1}
                   line2={titleLine2}

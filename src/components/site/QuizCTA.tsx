@@ -1,6 +1,7 @@
 import React from 'react'
 import { SectionHeader } from '@/components/ui/SectionHeader'
 import { Button } from '@/components/ui/Button'
+import type { TitleHighlightAnimation, TitleHighlightStyle } from '@/components/ui/TwoToneTitle'
 
 export const HABIT_QUIZ_PATH = '/habit/chan-doan'
 
@@ -9,6 +10,8 @@ export interface QuizCTAProps {
   seriesLabel?: string
   titleLine1?: string
   titleLine2?: string
+  titleHighlightStyle?: TitleHighlightStyle
+  titleHighlightAnimation?: TitleHighlightAnimation
   emotionLine?: string
   buttonText?: string
   bgColor?: string
@@ -20,6 +23,8 @@ export function QuizCTA({
   seriesLabel = '[MẪU] Thấu hiểu bản thân',
   titleLine1 = '[MẪU] 5 PHÚT CHẨN ĐOÁN',
   titleLine2 = '[MẪU] ĐIỂM NGHẼN THÓI QUEN',
+  titleHighlightStyle,
+  titleHighlightAnimation,
   emotionLine = '[MẪU] Nhận diện nguyên nhân gốc rễ và bức tranh cảm xúc đang chi phối hành động của bạn.',
   buttonText = 'Bắt đầu chẩn đoán 5 phút',
   bgColor = 'warm-ivory',
@@ -35,6 +40,8 @@ export function QuizCTA({
     <section className={`w-full bg-${bgColor} ${paddingClasses}`}>
       <div className="max-w-4xl mx-auto flex flex-col items-center text-center space-y-8">
         <SectionHeader
+          titleHighlightStyle={titleHighlightStyle}
+          titleHighlightAnimation={titleHighlightAnimation}
           seriesLabel={seriesLabel}
           titleLine1={titleLine1}
           titleLine2={titleLine2}

@@ -4,6 +4,7 @@ import { JourneyStepsMotion } from './JourneyStepsMotion'
 import { EmptySlotHint } from '@/components/ui/EmptySlotHint'
 import { TwoToneTitle } from '@/components/ui/TwoToneTitle'
 import { textTarget } from '@/puck/style/text-target'
+import type { TitleHighlightAnimation, TitleHighlightStyle } from '@/components/ui/TwoToneTitle'
 
 export interface JourneyStepsProps {
   version?: number
@@ -14,6 +15,8 @@ export interface JourneyStepsProps {
   seriesLabel?: string
   titleLine1?: string
   titleLine2?: string
+  titleHighlightStyle?: TitleHighlightStyle
+  titleHighlightAnimation?: TitleHighlightAnimation
   emotionLine?: string
   // Legacy v1/v2 props (for backward compatibility):
   highlightStep?: number
@@ -118,6 +121,8 @@ export function JourneySteps({
   seriesLabel,
   titleLine1 = '[MẪU] 5 BƯỚC THẤU HIỂU',
   titleLine2 = '[MẪU] VÀ LÀM CHỦ CẢM XÚC',
+  titleHighlightStyle,
+  titleHighlightAnimation,
   emotionLine,
   step1Subtitle,
   step2Subtitle,
@@ -173,6 +178,8 @@ export function JourneySteps({
 
             <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl uppercase tracking-tight !leading-[var(--tdcx-title-lh,1.3)]">
               <TwoToneTitle
+                highlightStyle={titleHighlightStyle}
+                highlightAnimation={titleHighlightAnimation}
                 id={id}
                 line1={titleLine1}
                 line2={titleLine2}
