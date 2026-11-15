@@ -558,6 +558,33 @@ Hana có thể mở trình hướng dẫn bằng một trong hai cách:
 - Chuyển sang tab **"Trang giới thiệu"** (chỉ hiển thị với loại Công cụ số).
 
 #### 2. Các ô nhập liệu tương ứng với từng phần trên trang
+
+- **Nhóm "Ẩn / hiện các phần" (BX-03 - Nằm ở đầu tab "Trang giới thiệu")**:
+  Cho phép bạn bật/tắt hiển thị từng phần tương ứng trên trang giới thiệu `/habit/1-percent-better` chỉ với một cú nhấp chuột:
+
+  | Ô checkbox | Phần tương ứng trên trang | Tác dụng khi BẬT |
+  | :--- | :--- | :--- |
+  | **Ẩn: Danh sách "Bộ tài liệu tự học…" trong hero** (`hideOfferIncludes`) | Khung tích xanh (✓) bên trong thẻ đăng ký đầu trang | Ẩn danh sách liệt kê tài liệu, giữ thẻ đăng ký siêu gọn |
+  | **Ẩn: Thanh số liệu** (`hideOfferStats`) | Thanh 4 ô đếm số lượng (video, kỹ thuật, 28 ngày, module) | Ẩn toàn bộ thanh số liệu; phần lộ trình kế tiếp tự đổi nền để không dính màu |
+  | **Ẩn: Lộ trình** (`hideOfferCurriculum`) | Khối các module/giai đoạn hành trình | Ẩn toàn bộ khối lộ trình chi tiết |
+  | **Ẩn: Tại sao Habit Tracker số khác biệt?** (`hideOfferFeatures`) | Khối 3 thẻ so sánh điểm nổi bật của Trạm | Ẩn toàn bộ khối so sánh (kể cả khi đã nhập dữ liệu) |
+  | **Ẩn: Câu hỏi thường gặp** (`hideOfferFaq`) | Khối các câu hỏi FAQ giải đáp thắc mắc | Ẩn toàn bộ khối câu hỏi thường gặp |
+  | **Ẩn: Khối kêu gọi cuối trang** (`hideOfferBottom`) | Khối màu gradient tím-hồng ở chân trang | Ẩn khối chốt đơn cuối trang |
+
+  > **Lưu ý an toàn bán hàng**: Thẻ Hero (tiêu đề + giá bán + nút đăng ký dùng thử / mua) **không có ô ẩn** nhằm bảo vệ luồng thanh toán cốt lõi của Trạm luôn vận hành thông suốt.
+
+- **Khác biệt quan trọng giữa "Ẩn phần này" và "Xoá nội dung"**:
+  - **Khi bật ô "Ẩn"**: Toàn bộ tiêu đề, mô tả, danh sách điểm khác biệt hay câu hỏi FAQ bạn đã cất công soạn thảo **vẫn được lưu trữ an toàn 100% trong CMS**. Website chỉ tạm thời giấu phần đó đi. Khi muốn hiển thị lại cho chiến dịch sau, bạn chỉ cần bấm tắt checkbox là nội dung xuất hiện lại ngay mà không phải gõ lại một chữ nào.
+  - **Nếu "Xoá nội dung"**: Dữ liệu sẽ mất, và một số phần sẽ tự động rơi về câu chữ mặc định trong code chứ không biến mất hoàn toàn. Do đó, **luôn dùng ô "Ẩn phần này" khi muốn tạm bỏ một khối trên trang**.
+
+- **HÀNH ĐỘNG HANA CẦN LÀM NGAY (Theo rà soát site audit mục 17)**:
+  1. Mở sản phẩm **Habit Tracker số** (`habit-tracker-so`), chuyển sang tab **Trang giới thiệu**.
+  2. Tại nhóm **Ẩn / hiện các phần** ở đầu trang, tích chọn bật 2 ô:
+     - ☑ **Ẩn: Tại sao Habit Tracker số khác biệt?**
+     - ☑ **Ẩn: Câu hỏi thường gặp**
+  3. Bấm **Xuất bản** (nút màu hồng sen ở góc phải).
+  4. Mở trang `/habit/1-percent-better`: Trang sẽ được tinh gọn ngay lập tức, chuyển tiếp mượt mà từ Hero → Thanh số liệu → Lộ trình → Khối chốt đơn cuối trang với nền xen kẽ hài hòa, không còn vướng các khối chưa hoàn thiện.
+
 - **Đầu trang (Hero Header)**:
   - **Nhãn nhỏ trên tiêu đề (`offerSeriesLabel`)**: Nhãn series phía trên tiêu đề chính (mặc định: `Khóa học & Công cụ số`).
   - **Tiêu đề dòng 1 (`offerTitleLine1`)**: Dòng chữ màu xanh thẫm `deep-navy` (mặc định: `Habit Hack`).
