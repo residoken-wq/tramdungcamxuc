@@ -10,7 +10,7 @@ export type { BookingCTAProps }
 export type BookingCTABlockProps = BookingCTAProps & {
   productId?: string | number
   // Filled server-side by resolvePuckData (src/puck/resolve.server.ts); never stored in puckData.
-  _resolved?: { product?: PublicProduct | null }
+  _resolved?: { product?: PublicProduct | null; defaultBookingProduct?: PublicProduct | null }
 }
 
 export const BookingCTABlock: ComponentConfig<BookingCTABlockProps> = {
@@ -50,6 +50,7 @@ export const BookingCTABlock: ComponentConfig<BookingCTABlockProps> = {
     <BookingCTA
       {...props}
       product={_resolved?.product ?? null}
+      defaultBookingProduct={_resolved?.defaultBookingProduct ?? null}
       puck={{ isEditing: puck?.isEditing ?? false }}
     />
   ),

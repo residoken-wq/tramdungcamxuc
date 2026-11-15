@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto'
 import { expect, test, type Page, type Response } from './fixtures'
+import { expectNoSeriousA11y } from './helpers/a11y'
 
 // E2E Test cho luồng đặt phiên trải nghiệm 149k, sinh mã VietQR và owner duyệt trong admin (T1-12b)
 // Tự tạo dữ liệu (admin, cấu hình ngân hàng, sản phẩm coaching_trial) và dọn dẹp sạch sẽ sau test.
@@ -191,6 +192,147 @@ test.describe('Experience booking & VietQR payment confirmation (T1-12b)', () =>
       if (userId) {
         const deleted = await page.request.delete(`/api/users/${userId}`)
         expect(deleted.ok(), 'Temporary admin user must be deleted.').toBe(true)
+      }
+    }
+  })
+
+  test('BX-06: Nút đặt lịch không dẫn tới 404 khi sản phẩm unbookable, fallback sang sản phẩm đang bán hoặc trang 200 tạm ngưng', async ({
+    page,
+    browser,
+  }, testInfo) => {
+    test.setTimeout(180000)
+    test.skip(testInfo.project.name !== 'desktop-1440', 'Runs once, checks 1440 and 375 itself.')
+
+    let adminId: number | undefined
+    let unbookableProductId: number | undefined
+    let bookableProductId: number | undefined
+    let pageId: number | undefined
+
+    const suffix = randomUUID().slice(0, 8)
+    const visitor = await browser.newContext({ baseURL: testInfo.project.use.baseURL })
+    const guest = await visitor.newPage()
+
+    try {
+      adminId = await bootstrapAdmin(page)
+
+      // 1. Tạo sản phẩm unbookable (loại coaching_trial, saleStatus = 'consult')
+      const createUnbookable = await page.request.post('/api/products', {
+        data: {
+          name: `[MẪU] Phiên trải nghiệm Consult ${suffix}`,
+          slug: `phien-trai-nghiem-consult-${suffix}`,
+          web: 'site',
+          type: 'coaching_trial',
+          saleStatus: 'consult',
+          price: 149000,
+          isSample: true,
+          _status: 'published',
+        },
+      })
+      expect(createUnbookable.ok()).toBe(true)
+      unbookableProductId = (await createUnbookable.json()).doc.id
+
+      // 2. Tạo trang test có khối BookingCTA gắn với unbookableProductId
+      const createPage = await page.request.post('/api/pages', {
+        data: {
+          title: `Test Page BX-06 ${suffix}`,
+          slug: `test-bx06-${suffix}`,
+          _status: 'published',
+          puckData: {
+            root: { props: { title: `Test Page BX-06 ${suffix}` } },
+            content: [
+              {
+                type: 'BookingCTA',
+                props: {
+                  id: `booking-${suffix}`,
+                  productId: unbookableProductId,
+                  title: 'Đặt phiên trải nghiệm test',
+                  buttonLabel: 'Đặt phiên ngay',
+                },
+              },
+            ],
+          },
+        },
+      })
+      expect(createPage.ok()).toBe(true)
+      pageId = (await createPage.json()).doc.id
+
+      // Khi chưa có sản phẩm nào khác mở bán:
+      // - Trang công khai: không có nút link tới sản phẩm consult đó
+      await guest.goto(`/test-bx06-${suffix}`)
+      const deadLink = guest.locator(
+        `a[href*="/dat-phien-trai-nghiem?san-pham=${unbookableProductId}"]`,
+      )
+      await expect(deadLink).toHaveCount(0)
+
+      // - Mở trực tiếp link cũ tới sản phẩm consult -> render trang tạm ngưng 200 (không 404)
+      const pausedRes = await guest.goto(`/dat-phien-trai-nghiem?san-pham=${unbookableProductId}`)
+      expect(pausedRes?.status()).toBe(200)
+      await expect(guest.getByRole('heading', { name: /TẠM NGƯNG/i })).toBeVisible()
+      await expect(
+        guest.getByText(/Phiên trải nghiệm đang tạm ngưng nhận lịch/i).first(),
+      ).toBeVisible()
+
+      // Kiểm tra responsive 375px và a11y trên trang tạm ngưng
+      const mobileContext = await browser.newContext({
+        viewport: { width: 375, height: 667 },
+        baseURL: testInfo.project.use.baseURL,
+      })
+      const mobileGuest = await mobileContext.newPage()
+      await mobileGuest.goto(`/dat-phien-trai-nghiem?san-pham=${unbookableProductId}`)
+      const hasHorizontalScroll = await mobileGuest.evaluate(
+        () => document.documentElement.scrollWidth > window.innerWidth,
+      )
+      expect(hasHorizontalScroll).toBe(false)
+      await expectNoSeriousA11y(mobileGuest, 'trang tạm ngưng nhận lịch 375px')
+      await mobileContext.close()
+
+      // 3. Tạo thêm 1 sản phẩm coaching_trial bookable (on_sale, giá > 0)
+      const createBookable = await page.request.post('/api/products', {
+        data: {
+          name: `[MẪU] Phiên trải nghiệm Đang bán ${suffix}`,
+          slug: `phien-trai-nghiem-on-sale-${suffix}`,
+          web: 'site',
+          type: 'coaching_trial',
+          saleStatus: 'on_sale',
+          price: 149000,
+          isSample: true,
+          _status: 'published',
+        },
+      })
+      expect(createBookable.ok()).toBe(true)
+      bookableProductId = (await createBookable.json()).doc.id
+
+      // 4. Mở lại trang test: nút tự động xuất hiện và liên kết tới sản phẩm bookable mới
+      await guest.goto(`/test-bx06-${suffix}`)
+      const activeLink = guest.locator(
+        `a[href*="/dat-phien-trai-nghiem?san-pham=${bookableProductId}"]`,
+      )
+      await expect(activeLink).toBeVisible()
+
+      // 5. Mở lại link cũ của sản phẩm consult: tự chuyển hướng (307) sang sản phẩm bookable
+      await guest.goto(`/dat-phien-trai-nghiem?san-pham=${unbookableProductId}`)
+      await expect(guest).toHaveURL(
+        new RegExp(`/dat-phien-trai-nghiem\\?san-pham=${bookableProductId}`),
+      )
+      await expect(
+        guest.getByRole('heading', { name: `[MẪU] Phiên trải nghiệm Đang bán ${suffix}` }),
+      ).toBeVisible()
+    } finally {
+      test.setTimeout(testInfo.timeout + 30000)
+      await visitor.close()
+
+      // Dọn dẹp dữ liệu
+      if (pageId) {
+        await page.request.delete(`/api/pages/${pageId}`)
+      }
+      if (unbookableProductId) {
+        await page.request.delete(`/api/products/${unbookableProductId}`)
+      }
+      if (bookableProductId) {
+        await page.request.delete(`/api/products/${bookableProductId}`)
+      }
+      if (adminId) {
+        await page.request.delete(`/api/users/${adminId}`)
       }
     }
   })

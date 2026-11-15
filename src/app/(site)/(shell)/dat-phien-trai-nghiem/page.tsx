@@ -1,11 +1,13 @@
 import React from 'react'
 import type { Metadata } from 'next'
-import { notFound } from 'next/navigation'
+import { redirect, notFound } from 'next/navigation'
 import { getPayload } from 'payload'
 import config from '@/payload.config'
-import { getEffectivePrice } from '@/lib/products'
+import { getEffectivePrice, getBookingPath, isBookableExperience } from '@/lib/products'
+import { resolveDefaultBookingProduct } from '@/puck/resolve.server'
 import { SectionHeader } from '@/components/ui/SectionHeader'
 import { ExperienceBookingForm } from '@/components/site/ExperienceBookingForm'
+import { Button } from '@/components/ui/Button'
 import { vi } from '@/lib/i18n/vi'
 
 export const dynamic = 'force-dynamic'
@@ -21,25 +23,47 @@ export async function generateMetadata({ searchParams }: PageProps): Promise<Met
   const { 'san-pham': sanPhamParam } = await searchParams
   const productId = sanPhamParam ? parseInt(sanPhamParam, 10) : NaN
 
-  let description: string | undefined
-  if (!isNaN(productId) && productId > 0) {
-    try {
-      const payload = await getPayload({ config: await config })
-      const product = await payload.findByID({
-        collection: 'products',
-        id: productId,
-      })
-      if (product?.shortDescription) {
-        description = product.shortDescription
-      }
-    } catch {
-      // fallback
+  if (isNaN(productId) || productId <= 0) {
+    return {
+      title: 'Đặt phiên trải nghiệm | Trạm Dừng Cảm Xúc',
     }
   }
 
-  return {
-    title: 'Đặt phiên trải nghiệm | Trạm Dừng Cảm Xúc',
-    description,
+  try {
+    const payload = await getPayload({ config: await config })
+    const product = await payload.findByID({
+      collection: 'products',
+      id: productId,
+    })
+
+    if (!product || product.type !== 'coaching_trial') {
+      return {
+        title: 'Đặt phiên trải nghiệm | Trạm Dừng Cảm Xúc',
+      }
+    }
+
+    if (!isBookableExperience(product)) {
+      const defaultProduct = await resolveDefaultBookingProduct(payload)
+      if (!defaultProduct || Number(defaultProduct.id) === productId) {
+        return {
+          title: `${vi.bx06.pausedMetadataTitle} | Trạm Dừng Cảm Xúc`,
+          description: vi.bx06.pausedDescription,
+          robots: {
+            index: false,
+            follow: false,
+          },
+        }
+      }
+    }
+
+    return {
+      title: 'Đặt phiên trải nghiệm | Trạm Dừng Cảm Xúc',
+      description: product?.shortDescription ?? undefined,
+    }
+  } catch {
+    return {
+      title: 'Đặt phiên trải nghiệm | Trạm Dừng Cảm Xúc',
+    }
   }
 }
 
@@ -67,14 +91,74 @@ export default async function ExperienceBookingPage({ searchParams }: PageProps)
     notFound()
   }
 
-  // REVIEW-REQUIRED: Bắt buộc sản phẩm phải tồn tại, thuộc loại coaching_trial, published và saleStatus === on_sale
-  if (
-    !product ||
-    product.type !== 'coaching_trial' ||
-    product._status !== 'published' ||
-    product.saleStatus !== 'on_sale'
-  ) {
+  // Bắt buộc sản phẩm phải tồn tại và thuộc loại coaching_trial (BX-06 mục 3)
+  if (!product || product.type !== 'coaching_trial') {
     notFound()
+  }
+
+  // REVIEW-REQUIRED: Khi phiên trải nghiệm không đủ điều kiện đặt lịch (BX-06 mục 3):
+  // - Nếu còn sản phẩm phiên trải nghiệm khác đặt được: chuyển hướng (307)
+  // - Nếu không còn sản phẩm nào: render trang thân thiện 200 (noindex)
+  if (!isBookableExperience(product)) {
+    const alternative = await resolveDefaultBookingProduct(payload)
+    if (alternative && Number(alternative.id) !== productId) {
+      const targetPath = getBookingPath(alternative.id)
+      const redirectUrl =
+        typeof goiParam === 'string' && goiParam.trim().length > 0
+          ? `${targetPath}&goi=${encodeURIComponent(goiParam.trim())}`
+          : targetPath
+      redirect(redirectUrl)
+    }
+
+    // Không còn sản phẩm nào khả dụng -> render trang thông báo tạm ngưng
+    let zaloUrl: string | null = null
+    try {
+      const settings = await payload.findGlobal({ slug: 'siteSettings' })
+      zaloUrl =
+        typeof settings?.zaloChatUrl === 'string' && settings.zaloChatUrl.trim().length > 0
+          ? settings.zaloChatUrl.trim()
+          : null
+    } catch {
+      // fallback
+    }
+
+    return (
+      <main className="min-h-[60vh] flex items-center justify-center py-16 px-4 bg-warm-ivory">
+        <div className="max-w-xl w-full mx-auto text-center bg-white/80 rounded-2xl p-8 sm:p-12 border border-lavender-mist shadow-sm">
+          <SectionHeader
+            as="h1"
+            seriesLabel={vi.bx06.pausedSeriesLabel}
+            titleLine1={vi.bx06.pausedTitleLine1}
+            titleLine2={vi.bx06.pausedTitleLine2}
+            emotionLine={vi.bx06.pausedEmotionLine}
+            align="center"
+          />
+          <p className="mt-6 font-sans text-base sm:text-lg text-deep-navy/80 leading-relaxed max-w-xl mx-auto">
+            {vi.bx06.pausedDescription}
+          </p>
+          <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
+            {zaloUrl && (
+              <Button
+                href={zaloUrl}
+                variant="primary"
+                size="lg"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {vi.bx06.contactZaloButton}
+              </Button>
+            )}
+            <Button
+              href="/lien-he"
+              variant={zaloUrl ? 'secondary' : 'primary'}
+              size="lg"
+            >
+              {vi.bx06.contactPageButton}
+            </Button>
+          </div>
+        </div>
+      </main>
+    )
   }
 
   const pricing = getEffectivePrice(product, new Date())
