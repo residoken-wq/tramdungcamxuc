@@ -1832,7 +1832,14 @@ Trong đợt nâng cấp Sitemap v2 (SM-03), hệ thống bổ sung 5 khối ké
 - **Vị trí**: Nhóm **Chuyển đổi**.
 - **Mục đích**: Khối kêu gọi hành động quyết định đặt ở cuối mỗi trang, thôi thúc độc giả đăng ký phiên trải nghiệm hoặc kết nối.
 - **Cách dùng**:
-  - Chọn **Biến thể (`variant`)**: `Mặc định` (đầy đủ tiêu đề 2 tầng màu, dòng cảm xúc và dải chỉ số niềm tin) hoặc `Tối giản` (gọn gàng, tập trung).
+  - Chọn **Biến thể (`variant`)**: `Mặc định` (đầy đủ tiêu đề 2 tầng màu, dòng cảm xúc và dải chỉ số niềm tin), `Tối giản` (gọn gàng, tập trung) hoặc `Nền phẳng` (`solid`).
+  - **Giao diện thông minh tự ẩn ô thừa (BX-01)**: Khung cấu hình bên phải tự động ẩn các ô không dùng tới giúp bạn không bị rối mắt:
+    - Khi chọn **Hành động nút chính** là *Mở liên kết* (`link`): Chỉ hiển thị các ô liên kết (Loại liên kết, Trang, URL ngoài); các ô cấu hình Form tự động ẩn đi.
+    - Khi chọn *Mở form* (`form`): Chỉ hiển thị các ô Loại form, Tiêu đề form và Thông báo gửi thành công; các ô liên kết tự động ẩn đi.
+    - Khi chọn *Đặt lịch trải nghiệm (149k)* (`booking`): Cả ô liên kết và form đều tự động ẩn.
+    - Tương tự cho **Nút phụ**: Nếu để trống ô Nhãn nút phụ, toàn bộ các cài đặt nút phụ sẽ được thu gọn ẩn đi.
+    - Khi chọn dạng *Nền phẳng* (`solid`): Các cài đặt về dải bảo chứng và lời chứng thực sẽ tự động ẩn.
+  - **Tự động đổi màu chữ theo nền tối**: Khi chọn màu nền `Hồng sen (Bright Magenta)` hoặc `Xanh thẫm (Deep Navy)` ở dạng Nền phẳng, chữ tiêu đề phụ và nội dung sẽ tự động chuyển sang màu sáng (`soft-pink` và trắng mờ) đạt chuẩn tương phản cao cấp, không bị chìm chữ.
   - Bật/tắt **Dải chỉ số niềm tin (`showProofStrip`)**: Hiển thị nhanh các con số bảo chứng (10+ năm kinh nghiệm, 500+ giờ khai vấn, tiêu chuẩn ICF ACC...).
   - Thiết lập nút kêu gọi dẫn về trang Đặt phiên trải nghiệm 149.000đ hoặc trang Khai vấn.
 
@@ -3432,6 +3439,84 @@ Bản cập nhật AU-04 hoàn thiện các tiện ích cốt lõi dùng chung t
    - Vào menu bên trái -> **Khách hàng** -> **Khách tiềm năng** (`leads`).
    - Cột **Nguồn (Source)** hiển thị rõ ràng từng loại form: `community-me-time`, `community-yoga-buddy`, hoặc `brochure-chuyen-minh`.
    - Hana có thể bấm nút **Xuất CSV** ở đầu danh sách để tải file Excel về chăm sóc khách qua Zalo.
+
+---
+
+### 5.46. Trình dựng trang thân thiện hơn (BX-01): Khối "Câu hỏi + nút", Ẩn ô thừa thông minh và Nền tối tự đổi màu
+
+Nhằm giúp Hana thao tác dựng trang nhanh hơn, không bị rối mắt bởi các cài đặt không dùng đến, hệ thống nâng cấp thêm khối chuyển đổi mới và cơ chế ẩn hiện thông minh:
+
+#### 1. Khối "Câu hỏi + nút (nền màu)" (`QuestionButtons`)
+
+- **Vị trí**: Nhóm **Chuyển đổi** trong danh sách khối bên trái.
+- **Khi nào dùng**:
+  - Dùng khi bạn muốn đặt một câu hỏi thấu cảm, khơi gợi trăn trở (font chữ nghệ thuật *Playfair Display Italic*) và đưa ra ngay từ 1 đến 3 lựa chọn hành động rõ ràng dưới dạng các nút bấm song song (ví dụ: phân luồng giữa *Chẩn đoán thói quen 5 phút* và *Khám phá 26 thẻ EQ Buddy*).
+  - Thay thế cho việc trước đây phải dùng riêng 2 khối rời nhau (`QuoteBlock` + `CTAButton`) khiến khoảng cách bị rời rạc.
+- **Các ô cài đặt chi tiết**:
+  - **Câu hỏi gợi mở (`question`)**: Dòng chữ câu hỏi uốn lượn cảm xúc. Hana có thể gõ ngay trên thanh bên phải hoặc nhấp chuột gõ trực tiếp lên chữ trong khung xem trước (tính năng sửa trực tiếp *inline*). Nếu xoá trống ô này, dòng câu hỏi sẽ tự ẩn đi, chỉ hiển thị hàng nút bấm.
+  - **Danh sách nút hành động (`buttons`)**: Cho phép thêm từ 1 đến 3 nút. Mỗi nút có các ô cấu hình:
+    - *Nhãn nút*: Văn bản hiển thị trên nút (ví dụ: *Chẩn đoán ngay*, *Khám phá EQ Buddy*).
+    - *Hành động*: Chọn **Mở liên kết** (dẫn sang trang web) hoặc **Đặt lịch trải nghiệm (149k)** (tự động bật pop-up đặt lịch kèm thanh toán).
+    - *Loại liên kết*: Chọn **Chọn trang trong hệ thống** (chọn nhanh từ danh sách trang CMS) hoặc **Nhập liên kết (URL)** (nhập đường dẫn tĩnh như `/habit/chan-doan`).
+    - *Trang / Đường dẫn URL*: Địa chỉ đích khi người dùng nhấp chuột.
+    - *Kiểu nút*: **Nút đặc** (màu nền đậm nổi bật) hoặc **Nút viền** (viền mảnh tinh tế, chữ sắc nét).
+  - **Màu nền khối (`bgColor`)**: Dropdown chuẩn 8 màu thương hiệu (mặc định là *Hồng sen - Bright Magenta*).
+  - **Khoảng đệm trên/dưới (`padding`)**: Nhỏ (`sm`), Vừa (`md` - mặc định) hoặc Lớn (`lg`).
+- **Tự động đổi màu bảo vệ thị giác (chuẩn WCAG AA ≥ 4.5:1)**:
+  - Khi nền tối (*Hồng sen - Bright Magenta* hoặc *Xanh thẫm - Deep Navy*): Chữ câu hỏi tự động đổi sang màu trắng sáng; nút đặc tự mang màu tương phản sắc nét (xanh thẫm trên nền hồng sen, hoặc hồng sen trên nền xanh thẫm); nút viền hiển thị viền trắng và chữ trắng.
+  - Khi nền sáng (*Ngà ấm*, *Hồng phấn*, *Tím sương*, *Bạc hà*, *Kem bơ*): Chữ câu hỏi tự đổi sang màu xanh thẫm; nút đặc mang màu hồng sen rực rỡ.
+- **Tương thích hoàn hảo trên mọi kích thước màn hình**:
+  - **Trên máy tính (1440px)**: Các nút tự động dàn hàng ngang, căn giữa thẳng hàng với câu hỏi.
+  - **Trên điện thoại (375px)**: Các nút tự động chuyển sang xếp dọc với chiều rộng 100% và chiều cao tối thiểu đạt chuẩn ngón tay bấm (≥ 44px), giúp độc giả chạm bấm cực kỳ thoải mái và trang không bao giờ bị cuộn ngang lệch lề.
+
+<!-- ẢNH 5.46a: Khối Câu hỏi + nút trên máy tính 1440px và điện thoại 375px trên nền hồng sen -->
+
+#### 2. Khối Chuyển đổi chân trang (`CTASection`): Tự động ẩn ô thừa & Sửa màu chữ nền tối
+
+- **Tự ẩn ô thừa theo hành động**:
+  - Khi chọn **Hành động khi bấm nút** là *Mở liên kết*, bảng điều khiển bên phải chỉ hiển thị các ô liên kết (Loại link, chọn Trang hoặc nhập URL). Toàn bộ các ô nhập Form (loại form, tiêu đề form, thông báo thành công) sẽ **tự động ẩn đi**, giúp màn hình cực kỳ gọn gàng.
+  - Khi chọn *Mở form*, các ô liên kết URL tự biến mất, nhường chỗ cho các ô cấu hình Form.
+  - Khi chọn *Đặt lịch trải nghiệm (149k)*, cả ô link và form đều ẩn.
+  - Nếu ô *Nhãn nút phụ* để trống, toàn bộ các ô cài đặt của nút phụ sẽ tự ẩn đi.
+- **Nền phẳng tối màu tự chuyển chữ sáng**: Khi chọn dạng *Nền phẳng* (`solid`) với màu nền `bright-magenta` hoặc `deep-navy`, màu tiêu đề phụ và nội dung mô tả sẽ tự chuyển sang màu sáng (`text-soft-pink` và `text-white/80`), không còn lo bị hiện tượng chữ đen chìm trên nền tím/hồng đậm.
+- **Không sinh thẻ rỗng**: Nếu để trống cả 2 dòng tiêu đề, khối sẽ không kết xuất tiêu đề rỗng, đảm bảo chuẩn SEO và trợ năng.
+
+<!-- ẢNH 5.46b: Bảng cài đặt CTASection tự ẩn ô thừa khi chọn Mở liên kết so với Mở form -->
+
+#### 3. Hướng dẫn từng bước: Cập nhật Section 04 trên Trang chủ đang chạy
+
+Để cập nhật Section 04 (đoạn "Nỗi đau" phân luồng) trên Trang chủ từ cách ghép 2 khối cũ sang khối "Câu hỏi + nút" mới, Hana làm theo các bước sau:
+
+1. **Vào chỉnh sửa trực quan trang chủ**:
+   - Ở cột menu bên trái CMS, bấm vào **Trang** (`pages`).
+   - Tìm trang **Trang chủ** (slug `trang-chu` hoặc `/`), bấm nút **Chỉnh sửa trực quan** để mở Puck Editor toàn màn hình.
+2. **Xoá 2 khối cũ ở Section 04**:
+   - Cuộn chuột xuống Section 04 (đoạn có câu trích dẫn trăn trở và một nút kêu gọi ở giữa).
+   - Nhấp chuột vào khối trích dẫn `QuoteBlock`, thanh công cụ nhỏ sẽ hiện lên; bấm vào biểu tượng **Thùng rác** (Xoá khối).
+   - Tiếp tục nhấp chuột vào khối nút bấm `CTAButton` ngay phía dưới và bấm biểu tượng **Thùng rác** để xoá.
+3. **Kéo khối mới vào trang**:
+   - Ở cột bên trái, bấm vào danh mục **Chuyển đổi**.
+   - Tìm khối **Câu hỏi + nút (nền màu)** (`QuestionButtons`).
+   - Nhấn giữ chuột và kéo thả khối vào đúng vị trí vừa xoá.
+4. **Cài đặt nội dung và 2 nút phân luồng**:
+   - Nhấp vào khối vừa kéo để bảng cài đặt bên phải hiện ra.
+   - Ô **Câu hỏi**: Nhập câu hỏi dẫn dắt (ví dụ: *Bạn muốn bắt đầu hành trình từ đâu?*).
+   - Ở mục **Danh sách nút hành động**, nhấp vào nút thứ nhất:
+     - *Nhãn nút*: Nhập `Chẩn đoán thói quen`.
+     - *Hành động*: `Mở liên kết`.
+     - *Loại liên kết*: `Nhập liên kết (URL)`.
+     - *Đường dẫn URL*: Nhập `/habit/chan-doan`.
+     - *Kiểu nút*: `Nút đặc`.
+   - Nhấp vào nút thứ hai:
+     - *Nhãn nút*: Nhập `Khám phá EQ Buddy`.
+     - *Hành động*: `Mở liên kết`.
+     - *Loại liên kết*: `Nhập liên kết (URL)`.
+     - *Đường dẫn URL*: Nhập `/eq-buddy`.
+     - *Kiểu nút*: `Nút viền`.
+   - Ô **Màu nền**: Chọn `Hồng sen (Bright Magenta)`.
+5. **Kiểm tra và Xuất bản**:
+   - Bấm vào biểu tượng **Điện thoại** (375px) ở góc trên để xem thử 2 nút xếp dọc cân đối trên mobile.
+   - Bấm nút **Xuất bản** màu hồng sen ở góc trên bên phải màn hình. Trang chủ của Trạm Dừng Cảm Xúc lập tức cập nhật giao diện mới đẹp mắt và chuẩn xác.
 
 ---
 

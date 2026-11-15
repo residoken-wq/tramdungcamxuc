@@ -126,6 +126,7 @@ export const CONTAINER_ALLOWED_BLOCKS = [
   'HanaStory',
   'TeamGrid',
   'CTAButton',
+  'QuestionButtons',
   'CTASection',
   'TwoPathCards',
   'LeadForm',

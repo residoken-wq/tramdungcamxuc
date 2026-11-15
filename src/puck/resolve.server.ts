@@ -474,6 +474,22 @@ export async function resolveServerData(
       }
     } else if (item.type === 'CTASection') {
       needsBookingProduct = true
+    } else if (item.type === 'QuestionButtons') {
+      const btns = item.props.buttons as Array<{
+        action?: string
+        linkType?: string
+        pageId?: string | number
+      }> | undefined
+      if (Array.isArray(btns)) {
+        for (const b of btns) {
+          if (b?.action === 'booking') {
+            needsBookingProduct = true
+          }
+          if (b?.action !== 'booking' && b?.linkType === 'page' && b?.pageId) {
+            pageIdsToFetch.add(b.pageId as string | number)
+          }
+        }
+      }
     } else if (item.type === 'Callout') {
       needsBookingProduct = true
     } else if (item.type === 'FAQ') {
@@ -1545,6 +1561,30 @@ export async function resolveServerData(
         buttonUrl: resolvedButtonUrl,
         bookingProductId: defaultBookingProductId,
         bookingProduct: defaultBookingProduct,
+      }
+    } else if (item.type === 'QuestionButtons') {
+      const btns = item.props.buttons as
+        | Array<{
+            pageId?: string | number
+          }>
+        | undefined
+      const pageUrls: Record<string, string> = {}
+      if (Array.isArray(btns)) {
+        for (const b of btns) {
+          if (b?.pageId) {
+            const pId = String(b.pageId)
+            const slug = pageMap.get(pId)
+            if (slug) {
+              pageUrls[pId] = slug === 'trang-chu' ? '/' : `/${slug}`
+            }
+          }
+        }
+      }
+      item.props._resolved = {
+        bookingProduct: defaultBookingProduct,
+        bookingProductId: defaultBookingProductId,
+        pageUrls,
+        pageSlug: normalizedSlug,
       }
     } else if (item.type === 'LeadForm') {
       const rId = item.props.resourceProductId ? String(item.props.resourceProductId) : ''

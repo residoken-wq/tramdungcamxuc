@@ -11,6 +11,7 @@ import { ExperienceBookingButton, formatBookingButtonLabel } from '@/components/
 import { vi } from '@/lib/i18n/vi'
 import type { PublicTestimonial } from '@/lib/testimonials'
 import type { FontSizeOption } from '@/lib/brand/format-classes'
+import { isDarkBrandBg } from '@/lib/brand/format-classes'
 import { LEAD_TEXT_SIZES, sizeClass } from '@/lib/brand/text-presets'
 import { textTarget } from '@/puck/style/text-target'
 import { TwoToneTitle } from '@/components/ui/TwoToneTitle'
@@ -47,7 +48,13 @@ export interface CTASectionProps {
   proofText?: string
   testimonials?: Array<{ testimonialId?: string | number }>
   bgColor?:
-    'warm-ivory' | 'soft-pink' | 'lavender-mist' | 'mint-haze' | 'butter-cream' | 'deep-navy'
+    | 'warm-ivory'
+    | 'soft-pink'
+    | 'lavender-mist'
+    | 'mint-haze'
+    | 'butter-cream'
+    | 'deep-navy'
+    | 'bright-magenta'
   padding?: 'sm' | 'md' | 'lg'
   /** PK-10 format presets. The CTA card is always white. */
   titleSize?: FontSizeOption
@@ -64,14 +71,15 @@ export interface CTASectionProps {
   }
 }
 
-const BG_COLORS = {
+const BG_COLORS: Record<string, string> = {
   'warm-ivory': 'bg-warm-ivory',
   'soft-pink': 'bg-soft-pink',
   'lavender-mist': 'bg-lavender-mist',
   'mint-haze': 'bg-mint-haze',
   'butter-cream': 'bg-butter-cream',
   'deep-navy': 'bg-deep-navy text-white',
-} as const
+  'bright-magenta': 'bg-bright-magenta text-white',
+}
 
 // `md` (the default) keeps the pre-PK-10 title size.
 const TITLE_SIZES: Record<FontSizeOption, string> = {
@@ -123,6 +131,13 @@ export function CTASection({
   const isEditing = puck?.isEditing ?? false
   const bookingProductId = _resolved?.bookingProductId ?? null
 
+  const effectiveButtonVariant =
+    bgColor === 'bright-magenta' && buttonVariant === 'magenta' ? 'primary' : buttonVariant
+  const effectiveSecondaryVariant =
+    bgColor === 'bright-magenta' && secondaryButtonVariant === 'magenta'
+      ? 'primary'
+      : secondaryButtonVariant
+
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [activeFormType, setActiveFormType] = useState<RegistrationFormType>('community-me-time')
   const [activeModalTitle, setActiveModalTitle] = useState<string | undefined>(undefined)
@@ -138,8 +153,9 @@ export function CTASection({
   const isBookingMode =
     buttonAction === 'booking' ||
     buttonLinkType === 'booking' ||
-    resolvedButtonHref?.trim() === BOOKING_PATH ||
-    resolvedButtonHref?.trim() === '/dat-phien-trai-nghiem'
+    (typeof resolvedButtonHref === 'string' &&
+      (resolvedButtonHref.trim() === BOOKING_PATH ||
+        resolvedButtonHref.trim() === '/dat-phien-trai-nghiem'))
 
   let finalButtonHref: string | null = null
   let isBookingUnavailable = false
@@ -170,19 +186,24 @@ export function CTASection({
     .slice(0, 3)
 
   const hasPhotos = validTestimonials.length > 0
-  const hasProofText = Boolean(proofText && proofText.trim().length > 0)
+  const hasProofText =
+    typeof proofText === 'string' ? proofText.trim().length > 0 : Boolean(proofText)
   const showProofStrip = hasPhotos || hasProofText
+  const hasTitle = Boolean(
+    (typeof titleLine1 === 'string' ? titleLine1.trim().length > 0 : Boolean(titleLine1)) ||
+      (typeof titleLine2 === 'string' ? titleLine2.trim().length > 0 : Boolean(titleLine2)),
+  )
 
   if (variant === 'solid') {
-    const isDeepNavy = bgColor === 'deep-navy'
+    const isDark = isDarkBrandBg(bgColor)
     return (
-      <section data-cta-solid="" className={`w-full ${BG_COLORS[bgColor]} ${PADDINGS[padding]} transition-colors`}>
+      <section data-cta-solid="" className={`w-full ${BG_COLORS[bgColor] ?? 'bg-soft-pink'} ${PADDINGS[padding]} transition-colors`}>
         <div className="mx-auto max-w-4xl text-center flex flex-col items-center">
           {seriesLabel && (
             <span
               {...textTarget(id, 'seriesLabel')}
               className={`mb-[var(--tdcx-eyebrow-gap,0.75rem)] font-ui text-xs font-bold uppercase tracking-widest ${
-                isDeepNavy ? 'text-soft-pink' : 'text-bright-magenta'
+                isDark ? 'text-soft-pink' : 'text-bright-magenta'
               }`}
             >
               {seriesLabel}
@@ -193,32 +214,34 @@ export function CTASection({
             <p
               {...textTarget(id, 'emotionLine')}
               className={`mb-4 font-quote text-lg sm:text-xl italic ${
-                isDeepNavy ? 'text-soft-pink' : 'text-deep-navy/85'
+                isDark ? 'text-soft-pink' : 'text-deep-navy/85'
               } max-w-2xl`}
             >
               {emotionLine}
             </p>
           )}
 
-          <h2
-            className={`font-display ${sizeClass(TITLE_SIZES, titleSize)} uppercase tracking-tight !leading-[var(--tdcx-title-lh,1.3)] ${
-              isDeepNavy ? 'text-white' : 'text-deep-navy'
-            }`}
-          >
-            <TwoToneTitle
-              id={id}
-              line1={titleLine1}
-              line2={titleLine2}
-              line1ClassName={isDeepNavy ? 'text-white' : 'text-deep-navy'}
-              line2ClassName={isDeepNavy ? 'text-white' : 'text-bright-magenta'}
-            />
-          </h2>
+          {hasTitle && (
+            <h2
+              className={`font-display ${sizeClass(TITLE_SIZES, titleSize)} uppercase tracking-tight !leading-[var(--tdcx-title-lh,1.3)] ${
+                isDark ? 'text-white' : 'text-deep-navy'
+              }`}
+            >
+              <TwoToneTitle
+                id={id}
+                line1={titleLine1}
+                line2={titleLine2}
+                line1ClassName={isDark ? 'text-white' : 'text-deep-navy'}
+                line2ClassName={isDark ? 'text-white' : 'text-bright-magenta'}
+              />
+            </h2>
+          )}
 
           {description && (
             <p
               {...textTarget(id, 'description')}
               className={`mt-4 font-ui ${sizeClass(LEAD_TEXT_SIZES, textSize)} ${
-                isDeepNavy ? 'text-white/80' : 'text-deep-navy/80'
+                isDark ? 'text-white/80' : 'text-deep-navy/80'
               } max-w-2xl leading-relaxed`}
             >
               {description}
@@ -236,9 +259,9 @@ export function CTASection({
                     shape={buttonShape}
                     showPrice={true}
                     className={`min-h-[48px] px-8 py-3.5 text-[19px] font-bold uppercase tracking-tight text-white shadow-md hover:shadow-lg transition-all ${
-                      buttonVariant === 'magenta'
+                      effectiveButtonVariant === 'magenta'
                         ? '!bg-bright-magenta'
-                        : buttonVariant === 'pink'
+                        : effectiveButtonVariant === 'pink'
                           ? '!bg-accent-pink'
                           : '!bg-accent-pink'
                     }`}
@@ -257,9 +280,9 @@ export function CTASection({
                   className={`inline-flex items-center justify-center min-h-[48px] px-8 py-3.5 text-[19px] font-bold uppercase tracking-tight text-white transition-opacity active:opacity-90 hover:opacity-95 cursor-pointer ${
                     buttonShape === 'pill' ? 'rounded-full' : 'rounded-card'
                   } ${
-                    buttonVariant === 'magenta'
+                    effectiveButtonVariant === 'magenta'
                       ? 'bg-bright-magenta'
-                      : buttonVariant === 'pink'
+                      : effectiveButtonVariant === 'pink'
                         ? 'bg-accent-pink'
                         : 'bg-accent-pink'
                   }`}
@@ -272,9 +295,9 @@ export function CTASection({
                   className={`inline-flex items-center justify-center min-h-[48px] px-8 py-3.5 text-[19px] font-bold uppercase tracking-tight text-white transition-opacity active:opacity-90 hover:opacity-95 ${
                     buttonShape === 'pill' ? 'rounded-full' : 'rounded-card'
                   } ${
-                    buttonVariant === 'magenta'
+                    effectiveButtonVariant === 'magenta'
                       ? 'bg-bright-magenta'
-                      : buttonVariant === 'pink'
+                      : effectiveButtonVariant === 'pink'
                         ? 'bg-accent-pink'
                         : 'bg-accent-pink'
                   }`}
@@ -296,9 +319,9 @@ export function CTASection({
                   className={`inline-flex items-center justify-center min-h-[48px] px-8 py-3.5 text-[19px] font-bold uppercase tracking-tight text-white transition-opacity active:opacity-90 hover:opacity-95 cursor-pointer ${
                     buttonShape === 'pill' ? 'rounded-full' : 'rounded-card'
                   } ${
-                    secondaryButtonVariant === 'magenta'
+                    effectiveSecondaryVariant === 'magenta'
                       ? 'bg-bright-magenta'
-                      : secondaryButtonVariant === 'pink'
+                      : effectiveSecondaryVariant === 'pink'
                         ? 'bg-accent-pink'
                         : 'bg-accent-pink'
                   }`}
@@ -311,9 +334,9 @@ export function CTASection({
                   className={`inline-flex items-center justify-center min-h-[48px] px-8 py-3.5 text-[19px] font-bold uppercase tracking-tight text-white transition-opacity active:opacity-90 hover:opacity-95 ${
                     buttonShape === 'pill' ? 'rounded-full' : 'rounded-card'
                   } ${
-                    secondaryButtonVariant === 'magenta'
+                    effectiveSecondaryVariant === 'magenta'
                       ? 'bg-bright-magenta'
-                      : secondaryButtonVariant === 'pink'
+                      : effectiveSecondaryVariant === 'pink'
                         ? 'bg-accent-pink'
                         : 'bg-accent-pink'
                   }`}
@@ -348,17 +371,19 @@ export function CTASection({
             </span>
           )}
 
-          <h2
-            className={`font-display ${sizeClass(TITLE_SIZES, titleSize)} uppercase tracking-tight !leading-[var(--tdcx-title-lh,1.3)]`}
-          >
-            <TwoToneTitle
-              id={id}
-              line1={titleLine1}
-              line2={titleLine2}
-              line1ClassName="text-deep-navy"
-              line2ClassName="text-bright-magenta"
-            />
-          </h2>
+          {hasTitle && (
+            <h2
+              className={`font-display ${sizeClass(TITLE_SIZES, titleSize)} uppercase tracking-tight !leading-[var(--tdcx-title-lh,1.3)]`}
+            >
+              <TwoToneTitle
+                id={id}
+                line1={titleLine1}
+                line2={titleLine2}
+                line1ClassName="text-deep-navy"
+                line2ClassName="text-bright-magenta"
+              />
+            </h2>
+          )}
 
           {emotionLine && (
             <p
