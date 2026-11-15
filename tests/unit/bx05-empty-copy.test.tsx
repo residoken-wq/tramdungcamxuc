@@ -1,6 +1,26 @@
 import React from 'react'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
+import { render, screen } from '@testing-library/react'
 import { pickCopy, pickCopyList, hasCopy } from '@/lib/copy'
+import { EQBuddyIntro } from '@/components/eq/zip/EQBuddyIntro'
+import { EQDrawApp } from '@/components/eq/zip/EQDrawApp'
+import { vi as viLocale } from '@/lib/i18n/vi'
+
+vi.mock('server-only', () => ({}))
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({
+    push: vi.fn(),
+    replace: vi.fn(),
+    prefetch: vi.fn(),
+  }),
+}))
+vi.mock('@/lib/analytics/track', () => ({
+  track: vi.fn(),
+}))
+vi.mock('@/lib/eq/actions', () => ({
+  drawEqCardAction: vi.fn(),
+  saveEqCardAction: vi.fn(),
+}))
 
 describe('BX-05: pickCopy & helper logic', () => {
   it('returns value when string is non-empty', () => {
@@ -55,5 +75,92 @@ describe('BX-05: pickCopy & helper logic', () => {
     expect(hasCopy('', 'Có chữ', null)).toBe(true)
     expect(hasCopy(['item'])).toBe(true)
     expect(hasCopy(<span>El</span>)).toBe(true)
+  })
+})
+
+describe('BX-05: Source 2 – EQ Buddy Content', () => {
+  it('EQBuddyIntro: ô trống + useDefaultCopyIntro = false thì ẩn tiêu đề và châm ngôn', () => {
+    const { container } = render(
+      <EQBuddyIntro
+        content={{
+          useDefaultCopyIntro: false,
+          mainTitle: '',
+          subtitle: '',
+          tagline: '',
+          quoteTop: '',
+        }}
+      />,
+    )
+
+    // Tiêu đề chính và phụ mặc định không hiện
+    expect(screen.queryByText(viLocale.au02.introTitle)).toBeNull()
+    expect(screen.queryByText(viLocale.au02.introSubtitle)).toBeNull()
+    expect(screen.queryByText('Dừng để vững vàng bước tới.')).toBeNull()
+    // Không có thẻ h1 nào
+    expect(container.querySelector('h1')).toBeNull()
+
+    // Nhãn chức năng: nút "Hướng dẫn" vẫn luôn hiển thị
+    expect(screen.getAllByText(`📖 ${viLocale.dp01eq.guide}`).length).toBeGreaterThan(0)
+  })
+
+  it('EQBuddyIntro: ô trống + useDefaultCopyIntro = true thì hiện chữ mẫu mặc định', () => {
+    render(
+      <EQBuddyIntro
+        content={{
+          useDefaultCopyIntro: true,
+          mainTitle: '',
+          subtitle: '',
+        }}
+      />,
+    )
+
+    expect(screen.getByText(viLocale.au02.introTitle)).toBeDefined()
+    expect(screen.getByText(viLocale.au02.introSubtitle)).toBeDefined()
+  })
+
+  it('EQBuddyIntro: có điền chữ thì hiện chữ tùy biến', () => {
+    render(
+      <EQBuddyIntro
+        content={{
+          useDefaultCopyIntro: false,
+          mainTitle: 'BỘ THẺ TÙY BIẾN CỦA HANA',
+          subtitle: 'Mô tả tùy biến riêng.',
+        }}
+      />,
+    )
+
+    expect(screen.getByText('BỘ THẺ TÙY BIẾN CỦA HANA')).toBeDefined()
+    expect(screen.getByText('Mô tả tùy biến riêng.')).toBeDefined()
+  })
+
+  it('EQDrawApp: 3 biểu tượng trống + useDefaultCopyStateIcons = false thì ẩn cả khối biểu tượng', () => {
+    const mockCard = {
+      id: 1,
+      code: 'TDCX-1',
+      qrSlug: 'the-so-1',
+      keywordEn: 'PEACE',
+      keywordVi: 'Bình An',
+      promptRecall: 'Câu 1',
+      promptPack: 'Câu 2',
+      promptAcknowledge: 'Câu 3',
+      isPublished: true,
+    }
+
+    render(
+      <EQDrawApp
+        allCards={[mockCard]}
+        initialStep="draw"
+        content={{
+          useDefaultCopyStateIcons: false,
+          stateIcon1Label: '',
+          stateIcon2Label: '',
+          stateIcon3Label: '',
+        }}
+      />,
+    )
+
+    expect(screen.queryByText(viLocale.au02.stateIcon1)).toBeNull()
+    expect(screen.queryByText(viLocale.au02.stateIcon2)).toBeNull()
+    expect(screen.queryByText(viLocale.au02.stateIcon3)).toBeNull()
   })
 })

@@ -4762,6 +4762,10 @@ export interface EqBuddyContent {
    * Chỉ chủ sở hữu (Owner) mới có quyền đổi. "Miễn phí hoàn toàn": khách rút không giới hạn, không cần đăng nhập, mở toàn bộ 26 thẻ và câu hỏi suy ngẫm, không hiển thị paywall. "Cần đăng ký dùng thử": khách rút 1 thẻ rồi phải dùng thử.
    */
   eqAccessMode?: ('trial' | 'free') | null;
+  /**
+   * Bật: ô nào để trống sẽ hiện chữ mẫu của hệ thống. Tắt: ô để trống thì ẩn.
+   */
+  useDefaultCopyIntro?: boolean | null;
   tagline?: string | null;
   quoteTop?: string | null;
   badge?: string | null;
@@ -4769,11 +4773,23 @@ export interface EqBuddyContent {
   subtitle?: string | null;
   suggestedEmotions?: string | null;
   shopeeUrl?: string | null;
+  /**
+   * Bật: ô nào để trống sẽ hiện chữ mẫu của hệ thống. Tắt: ô để trống thì ẩn.
+   */
+  useDefaultCopyStateIcons?: boolean | null;
   stateIcon1Label?: string | null;
   stateIcon2Label?: string | null;
   stateIcon3Label?: string | null;
+  /**
+   * Bật: ô nào để trống sẽ hiện chữ mẫu của hệ thống. Tắt: ô để trống thì ẩn.
+   */
+  useDefaultCopyCardBack?: boolean | null;
   cardBackPromptTitle?: string | null;
   cardBackQuote?: string | null;
+  /**
+   * Bật: ô nào để trống sẽ hiện chữ mẫu của hệ thống. Tắt: ô để trống thì ẩn.
+   */
+  useDefaultCopyIntro1?: boolean | null;
   intro1Heading?: string | null;
   intro1Description?: string | null;
   card1Title?: string | null;
@@ -4784,6 +4800,10 @@ export interface EqBuddyContent {
   card3Desc?: string | null;
   card4Title?: string | null;
   card4Desc?: string | null;
+  /**
+   * Bật: ô nào để trống sẽ hiện chữ mẫu của hệ thống. Tắt: ô để trống thì ẩn.
+   */
+  useDefaultCopyGuide?: boolean | null;
   intro2Heading?: string | null;
   intro2Description?: string | null;
   step1Title?: string | null;
@@ -5278,6 +5298,7 @@ export interface HabitJourneyContentSelect<T extends boolean = true> {
  */
 export interface EqBuddyContentSelect<T extends boolean = true> {
   eqAccessMode?: T;
+  useDefaultCopyIntro?: T;
   tagline?: T;
   quoteTop?: T;
   badge?: T;
@@ -5285,11 +5306,14 @@ export interface EqBuddyContentSelect<T extends boolean = true> {
   subtitle?: T;
   suggestedEmotions?: T;
   shopeeUrl?: T;
+  useDefaultCopyStateIcons?: T;
   stateIcon1Label?: T;
   stateIcon2Label?: T;
   stateIcon3Label?: T;
+  useDefaultCopyCardBack?: T;
   cardBackPromptTitle?: T;
   cardBackQuote?: T;
+  useDefaultCopyIntro1?: T;
   intro1Heading?: T;
   intro1Description?: T;
   card1Title?: T;
@@ -5300,6 +5324,7 @@ export interface EqBuddyContentSelect<T extends boolean = true> {
   card3Desc?: T;
   card4Title?: T;
   card4Desc?: T;
+  useDefaultCopyGuide?: T;
   intro2Heading?: T;
   intro2Description?: T;
   step1Title?: T;

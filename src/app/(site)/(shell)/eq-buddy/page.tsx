@@ -19,7 +19,7 @@ export async function generateMetadata(): Promise<Metadata> {
       limit: 1,
       overrideAccess: true,
     })
-    const product = res.docs[0] as Product | undefined
+    const _product = res.docs[0] as Product | undefined
     if (product) {
       return {
         title: product.name,
@@ -59,7 +59,7 @@ export default async function EqBuddyIntroPage() {
     }),
     payload.findGlobal({ slug: 'eqBuddyContent', overrideAccess: true }).catch(() => null),
   ])
-  const product = res.docs[0] as Product | undefined
+  const _product = res.docs[0] as Product | undefined
   const physicalProduct = physicalRes.docs[0] as Product | undefined
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -72,9 +72,6 @@ export default async function EqBuddyIntroPage() {
 
   const contentProps = {
     ...rawContent,
-    badge: rawContent?.badge ?? '',
-    mainTitle: rawContent?.mainTitle?.trim() || vi.au02.introTitle,
-    subtitle: rawContent?.subtitle?.trim() || vi.au02.introSubtitle,
     shopeeUrl,
   }
 

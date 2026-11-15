@@ -18,9 +18,15 @@ import { appendUtmParams } from '@/lib/utm'
 import { safeHref } from '@/lib/safe-href'
 import { track } from '@/lib/analytics/track'
 import { vi } from '@/lib/i18n/vi'
+import { pickCopy } from '@/lib/copy'
 
 export interface EQBuddyIntroProps {
   content?: {
+    useDefaultCopyIntro?: boolean | null
+    useDefaultCopyIntro1?: boolean | null
+    useDefaultCopyGuide?: boolean | null
+    useDefaultCopyStateIcons?: boolean | null
+    useDefaultCopyCardBack?: boolean | null
     tagline?: string | null
     quoteTop?: string | null
     badge?: string | null
@@ -63,6 +69,27 @@ export function EQBuddyIntro({ content, trialBanner }: EQBuddyIntroProps) {
   const router = useRouter()
   const [isGuideModalOpen, setIsGuideModalOpen] = useState(false)
 
+  const useDefaultIntro = content ? Boolean(content.useDefaultCopyIntro) : true
+  const useDefaultIntro1 = content ? Boolean(content.useDefaultCopyIntro1) : true
+  const useDefaultGuide = content ? Boolean(content.useDefaultCopyGuide) : true
+
+  const tagline = pickCopy(content?.tagline, 'EQ Buddy • Thẻ Trạm Dừng Cảm Xúc', useDefaultIntro)
+  const quoteTop = pickCopy(content?.quoteTop, 'Dừng để vững vàng bước tới.', useDefaultIntro)
+  const badge = pickCopy(content?.badge, '', useDefaultIntro)
+  const mainTitle = pickCopy(content?.mainTitle, vi.au02.introTitle, useDefaultIntro)
+  const subtitle = pickCopy(content?.subtitle, vi.au02.introSubtitle, useDefaultIntro)
+
+  const intro1Heading = pickCopy(content?.intro1Heading, '', useDefaultIntro1)
+  const intro1Description = pickCopy(content?.intro1Description, '', useDefaultIntro1)
+  const card1Title = pickCopy(content?.card1Title, '', useDefaultIntro1)
+  const card1Desc = pickCopy(content?.card1Desc, '', useDefaultIntro1)
+  const card2Title = pickCopy(content?.card2Title, '', useDefaultIntro1)
+  const card2Desc = pickCopy(content?.card2Desc, '', useDefaultIntro1)
+  const card3Title = pickCopy(content?.card3Title, '', useDefaultIntro1)
+  const card3Desc = pickCopy(content?.card3Desc, '', useDefaultIntro1)
+  const card4Title = pickCopy(content?.card4Title, '', useDefaultIntro1)
+  const card4Desc = pickCopy(content?.card4Desc, '', useDefaultIntro1)
+
   const rawShopeeUrl = content?.shopeeUrl?.trim() || ''
   // Same UTM + event as ShopeeButton (AGENTS §8.3, §9: Shopee link carries UTM, logs external_clicked)
   const shopeeUrl = rawShopeeUrl
@@ -77,14 +104,10 @@ export function EQBuddyIntro({ content, trialBanner }: EQBuddyIntroProps) {
 
   // Hana rà soát: Bỏ phần "Bộ thẻ là gì" và 4 ô mục đích -> để trống thì ẩn
   const hasIntro1 = Boolean(
-    content?.intro1Heading?.trim() ||
-    content?.card1Title?.trim() ||
-    content?.card2Title?.trim() ||
-    content?.card3Title?.trim() ||
-    content?.card4Title?.trim()
+    intro1Heading || card1Title || card2Title || card3Title || card4Title,
   )
 
-  const hasBadge = Boolean(content?.badge && content.badge.trim().length > 0)
+  const hasBadge = Boolean(badge && badge.trim().length > 0)
 
   return (
     <div className="w-full space-y-8">
@@ -96,10 +119,14 @@ export function EQBuddyIntro({ content, trialBanner }: EQBuddyIntroProps) {
         {/* Header Series Bar */}
         <div className="flex items-center justify-between border-b border-lavender-mist pb-3 sm:pb-4 mb-4 sm:mb-6 font-ui">
           <div className="flex items-center gap-1.5 sm:gap-2">
-            <span className="w-2 h-2 rounded-full bg-bright-magenta animate-pulse" />
-            <span className="text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider text-deep-navy/70">
-              {content?.tagline || 'EQ Buddy • Thẻ Trạm Dừng Cảm Xúc'}
-            </span>
+            {tagline && (
+              <>
+                <span className="w-2 h-2 rounded-full bg-bright-magenta animate-pulse" />
+                <span className="text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider text-deep-navy/70">
+                  {tagline}
+                </span>
+              </>
+            )}
           </div>
 
           <div className="flex items-center gap-2">
@@ -113,44 +140,51 @@ export function EQBuddyIntro({ content, trialBanner }: EQBuddyIntroProps) {
               <span>📖 {vi.dp01eq.guide}</span>
             </button>
 
-            <span className="font-quote italic text-sm sm:text-base md:text-lg text-bright-magenta font-semibold tracking-wide hidden sm:inline">
-              {content?.quoteTop || 'Dừng để vững vàng bước tới.'}
-            </span>
+            {quoteTop && (
+              <span className="font-quote italic text-sm sm:text-base md:text-lg text-bright-magenta font-semibold tracking-wide hidden sm:inline">
+                {quoteTop}
+              </span>
+            )}
           </div>
         </div>
 
         {/* Header Intro chung */}
-        <div className="space-y-3 mb-6 text-center sm:text-left font-ui">
-          {hasBadge && (
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-soft-pink text-bright-magenta text-xs font-semibold">
-              <Sparkles className="w-3.5 h-3.5 text-bright-magenta" />
-              <span>{content!.badge}</span>
-            </div>
-          )}
+        {(hasBadge || mainTitle || subtitle) && (
+          <div className="space-y-3 mb-6 text-center sm:text-left font-ui">
+            {hasBadge && (
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-soft-pink text-bright-magenta text-xs font-semibold">
+                <Sparkles className="w-3.5 h-3.5 text-bright-magenta" />
+                <span>{badge}</span>
+              </div>
+            )}
 
-          <h1 className="font-display text-2xl sm:text-3xl md:text-4xl uppercase tracking-wide text-deep-navy">
-            {content?.mainTitle || 'BỘ THẺ EQ BUDDY'}
-          </h1>
+            {mainTitle && (
+              <h1 className="font-display text-2xl sm:text-3xl md:text-4xl uppercase tracking-wide text-deep-navy">
+                {mainTitle}
+              </h1>
+            )}
 
-          <p className="text-sm sm:text-base text-deep-navy/80 font-medium leading-relaxed">
-            {content?.subtitle ||
-              '26 thông điệp cùng bạn Gói ghém cảm xúc - Ghi nhận nỗ lực - Gợi nhớ bài học ý nghĩa mỗi ngày.'}
-          </p>
-        </div>
+            {subtitle && (
+              <p className="text-sm sm:text-base text-deep-navy/80 font-medium leading-relaxed">
+                {subtitle}
+              </p>
+            )}
+          </div>
+        )}
 
         {/* ==================================================== */}
         {/* NỘI DUNG TÙY CHỌN: "BỘ THẺ LÀ GÌ?" (NẾU CMS CÓ NHẬP LIỆU) */}
         {/* ==================================================== */}
         {hasIntro1 ? (
           <div className="space-y-6 animate-fadeIn font-ui">
-            {content?.intro1Heading?.trim() && (
+            {intro1Heading && (
               <div className="border-l-4 border-bright-magenta pl-3 text-left">
                 <h3 className="font-display text-lg sm:text-xl text-deep-navy uppercase">
-                  {content.intro1Heading}
+                  {intro1Heading}
                 </h3>
-                {content.intro1Description?.trim() && (
+                {intro1Description && (
                   <p className="text-xs text-deep-navy/60 font-medium">
-                    {content.intro1Description}
+                    {intro1Description}
                   </p>
                 )}
               </div>
@@ -158,65 +192,65 @@ export function EQBuddyIntro({ content, trialBanner }: EQBuddyIntroProps) {
 
             {/* LƯỚI THẺ THÔNG TIN NẾU CÓ */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-4 text-left">
-              {content?.card1Title?.trim() && (
+              {card1Title && (
                 <div className="p-4 sm:p-5 rounded-2xl bg-white border border-lavender-mist shadow-soft-md space-y-2.5">
                   <div className="w-8 h-8 rounded-xl bg-soft-pink text-bright-magenta flex items-center justify-center font-bold">
                     <Heart className="w-4 h-4 text-bright-magenta" />
                   </div>
                   <h4 className="font-semibold text-sm sm:text-base text-deep-navy">
-                    {content.card1Title}
+                    {card1Title}
                   </h4>
-                  {content.card1Desc?.trim() && (
+                  {card1Desc && (
                     <p className="text-xs sm:text-[13px] text-deep-navy/70 leading-relaxed">
-                      {content.card1Desc}
+                      {card1Desc}
                     </p>
                   )}
                 </div>
               )}
 
-              {content?.card2Title?.trim() && (
+              {card2Title && (
                 <div className="p-4 sm:p-5 rounded-2xl bg-white border border-lavender-mist shadow-soft-md space-y-2.5">
                   <div className="w-8 h-8 rounded-xl bg-mint-haze text-deep-navy flex items-center justify-center font-bold">
                     <Compass className="w-4 h-4 text-deep-navy" />
                   </div>
                   <h4 className="font-semibold text-sm sm:text-base text-deep-navy">
-                    {content.card2Title}
+                    {card2Title}
                   </h4>
-                  {content.card2Desc?.trim() && (
+                  {card2Desc && (
                     <p className="text-xs sm:text-[13px] text-deep-navy/70 leading-relaxed">
-                      {content.card2Desc}
+                      {card2Desc}
                     </p>
                   )}
                 </div>
               )}
 
-              {content?.card3Title?.trim() && (
+              {card3Title && (
                 <div className="p-4 sm:p-5 rounded-2xl bg-white border border-lavender-mist shadow-soft-md space-y-2.5">
                   <div className="w-8 h-8 rounded-xl bg-butter-cream text-deep-navy flex items-center justify-center font-bold">
                     <Users className="w-4 h-4 text-deep-navy" />
                   </div>
                   <h4 className="font-semibold text-sm sm:text-base text-deep-navy">
-                    {content.card3Title}
+                    {card3Title}
                   </h4>
-                  {content.card3Desc?.trim() && (
+                  {card3Desc && (
                     <p className="text-xs sm:text-[13px] text-deep-navy/70 leading-relaxed">
-                      {content.card3Desc}
+                      {card3Desc}
                     </p>
                   )}
                 </div>
               )}
 
-              {content?.card4Title?.trim() && (
+              {card4Title && (
                 <div className="p-4 sm:p-5 rounded-2xl bg-white border border-lavender-mist shadow-soft-md space-y-2.5">
                   <div className="w-8 h-8 rounded-xl bg-lavender-mist text-deep-navy flex items-center justify-center font-bold">
                     <Layers className="w-4 h-4 text-deep-navy" />
                   </div>
                   <h4 className="font-semibold text-sm sm:text-base text-deep-navy">
-                    {content.card4Title}
+                    {card4Title}
                   </h4>
-                  {content.card4Desc?.trim() && (
+                  {card4Desc && (
                     <p className="text-xs sm:text-[13px] text-deep-navy/70 leading-relaxed">
-                      {content.card4Desc}
+                      {card4Desc}
                     </p>
                   )}
                 </div>
@@ -285,15 +319,16 @@ export function EQBuddyIntro({ content, trialBanner }: EQBuddyIntroProps) {
       <GuideModal
         isOpen={isGuideModalOpen}
         onClose={() => setIsGuideModalOpen(false)}
-        title={content?.guideModalTitle || undefined}
-        quote={content?.guideModalQuote || undefined}
-        buttonText={content?.guideModalButton || undefined}
-        step1Title={content?.step1Title || undefined}
-        step1Desc={content?.step1Desc || undefined}
-        step2Title={content?.step2Title || undefined}
-        step2Desc={content?.step2Desc || undefined}
-        step3Title={content?.step3Title || undefined}
-        step3Desc={content?.step3Desc || undefined}
+        useDefaultCopy={useDefaultGuide}
+        title={content?.guideModalTitle}
+        quote={content?.guideModalQuote}
+        buttonText={content?.guideModalButton}
+        step1Title={content?.step1Title}
+        step1Desc={content?.step1Desc}
+        step2Title={content?.step2Title}
+        step2Desc={content?.step2Desc}
+        step3Title={content?.step3Title}
+        step3Desc={content?.step3Desc}
         onConfirm={() => router.push('/eq-buddy/rut-the')}
       />
     </div>
