@@ -3480,10 +3480,24 @@ Bản cập nhật AU-04 hoàn thiện các tiện ích cốt lõi dùng chung t
    - **Lưu ý thương hiệu**: Chỉ nên nhấn chữ ở Dòng 1 nếu Dòng 2 đã mang màu hồng sen mặc định, tránh việc cả hai dòng đều nhấn làm rối mắt người đọc.
    - **An toàn**: Nếu nhập dấu lẻ hoặc sửa trực tiếp trên trang, hệ thống giữ nguyên văn bản thông thường và không bao giờ gây lỗi giao diện. Các bộ đọc màn hình vẫn đọc rõ ràng nội dung câu mà không bị mất chữ.
 
-2. **Nút đặt lịch phiên trải nghiệm 149.000đ dùng chung**:
-   - **Áp dụng cho**: Khối `BookingCTA`, khối `CTASection` (chọn `Hành động của nút chính` = *Đặt lịch phiên trải nghiệm*), hoặc widget nút `ButtonWidget` (chọn `Loại liên kết` = *Đặt lịch phiên trải nghiệm*).
-   - **Hoạt động**: Nút tự động chuyển tiếp tới trang thanh toán `/dat-phien-trai-nghiem?san-pham=[id]` và tự động lấy giá mới nhất từ sản phẩm phiên trải nghiệm trong CMS (không ghi cứng 149.000đ).
-   - **Thống kê**: Tự động ghi nhận lượt bấm `booking_clicked` mà không làm chậm trải nghiệm của khách.
+2. **Nút đặt lịch phiên trải nghiệm dùng chung và cơ chế bảo vệ liên kết (BX-06)**:
+   - **Áp dụng cho**: Khối `BookingCTA`, khối `CTASection` (chọn `Hành động của nút chính` = *Đặt lịch phiên trải nghiệm*), widget nút `ButtonWidget` (chọn `Loại liên kết` = *Đặt lịch phiên trải nghiệm*), khối `QuestionButtons` (chọn hành động *Đặt lịch*), hoặc các nút đặt phiên trong Thói quen và EQ Buddy.
+   - **3 điều kiện mở trang đặt lịch**: Để trang đặt lịch hoạt động và khách có thể hoàn tất thanh toán, sản phẩm phiên trải nghiệm cần thỏa mãn đủ 3 điều kiện:
+     1. **Loại sản phẩm**: Thuộc loại *Phiên trải nghiệm* (`coaching_trial`).
+     2. **Trạng thái bán**: Phải là **Đang bán** (`on_sale`). Nếu Hana chuyển thành *Tư vấn* (`consult`) hoặc *Ẩn* (`hidden`), trang đặt lịch sẽ tự động đóng lại.
+     3. **Giá bán**: Giá hiệu lực (giá gốc hoặc giá ưu đãi còn thời hạn) phải lớn hơn **0đ**.
+     4. **Trạng thái tài liệu**: Đã bấm **Xuất bản** (Published).
+   - **Khung thông báo trực quan trong CMS**: Khi mở form chỉnh sửa sản phẩm phiên trải nghiệm tại mục **Sản phẩm**, ngay đầu form sẽ xuất hiện khung thông báo:
+     - *Màu xanh lá*: Báo hiệu "Trang đặt lịch đang mở" kèm link trực tiếp để Hana bấm kiểm tra thử trong tab mới.
+     - *Màu vàng cam*: Báo hiệu "Trang đặt lịch đang ĐÓNG" kèm ghi chú cụ thể các điều kiện còn thiếu cần bật để mở lại trang.
+   - **Nút tự ẩn khi đóng**:
+     - Nếu phiên trải nghiệm gắn với nút đang đóng, hệ thống tự động tìm phiên trải nghiệm mặc định khác đang bán để thay thế (giá trên nút tự cập nhật theo sản phẩm thực tế).
+     - Nếu không còn phiên trải nghiệm nào khả dụng: Trên trang công khai, **nút tự động ẩn đi** để khách không bấm vào link hỏng; trong trình dựng trang Puck Editor, hệ thống hiển thị khung cảnh báo màu hồng sen nhắc Hana vào CMS cấu hình lại.
+   - **Xử lý khi khách vào link cũ**:
+     - Nếu khách bấm vào link cũ `/dat-phien-trai-nghiem?san-pham=X` đã lưu từ email hoặc Zalo mà sản phẩm X không còn mở bán:
+       - Nếu có phiên trải nghiệm khác đang bán: Tự động chuyển hướng khách sang phiên trải nghiệm mới (giữ nguyên thông tin gói quan tâm nếu có).
+       - Nếu Trạm đang tạm ngưng toàn bộ: Hiển thị trang giao diện thân thiện với thông báo "Phiên trải nghiệm đang tạm ngưng nhận lịch" và nút bấm dẫn sang Zalo hoặc trang Liên hệ, không hiển thị trang lỗi 404.
+   - **Thống kê**: Chỉ ghi nhận sự kiện `booking_clicked` khi khách thực sự bấm vào nút hiển thị trên trang; nút ẩn không gửi sự kiện rác.
    - **Cài đặt link Google Calendar sau thanh toán**: Hana nhập link Calendar (VD `https://calendar.app.google/gLuPgDnqAbFnjDPQ8`) vào ô `experienceBookingUrl` trong **Cài đặt Website** (`siteSettings`). Khách thanh toán xong sẽ nhận email tự động kèm nút dẫn tới link này để hẹn giờ.
 
 3. **Gắn form "Tham gia" (Me Time / Yoga Buddy) và "Nhận brochure chi tiết" vào nút (Modal)**:

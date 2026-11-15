@@ -102,6 +102,17 @@ export const Products: CollectionConfig = {
       { admin: { position: 'sidebar', description: vi.cms.productForm.sidebar.audienceSegment } },
     ),
 
+    // Khung thông báo trạng thái đặt lịch cho phiên trải nghiệm (BX-06 mục 4)
+    {
+      name: 'bookingStatusBanner',
+      type: 'ui',
+      admin: {
+        components: {
+          Field: '@/components/admin/BookingStatusBanner#BookingStatusBanner',
+        },
+      },
+    },
+
     // Tabs không tên (không đổi cấu trúc dữ liệu / schema)
     {
       type: 'tabs',

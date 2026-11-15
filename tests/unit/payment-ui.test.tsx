@@ -30,6 +30,7 @@ describe('Payment UI & Admin Action Guardrails (T1-12b)', () => {
         id: 42,
         name: 'Phiên trải nghiệm 1:1 Growth Mirror',
         slug: 'growth-mirror-trial',
+        type: 'coaching_trial',
         price: 250000,
         salePrice: 149000,
         saleStatus: 'on_sale',
@@ -47,12 +48,32 @@ describe('Payment UI & Admin Action Guardrails (T1-12b)', () => {
       expect(markup).toContain(BOOKING_PATH)
     })
 
-    it('BookingCTA falls back to BOOKING_PATH when product has no ID', () => {
-      const markup = renderToStaticMarkup(
+    it('BookingCTA hides button on public when product is unbookable, or uses defaultBookingProduct', () => {
+      // BX-06: Khi không có sản phẩm nào khả dụng trên trang công khai -> ẩn nút (không tạo link tới 404)
+      const markupPublic = renderToStaticMarkup(
         <BookingCTA title="Đặt phiên trải nghiệm" buttonLabel="Đặt phiên ngay" product={null} />,
       )
+      expect(markupPublic).not.toContain('href=')
 
-      expect(markup).toContain(`href="${BOOKING_PATH}"`)
+      // Khi có defaultBookingProduct -> dùng link của sản phẩm mặc định
+      const defaultProduct: PublicProduct = {
+        id: 99,
+        name: 'Phiên trải nghiệm mặc định',
+        slug: 'phien-trai-nghiem-mac-dinh',
+        price: 149000,
+        salePrice: null,
+        saleStatus: 'on_sale',
+        type: 'coaching_trial',
+      }
+      const markupWithDefault = renderToStaticMarkup(
+        <BookingCTA
+          title="Đặt phiên trải nghiệm"
+          buttonLabel="Đặt phiên ngay"
+          product={null}
+          defaultBookingProduct={defaultProduct}
+        />,
+      )
+      expect(markupWithDefault).toContain('href="/dat-phien-trai-nghiem?san-pham=99"')
     })
   })
 
