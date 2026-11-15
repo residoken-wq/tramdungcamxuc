@@ -129,6 +129,18 @@ test.describe('AU-04: Site shared components & fixes E2E', () => {
             emotionLine: 'Kiểm tra hiển thị chữ nổi bật bằng dấu sao',
           },
         },
+        {
+          type: 'SectionHeader',
+          props: {
+            id: 'bx04-header',
+            seriesLabel: 'BX-04 · KIỂU NHẤN CHỮ & HIỆU ỨNG',
+            titleLine1: '*CHUYỂN* MÌNH KHÔNG ~CHÊNH~ VÊNH',
+            titleLine2: 'HÀNH TRÌNH TẬP THƯƠNG',
+            titleHighlightStyle: 'pill',
+            titleHighlightAnimation: 'draw',
+            emotionLine: 'Kiểm tra hiển thị ô nền và chữ gạch ngang',
+          },
+        },
         ...communityTemplate.content,
       ]
 
@@ -162,6 +174,23 @@ test.describe('AU-04: Site shared components & fixes E2E', () => {
       const highlightedChenh = guest.locator('h2 span.text-bright-magenta:has-text("chênh")')
       await expect(highlightedChuyen).toBeVisible()
       await expect(highlightedChenh).toBeVisible()
+
+      // Test 1b (BX-04): Kiểm tra kiểu nhấn 'pill' và gạch ngang '<s>'
+      const bx04PillChuyen = guest.locator('h2 span.bg-bright-magenta:has-text("CHUYỂN")')
+      const bx04StrikeChenh = guest.locator('h2 s:has-text("CHÊNH")')
+      await expect(bx04PillChuyen).toBeVisible()
+      await expect(bx04StrikeChenh).toBeVisible()
+
+      // Test 1c (BX-04): prefers-reduced-motion: reduce
+      const reducedMotionVisitor = await browser.newContext({
+        baseURL: testInfo.project.use.baseURL,
+        reducedMotion: 'reduce',
+      })
+      const reducedMotionGuest = await reducedMotionVisitor.newPage()
+      await reducedMotionGuest.goto(`/${slug}`, { waitUntil: 'domcontentloaded' })
+      const hasNoActiveAnim = await reducedMotionGuest.locator('.title-anim-active').count()
+      expect(hasNoActiveAnim).toBe(0)
+      await reducedMotionVisitor.close()
 
       // Test 2: Kiểm tra nhãn Free trên thanh điều hướng
       const freeBadge = guest.locator(

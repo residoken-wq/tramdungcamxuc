@@ -16,6 +16,7 @@ test.describe('EB-15a: Kiểu chữ cho từng ô chữ (Nút "Aa")', () => {
     const email = `eb15a-${randomUUID()}@example.test`
     const password = randomUUID()
     const pageSlug = `e2e-text-styles-${randomUUID().slice(0, 8)}`
+    const heroId = `eb15a-hero-${randomUUID().slice(0, 8)}`
     const storyId = `eb15a-story-${randomUUID().slice(0, 8)}`
 
     let userId: number | undefined
@@ -59,10 +60,19 @@ test.describe('EB-15a: Kiểu chữ cho từng ô chữ (Nút "Aa")', () => {
         userId = meJson?.user?.id
       }
 
-      // 2. Create test page with HanaStory block
+      // 2. Create test page with HeroTwoEntries and HanaStory blocks
       const initialPuckData = {
         root: { props: { title: 'EB-15a Test Page' } },
         content: [
+          {
+            type: 'HeroTwoEntries',
+            props: {
+              id: heroId,
+              seriesLabel: '[MẪU] Series nhãn',
+              titleLine1: '[MẪU] DÒNG TIÊU ĐỀ 1',
+              titleLine2: '[MẪU] DÒNG TIÊU ĐỀ 2',
+            },
+          },
           {
             type: 'HanaStory',
             props: {
@@ -98,8 +108,35 @@ test.describe('EB-15a: Kiểu chữ cho từng ô chữ (Nút "Aa")', () => {
       await page.locator('[class*="_PuckCanvas--ready_"]').waitFor({ timeout: 45000 })
       await page.waitForTimeout(600)
 
-      // 4. Select HanaStory block on canvas
       const canvas = page.frameLocator('iframe')
+
+      // BX-04: Kiểm tra khối HeroTwoEntries dùng createTitleHighlightField:
+      // - Ô tiêu đề có đúng nhãn "Tiêu đề dòng 1"
+      // - Có nút "Aa" cạnh nhãn
+      // - Ô tiêu đề ẩn khi chuyển sang tab Kiểu (style) và hiện lại ở tab Nội dung (content)
+      const heroBlockOnCanvas = canvas.locator(`[data-puck-component="${heroId}"]`).first()
+      await heroBlockOnCanvas.click()
+      const heroTitle1Input = page.getByRole('textbox', {
+        name: vi.eb15a.titleLine1,
+        exact: true,
+      })
+      await expect(heroTitle1Input).toBeVisible()
+      const heroAaBtn = page.getByRole('button', {
+        name: vi.eb15a.buttonAaLabel(vi.eb15a.titleLine1),
+      })
+      await expect(heroAaBtn).toBeVisible()
+
+      // Chuyển sang tab Kiểu: ô tiêu đề không hiển thị
+      const styleTab = page.getByRole('tab', { name: vi.eb04.tabs.style })
+      await styleTab.click()
+      await expect(heroTitle1Input).not.toBeVisible()
+
+      // Chuyển về tab Nội dung: ô tiêu đề hiển thị lại
+      const contentTab = page.getByRole('tab', { name: vi.eb04.tabs.content })
+      await contentTab.click()
+      await expect(heroTitle1Input).toBeVisible()
+
+      // 4. Select HanaStory block on canvas
       const storyBlockOnCanvas = canvas.locator(`[data-puck-component="${storyId}"]`).first()
       await storyBlockOnCanvas.click()
 

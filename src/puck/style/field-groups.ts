@@ -19,6 +19,7 @@ export function isTopLevelField(name: string): boolean {
 export function fieldTab(name: string): PanelTab | null {
   if (name === STYLE_FIELD) return null
   if (name === LABEL_FIELD) return 'advanced'
+  if (name === 'titleHighlightStyle' || name === 'titleHighlightAnimation') return 'content'
   if (STYLE_NAMES.has(name) || STYLE_SUFFIX.test(name)) return 'style'
   return 'content'
 }
