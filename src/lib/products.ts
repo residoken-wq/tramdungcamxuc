@@ -209,6 +209,30 @@ export function getEffectivePrice(product: ProductPricingInput, now: Date): Effe
   return { price, salePrice: null }
 }
 
+// REVIEW-REQUIRED: Helper xác định phiên trải nghiệm có đủ điều kiện mở đặt lịch và nhận thanh toán không (BX-06, mục 1)
+export function isBookableExperience(
+  product?: {
+    type?: string | null
+    _status?: string | null
+    saleStatus?: string | null
+    price?: number | null
+    salePrice?: number | null
+    saleEndsAt?: string | null
+  } | null,
+  now = new Date(),
+): boolean {
+  if (!product || typeof product !== 'object') return false
+  if (product.type !== 'coaching_trial') return false
+  if ('_status' in product && product._status != null && product._status !== 'published') {
+    return false
+  }
+  if (product.saleStatus !== 'on_sale') return false
+
+  const pricing = getEffectivePrice(product, now)
+  const currentPrice = pricing.salePrice ?? pricing.price
+  return currentPrice != null && currentPrice > 0
+}
+
 /**
  * Xác định cấu hình nút kêu gọi hành động (CTA) cho sản phẩm theo thứ tự ưu tiên (bảng AGENTS.md 8.1 & T1-18):
  *

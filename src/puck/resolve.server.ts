@@ -2,7 +2,7 @@ import 'server-only'
 import { getPayload, type Payload } from 'payload'
 import config from '@/payload.config'
 import type { Data } from '@puckeditor/core'
-import { toPublicProduct, type PublicProduct, getEffectivePrice } from '@/lib/products'
+import { toPublicProduct, type PublicProduct, getEffectivePrice, isBookableExperience } from '@/lib/products'
 import { toPublicTestimonial, type PublicTestimonial } from '@/lib/testimonials'
 import { toPublicSiteSettings, type PublicSiteSettings } from '@/lib/site-public'
 import type {
@@ -94,14 +94,7 @@ export function selectDefaultBookingProduct<
     saleEndsAt?: string | null
   },
 >(products: T[], now = new Date()): T | null {
-  const eligible = products.filter((p) => {
-    if (p.type !== 'coaching_trial') return false
-    if (p._status !== 'published') return false
-    if (p.saleStatus !== 'on_sale') return false
-    const pricing = getEffectivePrice(p, now)
-    const price = pricing.salePrice ?? pricing.price
-    return price != null && price > 0
-  })
+  const eligible = products.filter((p) => isBookableExperience(p, now))
 
   if (eligible.length === 0) return null
 
@@ -1595,7 +1588,11 @@ export async function resolveServerData(
     } else if (item.type === 'BookingCTA') {
       const bId = item.props.productId ? String(item.props.productId) : ''
       const bProd = bId ? productMap.get(bId) || null : null
-      item.props._resolved = { product: bProd || defaultBookingProduct }
+      const validBProd = bProd && isBookableExperience(bProd) ? bProd : null
+      item.props._resolved = {
+        product: validBProd || defaultBookingProduct,
+        defaultBookingProduct,
+      }
     } else if (item.type === 'ShopeeButton') {
       const pId = item.props.productId ? String(item.props.productId) : ''
       const sProd = pId ? productMap.get(pId) : null
