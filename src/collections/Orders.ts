@@ -1,6 +1,6 @@
 import type { CollectionBeforeChangeHook, CollectionConfig } from 'payload'
 import { ValidationError } from 'payload'
-import { checkbox, date, number, relation, select, textarea } from '../fields/content'
+import { checkbox, date, money, relation, select, textarea } from '../fields/content'
 import {
   adminOrSelfCustomer,
   isAdminUser,
@@ -377,12 +377,12 @@ export const Orders: CollectionConfig = {
       required: true,
       fields: [
         { ...relation('product', 'Sản phẩm', 'products'), required: true },
-        { ...number('price', 'Giá tại thời điểm mua'), required: true },
+        { ...money('price', 'Giá tại thời điểm mua'), required: true },
       ],
     },
-    number('subtotal', 'Tạm tính'),
+    money('subtotal', 'Tạm tính'),
     relation('discountCode', 'Mã giảm giá', 'discountCodes'),
-    { ...number('total', 'Tổng thanh toán'), required: true },
+    { ...money('total', 'Tổng thanh toán'), required: true },
     {
       name: 'paymentRef',
       label: 'Mã chuyển khoản',

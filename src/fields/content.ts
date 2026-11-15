@@ -13,6 +13,7 @@ import type {
   UploadField,
 } from 'payload'
 import { authenticated, publishedOrAuthenticated } from '../lib/auth/access'
+import { vi } from '../lib/i18n/vi'
 
 type SingleTextField = TextField & { hasMany?: false }
 type SingleNumberField = NumberField & { hasMany?: false }
@@ -91,6 +92,31 @@ export const number = (
     ...extra.admin,
   },
 })
+
+/**
+ * Money field (VND): still a plain `number` column – no migration – but the admin shows it as
+ * `1.750.000 đ` while typing and in list views.
+ */
+export const money = (
+  name: string,
+  label: string,
+  defaultValue?: number,
+  extra: Partial<SingleNumberField> = {},
+): SingleNumberField => {
+  const base = number(name, label, defaultValue, extra)
+  return {
+    ...base,
+    admin: {
+      ...base.admin,
+      description: extra.admin?.description ?? vi.cms.money.description,
+      components: {
+        Field: '@/components/admin/money/MoneyField#MoneyField',
+        Cell: '@/components/admin/money/MoneyCell#MoneyCell',
+        ...extra.admin?.components,
+      },
+    },
+  }
+}
 
 export const date = (name: string, label: string, extra: Partial<DateField> = {}): DateField => ({
   name,

@@ -5,6 +5,7 @@ import { showFor, type ProductType } from '@/lib/cms/product-form'
 import { computePackageValue } from '@/lib/pricing'
 import type { ProductOption } from '@/lib/cms/product-wizard.server'
 import { vi } from '@/lib/i18n/vi'
+import { VndInput } from '../money/VndInput'
 
 interface PackageComponentItem {
   label: string
@@ -162,16 +163,9 @@ export function Step3Pricing({
               {vi.cms.wizard.labels.price}{' '}
               {saleStatus === 'on_sale' && <span className="text-accent-pink">*</span>}
             </label>
-            <input
-              type="number"
-              min="0"
-              step="1000"
-              value={price != null ? price : ''}
-              onChange={(e) =>
-                onChange({
-                  price: e.target.value ? Number(e.target.value) : null,
-                })
-              }
+            <VndInput
+              value={price}
+              onValueChange={(next) => onChange({ price: next })}
               placeholder={vi.cms.wizard.labels.pricePlaceholder}
               className="w-full rounded-xl border border-lavender-mist bg-white px-4 py-2.5 text-sm text-deep-navy focus:border-bright-magenta focus:outline-none focus:ring-2 focus:ring-soft-pink"
             />
@@ -187,16 +181,9 @@ export function Step3Pricing({
             <label className="block font-ui text-sm font-bold text-deep-navy mb-1.5">
               {vi.cms.wizard.labels.salePrice}
             </label>
-            <input
-              type="number"
-              min="0"
-              step="1000"
-              value={salePrice != null ? salePrice : ''}
-              onChange={(e) =>
-                onChange({
-                  salePrice: e.target.value ? Number(e.target.value) : null,
-                })
-              }
+            <VndInput
+              value={salePrice}
+              onValueChange={(next) => onChange({ salePrice: next })}
               placeholder={vi.cms.wizard.labels.salePricePlaceholder}
               className="w-full rounded-xl border border-lavender-mist bg-white px-4 py-2.5 text-sm text-deep-navy focus:border-bright-magenta focus:outline-none focus:ring-2 focus:ring-soft-pink"
             />
@@ -382,14 +369,9 @@ export function Step3Pricing({
                       <label className="block text-[11px] font-bold text-deep-navy/70 mb-1">
                         {vi.cms.wizard.labels.packageComponentUnitValue}
                       </label>
-                      <input
-                        type="number"
-                        min="0"
-                        step="100000"
+                      <VndInput
                         value={comp.unitValue}
-                        onChange={(e) =>
-                          handleUpdateComponent(idx, 'unitValue', Number(e.target.value) || 0)
-                        }
+                        onValueChange={(next) => handleUpdateComponent(idx, 'unitValue', next ?? 0)}
                         className="w-full rounded-lg border border-lavender-mist px-3 py-1.5 text-xs text-deep-navy focus:border-bright-magenta focus:outline-none"
                       />
                     </div>

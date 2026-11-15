@@ -621,9 +621,10 @@ Hana có thể mở trình hướng dẫn bằng một trong hai cách:
 **Các bước thực hiện**:
 
 1. Trong biểu mẫu sản phẩm, cuộn tới khu vực thông tin tài chính:
-   - **Giá bán**: Nhập số tiền gốc bằng đồng Việt Nam (chỉ gõ số liền nhau, ví dụ `250000`).
-   - **Giá ưu đãi**: Nếu có khuyến mại, nhập mức giá sau giảm vào ô này (ví dụ `178000`). Nếu không giảm giá, để trống ô này.
+   - **Giá bán**: Nhập số tiền gốc bằng đồng Việt Nam. Chỉ cần gõ số, ô tự thêm dấu chấm hàng nghìn khi gõ (gõ `250000` → hiện `250.000 đ`). Dán `250.000` hay `250,000` cũng được.
+   - **Giá ưu đãi**: Nếu có khuyến mại, nhập mức giá sau giảm vào ô này (ví dụ `178.000`). Nếu không giảm giá, để trống ô này.
    - **Hạn ưu đãi**: Bấm vào biểu tượng lịch để chọn ngày giờ kết thúc khuyến mại (tùy chọn).
+   - Mọi ô tiền trong CMS (giá sản phẩm, giá trị cấu phần gói, giá dịch vụ, số tiền trong đơn hàng, trình tạo sản phẩm 5 bước) và cột giá ở trang danh sách đều hiện theo kiểu Việt Nam `1.750.000đ`. Ô **Giá trị** của **Mã giảm giá** vẫn là số thường vì có thể là phần trăm.
 2. Bấm nút **Xuất bản** (hoặc **Lưu**) để áp dụng mức giá mới ngay lập tức. Mọi khối hiển thị sản phẩm trên website sẽ tự động cập nhật giá mới sau vài giây.
 
 ![Sửa giá bán và giá ưu đãi](images/huong-dan/04-sua-gia-va-uu-dai.png)
