@@ -3520,6 +3520,74 @@ Nhằm giúp Hana thao tác dựng trang nhanh hơn, không bị rối mắt b�
 
 ---
 
+### 5.47. Khung form liên hệ (BX-02): Bật / tắt từng trường và Chế độ "Nhận brochure"
+
+Khối **Khung form liên hệ (`ContactForms`)** được nâng cấp giúp Hana tuỳ biến linh hoạt từng trường nhập trong form Cá nhân (B2C) và hỗ trợ chế độ chuyên biệt **"Nhận brochure chi tiết"** (chỉ thu Email + Số điện thoại theo đúng tiêu chuẩn C6).
+
+#### 1. Các ô cài đặt bật / tắt trường (trong form Cá nhân)
+
+Khi chọn khối `ContactForms` trên Puck Editor, tại thanh cài đặt bên phải:
+- **Mục đích form Cá nhân (`b2cPurpose`)**:
+  - **Tư vấn 1:1 (Mặc định)**: Form tư vấn đầy đủ (Họ tên, Email, SĐT, Lộ trình, Tình trạng, Lời nhắn trăn trở).
+  - **Nhận brochure chi tiết**: Chế độ thu gọn chuyên biệt cho brochure (xem chi tiết mục 2 dưới đây).
+- **Hiện ô "Lộ trình bạn quan tâm" (`b2cShowPathway`)**: Bật (mặc định) / Tắt. Khi tắt, ô chọn dịch vụ/lộ trình sẽ không xuất hiện trên form.
+- **Hiện ô "Tình trạng hiện tại" (`b2cShowStatus`)**: Bật (mặc định) / Tắt. Khi tắt, ô chọn tình trạng cảm xúc/thói quen sẽ ẩn hoàn toàn.
+- **Hiện ô "Điều bạn đang trăn trở" (`b2cShowMessage`)**: Bật (mặc định) / Tắt. Khi tắt, ô nhập văn bản trăn trở dài 2000 ký tự sẽ ẩn đi.
+- **Bắt buộc nhập số điện thoại (`b2cPhoneRequired`)**: Tắt (mặc định - SĐT là tuỳ chọn) / Bật (bắt buộc khách phải nhập số điện thoại hợp lệ).
+- **Hiện ô "Họ và tên" (`b2cShowName`)**: Bật (mặc định) / Tắt (chỉ hiển thị khi chọn chế độ "Nhận brochure chi tiết", cho phép Hana thu form siêu gọn chỉ có Email + SĐT).
+
+> **Bố cục tự động dồn hàng thông minh**: Khi bạn ẩn 1 trong 2 ô ở hàng đôi (ví dụ ẩn Tình trạng, chỉ giữ Lộ trình), ô còn lại sẽ tự động mở rộng 100% chiều rộng hàng, tuyệt đối không để lại khoảng trống trắng lệch lề. Nếu chọn bố cục "Doanh nghiệp (1 form)", toàn bộ các ô cài đặt của form Cá nhân sẽ tự động ẩn đi để màn hình gọn gàng.
+
+#### 2. Chế độ "Nhận brochure chi tiết"
+
+Khi Hana chọn **Mục đích form Cá nhân** là **Nhận brochure chi tiết**:
+1. **Tự động tinh giản**: Hệ thống tự động ẩn 3 ô không cần thiết (Lộ trình, Tình trạng, Điều trăn trở).
+2. **Số điện thoại bắt buộc**: Ô Số điện thoại tự động gắn dấu sao đỏ (`*`) và bắt buộc nhập đúng định dạng số điện thoại Việt Nam (9–11 chữ số).
+3. **Tuỳ chọn Họ tên**: Hana có thể giữ ô Họ tên hoặc bấm tắt ô Họ tên nếu chỉ muốn thu Email + SĐT (đúng tinh thần C6).
+4. **Nút gửi & Câu cảm ơn mặc định**:
+   - Chữ trên nút gửi mặc định: `Đăng ký nhận brochure` (hoặc Hana gõ chữ riêng).
+   - Câu cảm ơn mặc định: `Em sẽ liên hệ trực tiếp.` (đúng thông điệp của Hana).
+5. **Lưu trữ chuyên biệt**: Dữ liệu gửi từ form brochure sẽ được gắn nhãn nguồn `source.form = 'brochure-chuyen-minh'` và tự động gắn các thẻ quan tâm `coaching`, `brochure`, `chuyen-minh` (đồng bộ hoàn toàn với pop-up brochure AU-04).
+
+#### 3. Các bước làm form brochure cuối trang Chuyển mình
+
+Để tạo form đăng ký nhận brochure nằm trực tiếp trên trang Chuyển mình:
+
+1. **Mở trang Chuyển mình trong Puck Editor**:
+   - Vào **Trang** (`pages`), tìm trang **Chuyển mình** (`chuyen-minh`), bấm **Chỉnh sửa trực quan**.
+2. **Thêm khối Khung form liên hệ**:
+   - Ở cột bên trái, nhóm **Chuyển đổi**, kéo khối **Khung form liên hệ (Contact Forms)** thả vào vị trí cuối trang.
+3. **Cài đặt chế độ brochure**:
+   - Nhấp vào khối vừa thả để mở bảng cài đặt bên phải.
+   - **Bố cục hiển thị**: Chọn `Cá nhân (1 form)`.
+   - **Mục đích form Cá nhân**: Chọn `Nhận brochure chi tiết`.
+   - **Hiện ô "Họ và tên"**: Chọn `Tắt (Ẩn)` nếu chỉ muốn thu Email + SĐT, hoặc giữ `Bật (Mặc định)` nếu muốn biết tên khách.
+   - **Tiêu đề form Cá nhân**: Nhập `Đăng ký nhận brochure chi tiết`.
+   - **Mô tả ngắn**: Nhập `Trạm sẽ gửi brochure chương trình Chuyển mình và liên hệ hỗ trợ bạn.` (hoặc để trống tuỳ ý).
+   - **Chữ trên nút gửi**: Nhập `Nhận brochure ngay`.
+   - **Tiêu đề thông báo thành công**: `Cảm ơn bạn đã kết nối!`.
+   - **Nội dung thông báo thành công**: `Em sẽ liên hệ trực tiếp.`.
+   - **Màu nền**: Chọn màu nền trang nhã (`warm-ivory` hoặc `soft-pink`).
+4. **Xem trước và Xuất bản**:
+   - Bấm xem trước trên máy tính (1440px) và điện thoại (375px) để thấy form dồn gọn gàng, nút bấm to rõ.
+   - Bấm **Xuất bản** màu hồng sen ở góc phải trên cùng.
+
+#### 4. Xem danh sách khách đăng ký nhận brochure trong Leads
+
+Mỗi khi có khách điền form nhận brochure trên trang, hệ thống sẽ gửi email thông báo ngay cho Hana và lưu trữ vào danh sách Leads:
+
+1. Ở menu CMS bên trái, vào **Khách tiềm năng** (`leads`).
+2. Xem cột **Nguồn (Source)**: Các đăng ký này sẽ hiển thị mã `brochure-chuyen-minh`.
+3. Bấm vào một dòng để xem chi tiết:
+   - **Email** và **Số điện thoại** của khách.
+   - **Họ tên** (nếu khách cung cấp).
+   - **Thẻ quan tâm**: Đầy đủ 3 thẻ `coaching`, `brochure`, `chuyen-minh`.
+   - **Trang gửi form**: Đường dẫn trang khách đã đăng ký (ví dụ: `/chuyen-minh`).
+   - **Đồng ý bảo mật (`consentAt`)**: Thời điểm khách bấm đồng ý điều khoản bảo mật thông tin (tuân thủ Nghị định 13/2023/NĐ-CP).
+4. Hana có thể đổi **Trạng thái xử lý** sang *Đang liên hệ* hoặc *Đã tư vấn* và bấm lưu.
+
+---
+
 ## 6. Quản lý Trang pháp lý và Thông tin người bán
 
 ### 6.1. Chỉnh sửa nội dung một trang pháp lý

@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto'
 import { expect, test, type Page, type Response } from './fixtures'
+import { expectNoSeriousA11y } from './helpers/a11y'
 
 // SM-06: trang Liên hệ dựng bằng Puck (ContactInfo + ContactForms + FAQ theo nhóm) và trang
 // /cau-hoi-thuong-gap. CI chạy trên DB chưa seed → test tự tạo dữ liệu qua REST rồi tự dọn.
@@ -46,6 +47,8 @@ test.describe('SM-06: Trang Liên hệ và Câu hỏi thường gặp', () => {
     const question = `[MẪU] Câu hỏi E2E ${marker}`
     let faqId: number | undefined
     let pageId: number | undefined
+    let brochurePageId: number | undefined
+    let brochureLeadId: number | undefined
     let previousSettings: Record<string, unknown> | undefined
 
     const visitor = await browser.newContext({ baseURL: testInfo.project.use.baseURL })
@@ -160,9 +163,95 @@ test.describe('SM-06: Trang Liên hệ và Câu hỏi thường gặp', () => {
         () => document.documentElement.scrollWidth > document.documentElement.clientWidth,
       )
       expect(overflow).toBe(false)
+
+      // 7. BX-02: Form liên hệ chế độ Nhận brochure (chỉ thấy các ô đúng chế độ, gửi form tạo lead brochure-chuyen-minh)
+      const brochurePageSlug = `e2e-brochure-${marker}`
+      const brochurePage = await page.request.post('/api/pages', {
+        data: {
+          title: `[MẪU] Nhận Brochure E2E ${marker}`,
+          slug: brochurePageSlug,
+          _status: 'published',
+          puckData: {
+            root: { props: {} },
+            content: [
+              {
+                type: 'ContactForms',
+                props: {
+                  id: 'e2e-brochure-form',
+                  version: 1,
+                  layout: 'personal',
+                  b2cPurpose: 'brochure',
+                  titleB2C: 'Đăng ký nhận brochure chi tiết',
+                  submitLabelB2C: 'Nhận brochure ngay',
+                },
+              },
+            ],
+          },
+        },
+      })
+      expect(brochurePage.ok()).toBe(true)
+      brochurePageId = (await brochurePage.json()).doc.id
+
+      await guest.setViewportSize({ width: 1440, height: 900 })
+      await guest.goto(`/${brochurePageSlug}`, { waitUntil: 'domcontentloaded' })
+
+      // Tiêu đề và các trường đúng chế độ brochure
+      await expect(guest.getByText('Đăng ký nhận brochure chi tiết')).toBeVisible()
+      await expect(guest.locator('input[type="text"][placeholder*="Họ và tên"]')).toBeVisible()
+      await expect(guest.locator('input[type="email"]')).toBeVisible()
+      await expect(guest.locator('input[type="tel"]')).toBeVisible()
+
+      // Tự ẩn Lộ trình, Tình trạng, và Điều bạn đang trăn trở
+      await expect(guest.locator('select[id$="-b2c-service"]')).toHaveCount(0)
+      await expect(guest.locator('select[id$="-b2c-status"]')).toHaveCount(0)
+      await expect(guest.locator('textarea[id$="-b2c-message"]')).toHaveCount(0)
+
+      // Gửi dữ liệu [TEST] (Học viên Test 01, SĐT giả, email @example.com, chờ Turnstile)
+      const testEmail = `hocvien-brochure-${marker}@example.com`
+      await guest.locator('input[type="text"][placeholder*="Họ và tên"]').fill('[TEST] Học viên Test 01')
+      await guest.locator('input[type="email"]').fill(testEmail)
+      await guest.locator('input[type="tel"]').fill('0901234567')
+      await guest.locator('input[id$="-b2c-consent"]').check()
+
+      // Chờ token Turnstile (không dùng networkidle)
+      await expect(guest.locator('input[name="cf-turnstile-response"]')).not.toHaveValue('', {
+        timeout: 20000,
+      })
+
+      // Bấm nút gửi
+      await guest.getByRole('button', { name: /Nhận brochure ngay/i }).click()
+
+      // Thấy câu cảm ơn
+      await expect(guest.getByText('Em sẽ liên hệ trực tiếp.')).toBeVisible({ timeout: 15000 })
+
+      // Kiểm tra có 1 lead brochure-chuyen-minh trong CSDL
+      const leadsRes = await page.request.get(`/api/leads?where[email][equals]=${testEmail}`)
+      expect(leadsRes.ok()).toBe(true)
+      const leadsData = await leadsRes.json()
+      expect(leadsData.totalDocs).toBe(1)
+      const lead = leadsData.docs[0]
+      brochureLeadId = lead.id
+      expect(lead.source.form).toBe('brochure-chuyen-minh')
+      expect(lead.name).toBe('[TEST] Học viên Test 01')
+      expect(lead.phone).toBe('0901234567')
+      expect(lead.need).toBe('personal')
+      const tagTexts = lead.interestTags.map((t: { text: string }) => t.text)
+      expect(tagTexts).toContain('brochure')
+      expect(tagTexts).toContain('chuyen-minh')
+
+      // Kiểm tra 375px không cuộn ngang và axe sạch
+      await guest.setViewportSize({ width: 375, height: 667 })
+      await guest.goto(`/${brochurePageSlug}`, { waitUntil: 'domcontentloaded' })
+      const overflowBrochure = await guest.evaluate(
+        () => document.documentElement.scrollWidth > document.documentElement.clientWidth,
+      )
+      expect(overflowBrochure).toBe(false)
+      await expectNoSeriousA11y(guest, 'BX-02 Brochure Form')
     } finally {
       await visitor.close().catch(() => {})
       if (pageId) await page.request.delete(`/api/pages/${pageId}`).catch(() => {})
+      if (brochurePageId) await page.request.delete(`/api/pages/${brochurePageId}`).catch(() => {})
+      if (brochureLeadId) await page.request.delete(`/api/leads/${brochureLeadId}`).catch(() => {})
       if (faqId) await page.request.delete(`/api/faqs/${faqId}`).catch(() => {})
       if (previousSettings) {
         await page.request

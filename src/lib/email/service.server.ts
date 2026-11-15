@@ -93,7 +93,7 @@ export async function sendCoachingEmails(
     phone?: string
     serviceName?: string
     currentStatus?: string
-    message: string
+    message?: string
   },
   ctx?: FormContext,
   customSender?: EmailSender,

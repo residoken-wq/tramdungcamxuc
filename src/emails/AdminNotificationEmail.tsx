@@ -141,7 +141,7 @@ export const AdminNotificationEmail: React.FC<AdminNotificationEmailProps> = ({
                   <strong>Thẻ quan tâm:</strong> {interestTags.join(', ')}
                 </Text>
               )}
-              {message && (
+              {message && message.trim().length > 0 && (
                 <Text style={infoRowStyle}>
                   <strong>Lời nhắn:</strong> {message}
                 </Text>
