@@ -7,7 +7,11 @@ import {
   type FontSizeOption,
 } from '@/lib/brand/format-classes'
 import { textTarget } from '@/puck/style/text-target'
-import { renderHighlightedTitle } from '@/components/ui/TwoToneTitle'
+import {
+  renderHighlightedTitle,
+  type TitleHighlightStyle,
+  type TitleHighlightAnimation,
+} from '@/components/ui/TwoToneTitle'
 
 export type SectionHeadingLevel = 'h1' | 'h2' | 'h3'
 
@@ -16,6 +20,8 @@ export interface SectionHeaderProps {
   seriesLabel?: string
   titleLine1: string
   titleLine2?: string
+  titleHighlightStyle?: TitleHighlightStyle
+  titleHighlightAnimation?: TitleHighlightAnimation
   emotionLine?: string
   as?: SectionHeadingLevel
   align?: 'left' | 'center'
@@ -36,6 +42,8 @@ export function SectionHeader({
   seriesLabel,
   titleLine1,
   titleLine2,
+  titleHighlightStyle = 'color',
+  titleHighlightAnimation = 'none',
   emotionLine,
   as: HeadingTag = 'h2',
   align = 'left',
@@ -78,12 +86,16 @@ export function SectionHeader({
         <span {...textTarget(id, 'titleLine1')} className={`block ${line1ColorClass}`}>
           {renderHighlightedTitle(titleLine1, {
             isDark: line1Color === 'soft-pink',
+            style: titleHighlightStyle,
+            animation: titleHighlightAnimation,
           })}
         </span>
         {titleLine2 && (
           <span {...textTarget(id, 'titleLine2')} className={`block ${line2ColorClass}`}>
             {renderHighlightedTitle(titleLine2, {
               isDark: line2Color === 'soft-pink',
+              style: titleHighlightStyle,
+              animation: titleHighlightAnimation,
             })}
           </span>
         )}

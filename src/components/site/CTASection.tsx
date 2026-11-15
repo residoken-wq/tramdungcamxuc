@@ -14,7 +14,11 @@ import type { FontSizeOption } from '@/lib/brand/format-classes'
 import { isDarkBrandBg } from '@/lib/brand/format-classes'
 import { LEAD_TEXT_SIZES, sizeClass } from '@/lib/brand/text-presets'
 import { textTarget } from '@/puck/style/text-target'
-import { TwoToneTitle } from '@/components/ui/TwoToneTitle'
+import {
+  TwoToneTitle,
+  type TitleHighlightStyle,
+  type TitleHighlightAnimation,
+} from '@/components/ui/TwoToneTitle'
 import {
   RegistrationModal,
   type RegistrationFormType,
@@ -26,6 +30,8 @@ export interface CTASectionProps {
   seriesLabel?: string
   titleLine1?: string
   titleLine2?: string
+  titleHighlightStyle?: TitleHighlightStyle
+  titleHighlightAnimation?: TitleHighlightAnimation
   emotionLine?: string
   description?: string
   buttonText?: string
@@ -100,6 +106,8 @@ export function CTASection({
   seriesLabel,
   titleLine1 = '[MẪU] BẮT ĐẦU HÀNH TRÌNH',
   titleLine2 = '[MẪU] CHUYỂN MÌNH CÙNG HANA',
+  titleHighlightStyle = 'color',
+  titleHighlightAnimation = 'none',
   emotionLine,
   description,
   buttonText = '[MẪU] Đặt phiên trải nghiệm 149.000đ',
@@ -233,6 +241,8 @@ export function CTASection({
                 line2={titleLine2}
                 line1ClassName={isDark ? 'text-white' : 'text-deep-navy'}
                 line2ClassName={isDark ? 'text-white' : 'text-bright-magenta'}
+                highlightStyle={titleHighlightStyle}
+                highlightAnimation={titleHighlightAnimation}
               />
             </h2>
           )}
@@ -381,6 +391,8 @@ export function CTASection({
                 line2={titleLine2}
                 line1ClassName="text-deep-navy"
                 line2ClassName="text-bright-magenta"
+                highlightStyle={titleHighlightStyle}
+                highlightAnimation={titleHighlightAnimation}
               />
             </h2>
           )}
