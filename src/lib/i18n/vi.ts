@@ -4981,7 +4981,6 @@ export const vi = {
     animPop: 'Nổi lên',
     chipHelp: 'Bấm chip: lần 1 nhấn (*), lần 2 gạch ngang (~), lần 3 bỏ.',
   },
-  },
 } as const
 
 export type LocaleStrings = typeof vi
