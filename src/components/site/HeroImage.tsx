@@ -11,7 +11,11 @@ import {
 } from '@/lib/brand/format-classes'
 import { HeroStatItem } from './HeroStatItem'
 import { HeroBackdrop } from './HeroBackdrop'
-import { TwoToneTitle } from '@/components/ui/TwoToneTitle'
+import {
+  TwoToneTitle,
+  type TitleHighlightStyle,
+  type TitleHighlightAnimation,
+} from '@/components/ui/TwoToneTitle'
 import { textTarget } from '@/puck/style/text-target'
 import { pickCopy, hasCopy } from '@/lib/copy'
 import {
@@ -45,6 +49,8 @@ export interface HeroImageProps {
   seriesLabel?: string
   titleLine1: string
   titleLine2: string
+  titleHighlightStyle?: TitleHighlightStyle
+  titleHighlightAnimation?: TitleHighlightAnimation
   emotionLine?: string
   listTitle?: string
   listItems?: HeroListItem[]
@@ -241,6 +247,8 @@ export function HeroImage({
   seriesLabel,
   titleLine1,
   titleLine2,
+  titleHighlightStyle = 'color',
+  titleHighlightAnimation = 'none',
   emotionLine,
   listTitle,
   listItems,
@@ -422,6 +430,8 @@ export function HeroImage({
                 line2={effectiveTitle2}
                 line1ClassName={bTitle1Color}
                 line2ClassName={bTitle2Color}
+                highlightStyle={titleHighlightStyle}
+                highlightAnimation={titleHighlightAnimation}
               />
             </h1>
           )}
@@ -558,6 +568,8 @@ export function HeroImage({
               line2={effectiveTitle2}
               line1ClassName={resolvedLine1Color}
               line2ClassName={resolvedLine2Color}
+              highlightStyle={titleHighlightStyle}
+              highlightAnimation={titleHighlightAnimation}
             />
           </h1>
         )}
@@ -749,6 +761,8 @@ export function HeroImage({
               line2={effectiveTitle2}
               line1ClassName={resolvedLine1Color}
               line2ClassName={resolvedLine2Color}
+              highlightStyle={titleHighlightStyle}
+              highlightAnimation={titleHighlightAnimation}
             />
           </h1>
         )}

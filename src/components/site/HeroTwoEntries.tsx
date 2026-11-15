@@ -6,7 +6,11 @@ import { safeHref } from '@/lib/safe-href'
 import { fontSizeClass, type FontSizeOption } from '@/lib/brand/format-classes'
 import { HeroEntryCard, type HeroEntryCardProps } from './HeroEntryCard'
 import { EmptySlotHint } from '@/components/ui/EmptySlotHint'
-import { TwoToneTitle } from '@/components/ui/TwoToneTitle'
+import {
+  TwoToneTitle,
+  type TitleHighlightStyle,
+  type TitleHighlightAnimation,
+} from '@/components/ui/TwoToneTitle'
 import { HeroBackdrop } from './HeroBackdrop'
 import { textTarget } from '@/puck/style/text-target'
 import { pickCopy, hasCopy } from '@/lib/copy'
@@ -35,6 +39,8 @@ export interface HeroTwoEntriesProps {
   seriesLabel?: string
   titleLine1: string
   titleLine2: string
+  titleHighlightStyle?: TitleHighlightStyle
+  titleHighlightAnimation?: TitleHighlightAnimation
   emotionLine?: string
   description?: string
   mediaId?: string | number
@@ -94,6 +100,8 @@ export function HeroTwoEntries({
   seriesLabel,
   titleLine1,
   titleLine2,
+  titleHighlightStyle = 'color',
+  titleHighlightAnimation = 'none',
   emotionLine,
   description,
   imageUrl,
@@ -313,6 +321,8 @@ export function HeroTwoEntries({
                 line2={effectiveTitle2}
                 line1ClassName={bTitle1Color}
                 line2ClassName={bTitle2Color}
+                highlightStyle={titleHighlightStyle}
+                highlightAnimation={titleHighlightAnimation}
               />
             </h1>
           )}
@@ -377,6 +387,8 @@ export function HeroTwoEntries({
                           line2={effectiveTitle2}
                           line1ClassName={isDeepNavy ? 'text-white' : 'text-deep-navy'}
                           line2ClassName={titleLine2ColorClass}
+                          highlightStyle={titleHighlightStyle}
+                          highlightAnimation={titleHighlightAnimation}
                         />
                       </h1>
                     )}
@@ -461,6 +473,8 @@ export function HeroTwoEntries({
                       line2={effectiveTitle2}
                       line1ClassName={isDeepNavy ? 'text-white' : 'text-deep-navy'}
                       line2ClassName={titleLine2ColorClass}
+                      highlightStyle={titleHighlightStyle}
+                      highlightAnimation={titleHighlightAnimation}
                     />
                   </h1>
                 )}

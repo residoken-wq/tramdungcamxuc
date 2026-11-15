@@ -118,10 +118,10 @@ test.describe('Product Creation Wizard 5-step (CM-04)', () => {
       }).toPass({ timeout: 15000 })
 
       // Bước 3: Giá & cách bán
-      const priceInput = page.locator('input[placeholder*="250000"]').first()
+      const priceInput = page.locator('input[placeholder*="250.000"]').first()
       await priceInput.fill('250000')
 
-      const salePriceInput = page.locator('input[placeholder*="178000"]').first()
+      const salePriceInput = page.locator('input[placeholder*="178.000"]').first()
       await salePriceInput.fill('178000')
 
       const trialDaysInput = page.locator('input[placeholder*="21"]').first()
@@ -169,7 +169,7 @@ test.describe('Product Creation Wizard 5-step (CM-04)', () => {
       await expect(page.locator('#field-name')).toHaveValue(toolName)
       // CM-03: price lives in the "Giá & bán" tab
       await page.getByRole('button', { name: 'Giá & bán' }).click()
-      await expect(page.locator('#field-price')).toHaveValue('250000')
+      await expect(page.locator('#field-price')).toHaveValue('250.000')
 
       // ==========================================
       // LUỒNG 2: TẠO GÓI ĐỒNG HÀNH (PACKAGE)
@@ -211,7 +211,7 @@ test.describe('Product Creation Wizard 5-step (CM-04)', () => {
       }).toPass({ timeout: 15000 })
 
       // Bước 3: Giá bán & Cấu phần gói
-      await page.locator('input[placeholder*="250000"]').first().fill('2900000')
+      await page.locator('input[placeholder*="250.000"]').first().fill('2900000')
 
       // Thêm cấu phần 1: Coaching 1:1, quantity 3, unitValue 1.000.000
       const addCompBtn = page.getByRole('button', { name: /Thêm cấu phần/i })

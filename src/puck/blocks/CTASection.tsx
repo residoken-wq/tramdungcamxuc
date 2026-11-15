@@ -6,6 +6,12 @@ import { createPageExternalField } from '../page-field'
 import { createTestimonialExternalField } from '../testimonial-field'
 import { sizeField } from '../format-fields'
 import { vi } from '@/lib/i18n/vi'
+import {
+  createTitleHighlightField,
+  titleHighlightStyleField,
+  titleHighlightAnimationField,
+} from '../title-highlight-field'
+import { hasTitleHighlight } from '@/components/ui/TwoToneTitle'
 
 export type { CTASectionProps }
 
@@ -24,16 +30,10 @@ export const CTASectionBlock: ComponentConfig<CTASectionProps> = {
       ],
     },
     seriesLabel: { type: 'text', label: vi.eb15a.seriesLabel, contentEditable: true },
-    titleLine1: {
-      type: 'text',
-      label: vi.eb15a.titleLine1,
-      contentEditable: true,
-    },
-    titleLine2: {
-      type: 'text',
-      label: vi.eb15a.titleLine2,
-      contentEditable: true,
-    },
+    titleLine1: createTitleHighlightField({ label: vi.eb15a.titleLine1 }),
+    titleLine2: createTitleHighlightField({ label: vi.eb15a.titleLine2 }),
+    titleHighlightStyle: titleHighlightStyleField,
+    titleHighlightAnimation: titleHighlightAnimationField,
     titleSize: sizeField('Cỡ chữ tiêu đề'),
     emotionLine: {
       type: 'textarea',
@@ -178,6 +178,13 @@ export const CTASectionBlock: ComponentConfig<CTASectionProps> = {
     const fields = { ...params.fields }
     const props = data?.props || {}
 
+    const hasHighlight =
+      hasTitleHighlight(props.titleLine1) || hasTitleHighlight(props.titleLine2)
+    if (!hasHighlight) {
+      delete fields.titleHighlightStyle
+      delete fields.titleHighlightAnimation
+    }
+
     // Dạng "hộp thẻ trắng" và "nền tràn" chỉ hiện ô áp dụng cho dạng đó
     if (props.variant === 'solid') {
       delete fields.proofText
@@ -271,6 +278,8 @@ export const CTASectionBlock: ComponentConfig<CTASectionProps> = {
     seriesLabel: '[MẪU] Sẵn sàng cho bước tiếp theo',
     titleLine1: '[MẪU] BẮT ĐẦU HÀNH TRÌNH',
     titleLine2: '[MẪU] CHUYỂN MÌNH CÙNG HANA',
+    titleHighlightStyle: 'color',
+    titleHighlightAnimation: 'none',
     emotionLine: '[MẪU] Lắng nghe chính mình là bước khởi đầu vững chãi nhất',
     description:
       '[MẪU] Dành cho bạn một khoảng dừng tĩnh lặng để nhận diện và đón nhận trọn vẹn cảm xúc bên trong.',

@@ -20,6 +20,12 @@ import {
   HERO_CONTENT_ALIGN_OPTIONS,
   HERO_MIN_HEIGHT_OPTIONS,
 } from '@/lib/brand/hero-backdrop'
+import {
+  createTitleHighlightField,
+  titleHighlightStyleField,
+  titleHighlightAnimationField,
+} from '../title-highlight-field'
+import { hasTitleHighlight } from '@/components/ui/TwoToneTitle'
 
 export type { HeroImageProps }
 
@@ -54,18 +60,10 @@ export const HeroImageBlock: ComponentConfig<HeroImageProps> = {
         },
       ],
     },
-    titleLine1: {
-      type: 'text',
-      label: vi.eb15a.titleLine1,
-      placeholder: 'Dùng *từ* để tô màu nổi bật',
-      contentEditable: true,
-    },
-    titleLine2: {
-      type: 'text',
-      label: vi.eb15a.titleLine2,
-      placeholder: 'Dùng *từ* để tô màu nổi bật',
-      contentEditable: true,
-    },
+    titleLine1: createTitleHighlightField({ label: vi.eb15a.titleLine1 }),
+    titleLine2: createTitleHighlightField({ label: vi.eb15a.titleLine2 }),
+    titleHighlightStyle: titleHighlightStyleField,
+    titleHighlightAnimation: titleHighlightAnimationField,
     titleCase: {
       type: 'select',
       label: 'Kiểu chữ tiêu đề',
@@ -279,6 +277,8 @@ export const HeroImageBlock: ComponentConfig<HeroImageProps> = {
     seriesLabelFont: 'ui',
     titleLine1: '[MẪU] DÒNG TIÊU ĐỀ 1',
     titleLine2: '[MẪU] DÒNG TIÊU ĐỀ 2',
+    titleHighlightStyle: 'color',
+    titleHighlightAnimation: 'none',
     emotionLine: '[MẪU] Dòng cảm xúc trích dẫn chạm đến trái tim',
     emotionFont: 'quote',
     listTitle: '',
@@ -321,6 +321,13 @@ export const HeroImageBlock: ComponentConfig<HeroImageProps> = {
     const fields = {
       ...params.fields,
       ...statColorFields(effectiveBg),
+    }
+
+    const hasHighlight =
+      hasTitleHighlight(data?.props?.titleLine1) || hasTitleHighlight(data?.props?.titleLine2)
+    if (!hasHighlight) {
+      delete fields.titleHighlightStyle
+      delete fields.titleHighlightAnimation
     }
 
     if (!isBackdrop) {

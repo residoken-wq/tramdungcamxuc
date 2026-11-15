@@ -275,3 +275,125 @@ html.eb-anim-ready [data-eb-card].eb-step-active h3 {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+/* BX-04: Title Highlight Styles & Animations */
+.title-strike-line,
+.title-underline-line {
+  position: relative;
+  display: inline-block;
+  text-decoration: none !important;
+}
+
+.title-strike-line::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 100%;
+  height: 2px;
+  background-color: currentColor;
+  transform-origin: left center;
+  transform: scaleX(1);
+}
+
+.title-underline-line::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0px;
+  width: 100%;
+  height: 2px;
+  background-color: currentColor;
+  transform-origin: left center;
+  transform: scaleX(1);
+}
+
+/* Stagger delays for animated title tokens (max ~600ms total) */
+.title-anim-draw [data-hl-index="0"],
+.title-anim-pop [data-hl-index="0"] {
+  animation-delay: 0ms;
+}
+.title-anim-draw [data-hl-index="1"],
+.title-anim-pop [data-hl-index="1"] {
+  animation-delay: 90ms;
+}
+.title-anim-draw [data-hl-index="2"],
+.title-anim-pop [data-hl-index="2"] {
+  animation-delay: 180ms;
+}
+.title-anim-draw [data-hl-index="3"],
+.title-anim-pop [data-hl-index="3"] {
+  animation-delay: 260ms;
+}
+.title-anim-draw [data-hl-index="4"],
+.title-anim-pop [data-hl-index="4"] {
+  animation-delay: 340ms;
+}
+.title-anim-draw [data-hl-index="5"],
+.title-anim-pop [data-hl-index="5"] {
+  animation-delay: 420ms;
+}
+
+@keyframes titlePopIn {
+  from {
+    transform: scale(0.95);
+    opacity: 0.6;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.title-anim-active.title-anim-pop .title-hl-token,
+.title-anim-active.title-anim-pop .title-strike-token {
+  display: inline-block;
+  animation-name: titlePopIn;
+  animation-duration: 380ms;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  animation-fill-mode: both;
+}
+
+@keyframes titleColorTransition {
+  from {
+    opacity: 0.4;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.title-anim-active.title-anim-draw .title-hl-color {
+  animation-name: titleColorTransition;
+  animation-duration: 420ms;
+  animation-timing-function: ease-out;
+  animation-fill-mode: both;
+}
+
+@keyframes titleLineDraw {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+.title-anim-active.title-anim-draw .title-strike-line::after,
+.title-anim-active.title-anim-draw .title-underline-line::after {
+  animation: titleLineDraw 420ms cubic-bezier(0.2, 0.8, 0.4, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .title-anim-active.title-anim-draw .title-hl-token,
+  .title-anim-active.title-anim-draw .title-strike-token,
+  .title-anim-active.title-anim-pop .title-hl-token,
+  .title-anim-active.title-anim-pop .title-strike-token,
+  .title-anim-active.title-anim-draw .title-strike-line::after,
+  .title-anim-active.title-anim-draw .title-underline-line::after {
+    animation: none !important;
+    transform: none !important;
+    opacity: 1 !important;
+  }
+}
+

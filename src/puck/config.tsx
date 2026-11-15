@@ -4,6 +4,12 @@ import { HeroTwoEntriesBlock, type HeroTwoEntriesProps } from './blocks/HeroTwoE
 import { ImageText, type ImageTextProps } from '@/components/site/ImageText'
 import { RichText, type RichTextProps } from '@/components/site/RichText'
 import { SectionHeader, type SectionHeaderProps } from '@/components/ui/SectionHeader'
+import { hasTitleHighlight } from '@/components/ui/TwoToneTitle'
+import {
+  createTitleHighlightField,
+  titleHighlightStyleField,
+  titleHighlightAnimationField,
+} from './title-highlight-field'
 import { vi } from '@/lib/i18n/vi'
 import { isOpen, type CleanDesignSystem } from '@/lib/design/design-system'
 import { PageCustomCssControl } from './editor/PageCustomCssControl'
@@ -443,23 +449,13 @@ const basePuckConfig: Config<PageComponentsProps> = {
           label: 'Màu nhãn series',
           options: allowedTextColors('warm-ivory', 'sm'),
         },
-        titleLine1: {
-          type: 'text',
-          label: vi.eb15a.titleLine1,
-          placeholder: 'Dùng *từ* để tô màu nổi bật',
-          contentEditable: true,
-        },
+        titleLine1: createTitleHighlightField({ label: vi.eb15a.titleLine1 }),
         line1Color: {
           type: 'select',
           label: 'Màu tiêu đề dòng 1',
           options: allowedTextColors('warm-ivory', 'md'),
         },
-        titleLine2: {
-          type: 'text',
-          label: vi.eb15a.titleLine2,
-          placeholder: 'Dùng *từ* để tô màu nổi bật',
-          contentEditable: true,
-        },
+        titleLine2: createTitleHighlightField({ label: vi.eb15a.titleLine2 }),
         line2Color: {
           type: 'select',
           label: 'Màu tiêu đề dòng 2',
@@ -532,6 +528,9 @@ const basePuckConfig: Config<PageComponentsProps> = {
         // treats it as normal text at every size, so accent-pink (< 4.5:1) is never offered.
         const emotionColors = allowedTextColors(currentBg, 'md')
 
+        const hasHighlight =
+          hasTitleHighlight(data.props?.titleLine1) || hasTitleHighlight(data.props?.titleLine2)
+
         return {
           seriesLabel: { type: 'text', label: vi.eb15a.seriesLabel, contentEditable: true },
           eyebrowColor: {
@@ -539,18 +538,24 @@ const basePuckConfig: Config<PageComponentsProps> = {
             label: 'Màu nhãn series',
             options: eyebrowColors,
           },
-          titleLine1: { type: 'text', label: vi.eb15a.titleLine1, contentEditable: true },
+          titleLine1: createTitleHighlightField({ label: vi.eb15a.titleLine1 }),
           line1Color: {
             type: 'select',
             label: 'Màu tiêu đề dòng 1',
             options: titleColors,
           },
-          titleLine2: { type: 'text', label: vi.eb15a.titleLine2, contentEditable: true },
+          titleLine2: createTitleHighlightField({ label: vi.eb15a.titleLine2 }),
           line2Color: {
             type: 'select',
             label: 'Màu tiêu đề dòng 2',
             options: titleColors,
           },
+          ...(hasHighlight
+            ? {
+                titleHighlightStyle: titleHighlightStyleField,
+                titleHighlightAnimation: titleHighlightAnimationField,
+              }
+            : {}),
           titleSize: {
             type: 'select',
             label: 'Cỡ chữ tiêu đề',
@@ -601,12 +606,16 @@ const basePuckConfig: Config<PageComponentsProps> = {
         eyebrowColor: 'bright-magenta',
         emotionColor: 'deep-navy',
         emotionSize: 'md',
+        titleHighlightStyle: 'color',
+        titleHighlightAnimation: 'none',
       },
       render: ({
         id,
         seriesLabel,
         titleLine1,
         titleLine2,
+        titleHighlightStyle,
+        titleHighlightAnimation,
         emotionLine,
         align,
         as,
@@ -626,6 +635,8 @@ const basePuckConfig: Config<PageComponentsProps> = {
               seriesLabel={seriesLabel}
               titleLine1={titleLine1}
               titleLine2={titleLine2}
+              titleHighlightStyle={titleHighlightStyle}
+              titleHighlightAnimation={titleHighlightAnimation}
               emotionLine={emotionLine}
               align={align}
               as={as}

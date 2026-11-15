@@ -23,6 +23,8 @@ import { UnderlineFeatureClient as UnderlineFeatureClient_e70f5e05f09f93e00b997e
 import { BoldFeatureClient as BoldFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { ItalicFeatureClient as ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { TableFeatureClient as TableFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
+import { MoneyCell as MoneyCell_802b42af266a7a241600efa0eff5665f } from '@/components/admin/money/MoneyCell'
+import { MoneyField as MoneyField_1ffafb1db8f202b1dc4c49070c63e0cc } from '@/components/admin/money/MoneyField'
 import { CreateProductButton as CreateProductButton_524a0c2fe6867b553aa2ee9b68ac70cd } from '@/components/admin/product-wizard/CreateProductButton'
 import { OrderActions as OrderActions_bd9a3eb0969675b027902d6a22a18ee7 } from '@/components/admin/OrderActions'
 import { OrderPaymentEvents as OrderPaymentEvents_5d110d44f1eb9dcabda3b8db24c36faf } from '@/components/admin/OrderPaymentEvents'
@@ -75,6 +77,8 @@ export const importMap = {
   "@payloadcms/richtext-lexical/client#BoldFeatureClient": BoldFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#ItalicFeatureClient": ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#TableFeatureClient": TableFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
+  "@/components/admin/money/MoneyCell#MoneyCell": MoneyCell_802b42af266a7a241600efa0eff5665f,
+  "@/components/admin/money/MoneyField#MoneyField": MoneyField_1ffafb1db8f202b1dc4c49070c63e0cc,
   "@/components/admin/product-wizard/CreateProductButton#CreateProductButton": CreateProductButton_524a0c2fe6867b553aa2ee9b68ac70cd,
   "@/components/admin/OrderActions#OrderActions": OrderActions_bd9a3eb0969675b027902d6a22a18ee7,
   "@/components/admin/OrderPaymentEvents#OrderPaymentEvents": OrderPaymentEvents_5d110d44f1eb9dcabda3b8db24c36faf,

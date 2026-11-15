@@ -99,6 +99,11 @@ export const vi = {
         editor: 'Biên tập viên',
       },
     },
+    money: {
+      suffix: 'đ',
+      description:
+        'Giá tiền tính bằng đồng. Chỉ cần gõ số, hệ thống tự thêm dấu chấm (VD: 1.750.000).',
+    },
     productForm: {
       collectionDescription:
         'Tất cả sản phẩm mở bán hoặc tặng: công cụ số, sách điện tử, gói đồng hành.',
@@ -324,9 +329,9 @@ export const vi = {
         coverImageAltPlaceholder: 'Mô tả ngắn về nội dung bức ảnh...',
         saleStatus: 'Trạng thái mở bán',
         price: 'Giá niêm yết (VND)',
-        pricePlaceholder: '250000',
+        pricePlaceholder: '250.000',
         salePrice: 'Giá ưu đãi (VND)',
-        salePricePlaceholder: '178000',
+        salePricePlaceholder: '178.000',
         saleEndsAt: 'Hạn ưu đãi (tùy chọn)',
         trialDays: 'Số ngày dùng thử miễn phí',
         trialDaysPlaceholder: '21',
@@ -4825,7 +4830,8 @@ export const vi = {
   pk30: {
     tabIntro: 'Trang giới thiệu',
     groupHideSections: 'Ẩn / hiện các phần',
-    groupHideSectionsDescription: 'Bật ô tương ứng để ẩn phần đó trên trang. Nội dung đã nhập vẫn giữ nguyên, tắt là hiện lại.',
+    groupHideSectionsDescription:
+      'Bật ô tương ứng để ẩn phần đó trên trang. Nội dung đã nhập vẫn giữ nguyên, tắt là hiện lại.',
     hideOfferIncludes: 'Ẩn: Danh sách "Bộ tài liệu tự học…" trong hero',
     hideOfferStats: 'Ẩn: Thanh số liệu (video, kỹ thuật, ngày, lộ trình)',
     hideOfferCurriculum: 'Ẩn: Lộ trình (module / giai đoạn)',
@@ -4963,6 +4969,18 @@ export const vi = {
     useDefaultCopyLabel: 'Dùng chữ mặc định cho ô để trống',
     useDefaultCopyDescription:
       'Bật: ô nào để trống sẽ hiện chữ mẫu của hệ thống. Tắt: ô để trống thì ẩn.',
+  },
+  bx04: {
+    titleHighlightStyle: 'Kiểu nhấn chữ',
+    styleColor: 'Tô màu (mặc định)',
+    styleUnderline: 'Gạch chân',
+    stylePill: 'Nền',
+    titleHighlightAnimation: 'Hiệu ứng nhấn chữ',
+    animNone: 'Không (mặc định)',
+    animDraw: 'Vẽ dần',
+    animPop: 'Nổi lên',
+    chipHelp: 'Bấm chip: lần 1 nhấn (*), lần 2 gạch ngang (~), lần 3 bỏ.',
+  },
   },
 } as const
 
