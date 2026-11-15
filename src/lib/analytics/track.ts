@@ -38,7 +38,7 @@ export type AnalyticsEvent =
  * TUYỆT ĐỐI KHÔNG cho phép email, tên, số điện thoại, ghi chú, nội dung form, cảm xúc, reflection (AGENTS.md §11).
  */
 export const EVENT_ALLOWED_PROPS: Record<AnalyticsEvent, readonly string[]> = {
-  lead_submitted: ['need', 'resource', 'productName', 'pageSlug'],
+  lead_submitted: ['need', 'resource', 'productName', 'pageSlug', 'form'],
   resource_downloaded: ['resource', 'productSlug', 'format', 'pageSlug'],
   diagnostic_completed: ['stage', 'result', 'totalQuestions'],
   habit_loop_completed: ['step', 'duration'],

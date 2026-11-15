@@ -241,13 +241,14 @@ export async function submitCoachingForm(
   }
 
   // 5. REVIEW-REQUIRED: Personal data (NĐ 13/2023). Coaching form creates lead with overrideAccess after validation.
+  // BX-02: message là tuỳ chọn, lead không có lời nhắn vẫn lưu được bình thường.
   const lead = await payload.create({
     collection: 'leads',
     data: {
       name: validated.name,
       email: validated.email.toLowerCase().trim(),
       phone: validated.phone || undefined,
-      message: validated.message,
+      message: validated.message || undefined,
       service: serviceId,
       currentStatus: validCurrentStatus,
       need: 'personal',
@@ -273,7 +274,7 @@ export async function submitCoachingForm(
       phone: validated.phone,
       serviceName,
       currentStatus: validCurrentStatus,
-      message: validated.message,
+      message: validated.message || undefined,
     },
     ctx,
     options.emailSender,

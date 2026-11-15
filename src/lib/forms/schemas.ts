@@ -93,41 +93,70 @@ export const registrationFormSchema = z
 
 export type RegistrationFormInput = z.infer<typeof registrationFormSchema>
 
-export const coachingFormSchema = z.object({
-  name: createNameSchema(vi.forms.validation.nameRequired),
-  email: z
-    .string()
-    .trim()
-    .min(1, vi.forms.validation.emailRequired)
-    .max(254, vi.forms.validation.emailMax)
-    .email(vi.forms.validation.emailInvalid),
-  phone: z.string().trim().max(20, vi.forms.validation.phoneMax).optional(),
-  service: z
-    .union([z.number(), z.string()])
-    .optional()
-    .nullable()
-    .transform((val) => {
-      if (val === null || val === undefined || val === '') return undefined
-      return typeof val === 'string' && !isNaN(Number(val)) ? Number(val) : val
+// REVIEW-REQUIRED: Personal data (NĐ 13/2023). Quy tắc xác thực form tư vấn 1:1 (Coaching / B2C contact):
+// - message là tuỳ chọn (BX-02) nhưng tối đa 2000 ký tự (client vẫn bắt nhập khi ô hiện)
+// - phoneRequired: cờ tuỳ chọn từ client, khi bật thì SĐT bắt buộc (9-11 chữ số VN).
+//   Chấp nhận được vì chỉ là yêu cầu nhập thêm, không mở rộng quyền truy cập.
+export const coachingFormSchema = z
+  .object({
+    name: createNameSchema(vi.forms.validation.nameRequired),
+    email: z
+      .string()
+      .trim()
+      .min(1, vi.forms.validation.emailRequired)
+      .max(254, vi.forms.validation.emailMax)
+      .email(vi.forms.validation.emailInvalid),
+    phone: z.string().trim().max(20, vi.forms.validation.phoneMax).optional(),
+    phoneRequired: z.boolean().optional(),
+    service: z
+      .union([z.number(), z.string()])
+      .optional()
+      .nullable()
+      .transform((val) => {
+        if (val === null || val === undefined || val === '') return undefined
+        return typeof val === 'string' && !isNaN(Number(val)) ? Number(val) : val
+      }),
+    currentStatus: z
+      .string()
+      .trim()
+      .max(120)
+      .optional()
+      .nullable()
+      .transform((val) => (val && val.trim().length > 0 ? val.trim() : undefined)),
+    message: z
+      .string()
+      .trim()
+      .max(2000, vi.forms.validation.messageMax)
+      .optional()
+      .transform((val) => (val && val.trim().length > 0 ? val.trim() : undefined)),
+    consent: z.boolean().refine((val) => val === true, {
+      message: vi.forms.validation.consentRequired,
     }),
-  currentStatus: z
-    .string()
-    .trim()
-    .max(120)
-    .optional()
-    .nullable()
-    .transform((val) => (val && val.trim().length > 0 ? val.trim() : undefined)),
-  message: z
-    .string()
-    .trim()
-    .min(1, vi.forms.validation.messageRequired)
-    .max(2000, vi.forms.validation.messageMax),
-  consent: z.boolean().refine((val) => val === true, {
-    message: vi.forms.validation.consentRequired,
-  }),
-  honeypot: z.string().max(2048, vi.forms.validation.tokenMax).optional(),
-  turnstileToken: z.string().max(2048, vi.forms.validation.tokenMax).optional(),
-})
+    honeypot: z.string().max(2048, vi.forms.validation.tokenMax).optional(),
+    turnstileToken: z.string().max(2048, vi.forms.validation.tokenMax).optional(),
+    form: z.string().optional(),
+    page: z.string().optional(),
+  })
+  .superRefine((data, ctx) => {
+    if (data.phoneRequired) {
+      if (!data.phone || data.phone.trim().length === 0) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['phone'],
+          message: vi.forms.validation.phoneRequired,
+        })
+      } else {
+        const cleaned = data.phone.replace(/[\s.-]/g, '')
+        if (!/^(?:\+?84|0)[0-9]{9,10}$/.test(cleaned)) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ['phone'],
+            message: vi.forms.validation.phoneInvalid,
+          })
+        }
+      }
+    }
+  })
 
 export type CoachingFormInput = z.infer<typeof coachingFormSchema>
 

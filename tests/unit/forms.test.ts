@@ -28,11 +28,15 @@ class MockEmailSender implements EmailSender {
 
 describe('Forms & Email Infrastructure (T1-06 & T1-06b)', () => {
   let payload: Payload
+  let savedTurnstileSecret: string | undefined
   const createdLeads: number[] = []
   const createdHits: number[] = []
   const createdServices: number[] = []
 
   beforeAll(async () => {
+    savedTurnstileSecret = process.env.TURNSTILE_SECRET_KEY
+    delete process.env.TURNSTILE_SECRET_KEY
+
     payload = await getPayload({ config })
 
     // Ensure siteSettings has contact email for admin notification
@@ -45,6 +49,11 @@ describe('Forms & Email Infrastructure (T1-06 & T1-06b)', () => {
   }, 60000)
 
   afterAll(async () => {
+    if (savedTurnstileSecret !== undefined) {
+      process.env.TURNSTILE_SECRET_KEY = savedTurnstileSecret
+    } else {
+      delete process.env.TURNSTILE_SECRET_KEY
+    }
     if (!payload) return
     try {
       for (const id of createdLeads) {
@@ -121,19 +130,21 @@ describe('Forms & Email Infrastructure (T1-06 & T1-06b)', () => {
       }
     })
 
-    it('requires message in coaching form', () => {
-      const result = coachingFormSchema.safeParse({
+    it('allows empty or omitted message in coaching form (BX-02)', () => {
+      const resultEmpty = coachingFormSchema.safeParse({
         name: 'Lê Học Viên',
         email: 'hocvien@example.com',
         message: '',
         consent: true,
       })
+      expect(resultEmpty.success).toBe(true)
 
-      expect(result.success).toBe(false)
-      if (!result.success) {
-        const msgError = result.error.issues.find((i) => i.path.includes('message'))
-        expect(msgError?.message).toBe(viStrings.forms.validation.messageRequired)
-      }
+      const resultOmitted = coachingFormSchema.safeParse({
+        name: 'Lê Học Viên',
+        email: 'hocvien@example.com',
+        consent: true,
+      })
+      expect(resultOmitted.success).toBe(true)
     })
 
     it('rejects message exceeding 2000 characters with Vietnamese error message', () => {
