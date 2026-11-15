@@ -147,11 +147,7 @@ export function QuestionButtons({
               const safeLink = safeHref(resolvedHref) || '#'
 
               return (
-                <Link
-                  key={`qbtn-${index}`}
-                  href={safeLink}
-                  className={commonButtonClass}
-                >
+                <Link key={`qbtn-${index}`} href={safeLink} className={commonButtonClass}>
                   {btn.text}
                 </Link>
               )
