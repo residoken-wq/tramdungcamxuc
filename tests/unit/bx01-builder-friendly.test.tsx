@@ -121,6 +121,8 @@ describe('BX-01: Builder Friendly & QuestionButtons', () => {
           ]}
           _resolved={{
             pageUrls: { '123': '/ve-tram' },
+            // BX-06: resolve.server passes the bookable product object with its id
+            bookingProduct: { id: 99, name: '[MẪU] Phiên trải nghiệm', slug: 'mau-phien', type: 'coaching_trial', saleStatus: 'on_sale', price: 149000 } as never,
             bookingProductId: 99,
           }}
         />,

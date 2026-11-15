@@ -468,7 +468,7 @@ export interface Product {
    */
   web: 'site' | 'habit' | 'eq';
   /**
-   * Trạng thái hiển thị và mở bán trên toàn website.
+   * Trạng thái hiển thị và mở bán trên toàn website. Lưu ý: Phiên trải nghiệm chỉ mở trang đặt lịch khi ở trạng thái "Đang bán".
    */
   saleStatus: 'coming_soon' | 'on_sale' | 'free' | 'consult' | 'hidden';
   /**

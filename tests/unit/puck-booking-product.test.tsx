@@ -250,11 +250,14 @@ describe('SM-04b C1: Booking Product Resolution & Link Generation', () => {
             buttonText="Bắt đầu ngay"
             buttonLink="/dat-phien-trai-nghiem"
             _resolved={{
+              // BX-06: resolve.server passes the bookable product object with its id
+              bookingProduct: { id: 99, name: '[MẪU] Phiên trải nghiệm', slug: 'mau-phien', type: 'coaching_trial', saleStatus: 'on_sale', price: 149000 } as never,
               bookingProductId: 99,
             }}
           />,
         )
-        const link = screen.getByRole('link', { name: 'Bắt đầu ngay' })
+        // The booking button now also shows the price of the product it really uses
+        const link = screen.getByRole('link', { name: /Bắt đầu ngay/ })
         expect(link.getAttribute('href')).toContain('san-pham=99')
       })
 

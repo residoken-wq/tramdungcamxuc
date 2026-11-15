@@ -119,7 +119,8 @@ export const vi = {
       sidebar: {
         type: 'Loại sản phẩm (công cụ số, sách điện tử, gói đồng hành, Shopee...). Quyết định trường nào cần điền.',
         web: 'Khu vực hiển thị chính: Trang chủ (site), Thói quen (habit), EQ Buddy (eq).',
-        saleStatus: 'Trạng thái hiển thị và mở bán trên toàn website.',
+        saleStatus:
+          'Trạng thái hiển thị và mở bán trên toàn website. Lưu ý: Phiên trải nghiệm chỉ mở trang đặt lịch khi ở trạng thái "Đang bán".',
         order: 'Thứ tự sắp xếp trên trang danh sách (số nhỏ hơn đứng trước).',
         topic: 'Chủ đề dùng cho bộ lọc ở trang Tài nguyên (Cảm xúc, Thói quen, Sự nghiệp).',
         audienceSegment:
@@ -4980,6 +4981,25 @@ export const vi = {
     animDraw: 'Vẽ dần',
     animPop: 'Nổi lên',
     chipHelp: 'Bấm chip: lần 1 nhấn (*), lần 2 gạch ngang (~), lần 3 bỏ.',
+  },
+  bx06: {
+    bannerOpenLabel: 'Trang đặt lịch đang mở:',
+    bannerClosedLabel: 'Trang đặt lịch đang ĐÓNG',
+    bannerClosedHint:
+      '– khách sẽ không thấy nút đặt lịch. Cần: Trạng thái bán = Đang bán, Giá > 0, Xuất bản.',
+    bannerPublishNote: 'Theo dữ liệu đang hiện trên form – thay đổi chỉ áp dụng cho khách sau khi bấm Xuất bản.',
+    bookingUnavailableBuilderTitle: 'Nút đặt lịch đang ẩn trên trang công khai',
+    bookingUnavailableBuilderNotice:
+      'Nút đặt lịch đang ẩn vì phiên trải nghiệm chưa ở trạng thái Đang bán hoặc chưa có giá. Sửa ở Sản phẩm → Phiên trải nghiệm.',
+    pausedSeriesLabel: 'PHIÊN TRẢI NGHIỆM',
+    pausedTitleLine1: 'TẠM NGƯNG',
+    pausedTitleLine2: 'NHẬN LỊCH',
+    pausedEmotionLine: 'Trạm Dừng Cảm Xúc · Cảm ơn bạn đã quan tâm',
+    pausedDescription:
+      'Phiên trải nghiệm đang tạm ngưng nhận lịch mới. Bạn có thể liên hệ trực tiếp với Trạm qua Zalo hoặc trang Liên hệ để được hỗ trợ và nhận thông báo khi mở lịch trở lại.',
+    pausedMetadataTitle: 'Phiên trải nghiệm đang tạm ngưng nhận lịch',
+    contactZaloButton: 'Nhắn tin qua Zalo',
+    contactPageButton: 'Gửi yêu cầu liên hệ',
   },
 } as const
 

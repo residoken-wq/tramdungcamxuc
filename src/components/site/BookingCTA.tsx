@@ -4,7 +4,7 @@ import React from 'react'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { formatVnd } from '@/lib/format'
-import { getEffectivePrice, type PublicProduct } from '@/lib/products'
+import { getEffectivePrice, isBookableExperience, type PublicProduct } from '@/lib/products'
 import { ExperienceBookingButton } from '@/components/site/ExperienceBookingButton'
 
 export interface BookingCTAProps {
@@ -19,6 +19,7 @@ export interface BookingCTAProps {
   bgColor?: string
   padding?: 'sm' | 'md' | 'lg'
   product?: PublicProduct | null
+  defaultBookingProduct?: PublicProduct | null
   pageSlug?: string
   puck?: { isEditing?: boolean }
 }
@@ -34,7 +35,9 @@ export function BookingCTA({
   bgColor = 'warm-ivory',
   padding = 'md',
   product,
+  defaultBookingProduct,
   pageSlug,
+  puck,
 }: BookingCTAProps) {
   const displayTitle = title || heading || ''
   const displayDesc = description || subtitle
@@ -46,10 +49,18 @@ export function BookingCTA({
     lg: 'py-16 px-4 sm:px-8',
   }[padding]
 
-  const pricing = getEffectivePrice(product || {}, new Date())
-  const hasSale = pricing.salePrice != null
-  const currentPrice = hasSale ? pricing.salePrice : pricing.price
-  const originalPrice = hasSale && pricing.price != null ? pricing.price : null
+  const fallbackProduct = defaultBookingProduct ?? null
+  const effectiveProduct: PublicProduct | null =
+    product && isBookableExperience(product)
+      ? product
+      : fallbackProduct && isBookableExperience(fallbackProduct)
+        ? fallbackProduct
+        : null
+
+  const pricing = effectiveProduct ? getEffectivePrice(effectiveProduct, new Date()) : null
+  const hasSale = pricing?.salePrice != null
+  const currentPrice = pricing ? (hasSale ? pricing.salePrice : pricing.price) : null
+  const originalPrice = hasSale && pricing?.price != null ? pricing.price : null
 
 
   return (
@@ -86,11 +97,13 @@ export function BookingCTA({
           <div className="pt-2">
             <ExperienceBookingButton
               product={product}
+              defaultBookingProduct={defaultBookingProduct}
               buttonText={displayButtonLabel}
               variant={variant}
               size="lg"
               showPrice={false}
               pageSlug={pageSlug}
+              puck={puck}
               className="px-8 py-3.5 shadow-md hover:shadow-lg transition-all"
             />
           </div>
