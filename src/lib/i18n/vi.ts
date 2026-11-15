@@ -4983,6 +4983,11 @@ export const vi = {
     chipHelp: 'Bấm chip: lần 1 nhấn (*), lần 2 gạch ngang (~), lần 3 bỏ.',
   },
   bx06: {
+    bannerOpenLabel: 'Trang đặt lịch đang mở:',
+    bannerClosedLabel: 'Trang đặt lịch đang ĐÓNG',
+    bannerClosedHint:
+      '– khách sẽ không thấy nút đặt lịch. Cần: Trạng thái bán = Đang bán, Giá > 0, Xuất bản.',
+    bannerPublishNote: 'Theo dữ liệu đang hiện trên form – thay đổi chỉ áp dụng cho khách sau khi bấm Xuất bản.',
     bookingUnavailableBuilderTitle: 'Nút đặt lịch đang ẩn trên trang công khai',
     bookingUnavailableBuilderNotice:
       'Nút đặt lịch đang ẩn vì phiên trải nghiệm chưa ở trạng thái Đang bán hoặc chưa có giá. Sửa ở Sản phẩm → Phiên trải nghiệm.',

@@ -123,7 +123,7 @@ export default async function ExperienceBookingPage({ searchParams }: PageProps)
     }
 
     return (
-      <main className="min-h-[60vh] flex items-center justify-center py-16 px-4 bg-warm-ivory">
+      <section className="min-h-[60vh] flex items-center justify-center py-16 px-4 bg-warm-ivory">
         <div className="max-w-xl w-full mx-auto text-center bg-white/80 rounded-2xl p-8 sm:p-12 border border-lavender-mist shadow-sm">
           <SectionHeader
             as="h1"
@@ -157,7 +157,7 @@ export default async function ExperienceBookingPage({ searchParams }: PageProps)
             </Button>
           </div>
         </div>
-      </main>
+      </section>
     )
   }
 

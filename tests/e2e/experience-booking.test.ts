@@ -286,6 +286,13 @@ test.describe('Experience booking & VietQR payment confirmation (T1-12b)', () =>
       await expectNoSeriousA11y(mobileGuest, 'trang tạm ngưng nhận lịch 375px')
       await mobileContext.close()
 
+      // Trang tạm ngưng nằm trong <main id="noi-dung"> của layout, không lồng thêm <main>
+      await expect(guest.locator('main')).toHaveCount(1)
+
+      // CMS: form sản phẩm consult hiện khung "Trang đặt lịch đang ĐÓNG" (cần importMap)
+      await page.goto(`/admin/collections/products/${unbookableProductId}`)
+      await expect(page.getByTestId('booking-status-closed')).toBeVisible({ timeout: 30000 })
+
       // 3. Tạo thêm 1 sản phẩm coaching_trial bookable (on_sale, giá > 0)
       const createBookable = await page.request.post('/api/products', {
         data: {
@@ -317,6 +324,12 @@ test.describe('Experience booking & VietQR payment confirmation (T1-12b)', () =>
       await expect(
         guest.getByRole('heading', { name: `[MẪU] Phiên trải nghiệm Đang bán ${suffix}` }),
       ).toBeVisible()
+
+      // CMS: form sản phẩm đang bán hiện khung "Trang đặt lịch đang mở" kèm link đúng
+      await page.goto(`/admin/collections/products/${bookableProductId}`)
+      const openBanner = page.getByTestId('booking-status-open')
+      await expect(openBanner).toBeVisible({ timeout: 30000 })
+      await expect(openBanner).toContainText(`/dat-phien-trai-nghiem?san-pham=${bookableProductId}`)
     } finally {
       test.setTimeout(testInfo.timeout + 30000)
       await visitor.close()
