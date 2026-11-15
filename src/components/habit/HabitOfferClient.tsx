@@ -48,8 +48,9 @@ export function HabitOfferClient({ product, journeyDays = 28 }: HabitOfferClient
 
   // BX-05: Hero text – ô trống thì ẩn (trừ khi bật useDefaultCopyHero)
   const seriesLabel = pickCopy(product?.offerSeriesLabel, vi.habit.offer.badge, useDefaultHero)
-  const titleLine1 = pickCopy(product?.offerTitleLine1, vi.habit.offer.titleLine1, useDefaultHero)
+  const rawTitle1 = pickCopy(product?.offerTitleLine1, vi.habit.offer.titleLine1, useDefaultHero)
   const titleLine2 = pickCopy(product?.offerTitleLine2, vi.habit.offer.titleLine2, useDefaultHero)
+  const titleLine1 = rawTitle1 || (!titleLine2 ? (product?.name || vi.habit.offer.titleLine1) : '')
   const emotionLine = pickCopy(product?.offerEmotionLine, vi.habit.offer.emotionalLine, useDefaultHero)
 
   // BX-05: Includes
@@ -83,7 +84,7 @@ export function HabitOfferClient({ product, journeyDays = 28 }: HabitOfferClient
     vi.habit.offer.curriculum.subheading,
     useDefaultCurriculum,
   )
-  const curriculumUnitStatLabel = curriculumUnitLabel || (useDefaultStats ? vi.habit.offer.stats.modules : '')
+  const curriculumUnitStatLabel = curriculumUnitLabel || vi.habit.offer.stats.modules
 
   // BX-05: Features
   const rawFeatures =
