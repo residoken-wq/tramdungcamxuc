@@ -4475,6 +4475,10 @@ export interface HabitJourneyContent {
    */
   tracker?: {
     /**
+     * Bật: ô nào để trống sẽ hiện chữ mẫu của hệ thống. Tắt: ô để trống thì ẩn.
+     */
+    useDefaultCopyTracker?: boolean | null;
+    /**
      * Nhập tiêu đề khối đồng hành sau 28 ngày.
      */
     afterJourneyTitle?: string | null;
@@ -4502,6 +4506,10 @@ export interface HabitJourneyContent {
    */
   privacyNote?: string | null;
   header?: {
+    /**
+     * Bật: ô nào để trống sẽ hiện chữ mẫu của hệ thống. Tắt: ô để trống thì ẩn.
+     */
+    useDefaultCopyHeader?: boolean | null;
     /**
      * Nhập huy hiệu trên cùng (vd: content creator hub).
      */
@@ -4553,6 +4561,10 @@ export interface HabitJourneyContent {
   };
   step1?: {
     /**
+     * Bật: ô nào để trống sẽ hiện chữ mẫu của hệ thống. Tắt: ô để trống thì ẩn.
+     */
+    useDefaultCopyStep1?: boolean | null;
+    /**
      * Nhập lời dẫn mở đầu bước 1.
      */
     leadIn?: string | null;
@@ -4575,6 +4587,10 @@ export interface HabitJourneyContent {
   };
   step2?: {
     /**
+     * Bật: ô nào để trống sẽ hiện chữ mẫu của hệ thống. Tắt: ô để trống thì ẩn.
+     */
+    useDefaultCopyStep2?: boolean | null;
+    /**
      * Nhập lời dẫn mở đầu bước 2.
      */
     leadIn?: string | null;
@@ -4588,6 +4604,10 @@ export interface HabitJourneyContent {
     chartSubtitle?: string | null;
   };
   step3?: {
+    /**
+     * Bật: ô nào để trống sẽ hiện chữ mẫu của hệ thống. Tắt: ô để trống thì ẩn.
+     */
+    useDefaultCopyStep3?: boolean | null;
     /**
      * Nhập lời dẫn mở đầu bước 3.
      */
@@ -4622,6 +4642,10 @@ export interface HabitJourneyContent {
     mentorSuccessHint?: string | null;
   };
   step4?: {
+    /**
+     * Bật: ô nào để trống sẽ hiện chữ mẫu của hệ thống. Tắt: ô để trống thì ẩn.
+     */
+    useDefaultCopyStep4?: boolean | null;
     /**
      * Nhập lời dẫn mở đầu bước 4.
      */
@@ -4685,6 +4709,10 @@ export interface HabitJourneyContent {
   };
   step5?: {
     /**
+     * Bật: ô nào để trống sẽ hiện chữ mẫu của hệ thống. Tắt: ô để trống thì ẩn.
+     */
+    useDefaultCopyStep5?: boolean | null;
+    /**
      * Nhập lời dẫn mở đầu bước 5.
      */
     leadIn?: string | null;
@@ -4702,6 +4730,10 @@ export interface HabitJourneyContent {
     customActionPlaceholder?: string | null;
   };
   step6?: {
+    /**
+     * Bật: ô nào để trống sẽ hiện chữ mẫu của hệ thống. Tắt: ô để trống thì ẩn.
+     */
+    useDefaultCopyStep6?: boolean | null;
     /**
      * Nhập lời dẫn mở đầu bước 6.
      */
@@ -4721,6 +4753,10 @@ export interface HabitJourneyContent {
   };
   checkIn?: {
     /**
+     * Bật: ô nào để trống sẽ hiện chữ mẫu của hệ thống. Tắt: ô để trống thì ẩn.
+     */
+    useDefaultCopyCheckIn?: boolean | null;
+    /**
      * Nhập lời dẫn ngày cần check-in.
      */
     postDayHint?: string | null;
@@ -4734,6 +4770,10 @@ export interface HabitJourneyContent {
     notePlaceholder?: string | null;
   };
   footer?: {
+    /**
+     * Bật: ô nào để trống sẽ hiện chữ mẫu của hệ thống. Tắt: ô để trống thì ẩn.
+     */
+    useDefaultCopyFooter?: boolean | null;
     /**
      * Nhập khẩu hiệu thương hiệu.
      */
@@ -5184,6 +5224,7 @@ export interface HabitJourneyContentSelect<T extends boolean = true> {
   tracker?:
     | T
     | {
+        useDefaultCopyTracker?: T;
         afterJourneyTitle?: T;
         afterJourneyText?: T;
         myDataTitle?: T;
@@ -5198,6 +5239,7 @@ export interface HabitJourneyContentSelect<T extends boolean = true> {
   header?:
     | T
     | {
+        useDefaultCopyHeader?: T;
         badgeText?: T;
         titleLine1?: T;
         titleLine2?: T;
@@ -5214,6 +5256,7 @@ export interface HabitJourneyContentSelect<T extends boolean = true> {
   step1?:
     | T
     | {
+        useDefaultCopyStep1?: T;
         leadIn?: T;
         cueDiagnosis?: T;
         cravingDiagnosis?: T;
@@ -5223,6 +5266,7 @@ export interface HabitJourneyContentSelect<T extends boolean = true> {
   step2?:
     | T
     | {
+        useDefaultCopyStep2?: T;
         leadIn?: T;
         chartTitle?: T;
         chartSubtitle?: T;
@@ -5230,6 +5274,7 @@ export interface HabitJourneyContentSelect<T extends boolean = true> {
   step3?:
     | T
     | {
+        useDefaultCopyStep3?: T;
         leadIn?: T;
         scorecardTitle?: T;
         scorecardDesc?: T;
@@ -5242,6 +5287,7 @@ export interface HabitJourneyContentSelect<T extends boolean = true> {
   step4?:
     | T
     | {
+        useDefaultCopyStep4?: T;
         leadIn?: T;
         leadInEmphasis?: T;
         statementTitle?: T;
@@ -5261,6 +5307,7 @@ export interface HabitJourneyContentSelect<T extends boolean = true> {
   step5?:
     | T
     | {
+        useDefaultCopyStep5?: T;
         leadIn?: T;
         theoryTitle?: T;
         theoryDesc?: T;
@@ -5269,6 +5316,7 @@ export interface HabitJourneyContentSelect<T extends boolean = true> {
   step6?:
     | T
     | {
+        useDefaultCopyStep6?: T;
         leadIn?: T;
         passTitle?: T;
         passSubtitle?: T;
@@ -5277,6 +5325,7 @@ export interface HabitJourneyContentSelect<T extends boolean = true> {
   checkIn?:
     | T
     | {
+        useDefaultCopyCheckIn?: T;
         postDayHint?: T;
         restDayHint?: T;
         notePlaceholder?: T;
@@ -5284,6 +5333,7 @@ export interface HabitJourneyContentSelect<T extends boolean = true> {
   footer?:
     | T
     | {
+        useDefaultCopyFooter?: T;
         slogan?: T;
         authorInfo?: T;
         bookCredits?: T;

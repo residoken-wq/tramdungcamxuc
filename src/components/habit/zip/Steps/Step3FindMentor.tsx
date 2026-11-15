@@ -76,9 +76,11 @@ export function Step3FindMentor({
       />
 
       {/* Lead-in Text */}
-      <p className="text-center text-deep-navy/60 text-sm md:text-base max-w-2xl mx-auto mt-4 mb-8 leading-relaxed font-ui">
-        {step3Content.leadIn}
-      </p>
+      {step3Content.leadIn && (
+        <p className="text-center text-deep-navy/60 text-sm md:text-base max-w-2xl mx-auto mt-4 mb-8 leading-relaxed font-ui">
+          {step3Content.leadIn}
+        </p>
+      )}
 
       {/* 2. Khối 1: Soi lại một ngày của bạn (Habit Scorecard) */}
       <div

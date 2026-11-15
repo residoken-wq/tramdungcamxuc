@@ -148,7 +148,7 @@ describe('BX-05: Source 2 – EQ Buddy Content', () => {
 
     render(
       <EQDrawApp
-        allCards={[mockCard]}
+        allCards={[mockCard as any]}
         initialStep="draw"
         content={{
           useDefaultCopyStateIcons: false,

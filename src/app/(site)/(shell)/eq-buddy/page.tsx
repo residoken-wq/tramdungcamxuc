@@ -19,7 +19,7 @@ export async function generateMetadata(): Promise<Metadata> {
       limit: 1,
       overrideAccess: true,
     })
-    const _product = res.docs[0] as Product | undefined
+    const product = res.docs[0] as Product | undefined
     if (product) {
       return {
         title: product.name,

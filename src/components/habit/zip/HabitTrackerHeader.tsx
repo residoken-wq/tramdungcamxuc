@@ -56,22 +56,34 @@ export function HabitTrackerHeader({
 
       {/* Main Title: Font Anton. Xây Thói Quen màu Navy, Dựng Thương Hiệu màu Magenta */}
       <div className="space-y-1.5 text-left">
-        <h1 className="text-2xl sm:text-3xl md:text-4xl font-display font-black tracking-wide uppercase leading-tight">
-          <span className="text-deep-navy">{headerContent.titleLine1}</span>
-          <span className="text-deep-navy/70 mx-2 font-black">—</span>
-          <span className="text-bright-magenta">{headerContent.titleLine2}</span>
-        </h1>
+        {(headerContent.titleLine1 || headerContent.titleLine2) && (
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-display font-black tracking-wide uppercase leading-tight">
+            {headerContent.titleLine1 && <span className="text-deep-navy">{headerContent.titleLine1}</span>}
+            {headerContent.titleLine1 && headerContent.titleLine2 && (
+              <span className="text-deep-navy/70 mx-2 font-black">—</span>
+            )}
+            {headerContent.titleLine2 && <span className="text-bright-magenta">{headerContent.titleLine2}</span>}
+          </h1>
+        )}
 
         {/* Subtitle: FORM HABIT · BUILD IDENTITY badge + tagline Playfair Italic */}
-        <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-          <span className="bg-soft-pink/60 px-2.5 py-0.5 rounded-md inline-block font-semibold text-xs border border-accent-pink/20 shadow-sm font-ui uppercase tracking-wider text-bright-magenta">
-            {headerContent.seriesBadge}
-          </span>
-          <span className="text-deep-navy/70 text-xs">|</span>
-          <span className="font-quote italic text-deep-navy/85 text-xs sm:text-sm">
-            {headerContent.tagline}
-          </span>
-        </div>
+        {(headerContent.seriesBadge || headerContent.tagline) && (
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+            {headerContent.seriesBadge && (
+              <span className="bg-soft-pink/60 px-2.5 py-0.5 rounded-md inline-block font-semibold text-xs border border-accent-pink/20 shadow-sm font-ui uppercase tracking-wider text-bright-magenta">
+                {headerContent.seriesBadge}
+              </span>
+            )}
+            {headerContent.seriesBadge && headerContent.tagline && (
+              <span className="text-deep-navy/70 text-xs">|</span>
+            )}
+            {headerContent.tagline && (
+              <span className="font-quote italic text-deep-navy/85 text-xs sm:text-sm">
+                {headerContent.tagline}
+              </span>
+            )}
+          </div>
+        )}
 
         {/* Đoạn văn dẫn */}
         {headerContent.introText && (

@@ -44,6 +44,7 @@ describe('AU-03: Habit updates across offer, 5-minute tool, boarding pass & 28-d
         <HabitOfferClient
           product={{
             ...baseOfferProduct,
+            useDefaultCopyCurriculum: true,
             shortDescription: 'Bộ tài liệu tự học Habit Hack 28 ngày',
             curriculumUnitLabel: 'giai đoạn',
             curriculumModules: [

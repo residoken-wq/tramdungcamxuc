@@ -451,6 +451,9 @@ export const HabitJourneyContent: GlobalConfig = {
       label: vi.hb18.tracker.label,
       admin: { description: vi.hb18.tracker.description },
       fields: [
+        checkbox('useDefaultCopyTracker', vi.bx05.useDefaultCopyLabel, false, {
+          admin: { description: vi.bx05.useDefaultCopyDescription },
+        }),
         text('afterJourneyTitle', vi.hb18.tracker.afterJourneyTitle),
         textarea('afterJourneyText', vi.hb18.tracker.afterJourneyText),
         text('myDataTitle', 'Tiêu đề khối Dữ liệu của bạn'),
@@ -479,6 +482,9 @@ export const HabitJourneyContent: GlobalConfig = {
       type: 'group',
       label: 'Đầu trang (Header)',
       fields: [
+        checkbox('useDefaultCopyHeader', vi.bx05.useDefaultCopyLabel, false, {
+          admin: { description: vi.bx05.useDefaultCopyDescription },
+        }),
         text('badgeText', 'Huy hiệu trên cùng (VD: CONTENT CREATOR HUB)'),
         text('titleLine1', 'Dòng tiêu đề 1 (Navy - VD: Xây Thói Quen)'),
         text('titleLine2', 'Dòng tiêu đề 2 (Magenta - VD: Dựng Thương Hiệu)'),
@@ -498,6 +504,9 @@ export const HabitJourneyContent: GlobalConfig = {
       type: 'group',
       label: 'Bước 1: Khám thói quen',
       fields: [
+        checkbox('useDefaultCopyStep1', vi.bx05.useDefaultCopyLabel, false, {
+          admin: { description: vi.bx05.useDefaultCopyDescription },
+        }),
         textarea('leadIn', 'Lời dẫn mở đầu bước 1'),
         textarea('cueDiagnosis', 'Chẩn đoán mắt xích hở: Tín hiệu (Cue)'),
         textarea('cravingDiagnosis', 'Chẩn đoán mắt xích hở: Khao khát (Craving)'),
@@ -510,6 +519,9 @@ export const HabitJourneyContent: GlobalConfig = {
       type: 'group',
       label: 'Bước 2: Nguyên lý 1%',
       fields: [
+        checkbox('useDefaultCopyStep2', vi.bx05.useDefaultCopyLabel, false, {
+          admin: { description: vi.bx05.useDefaultCopyDescription },
+        }),
         textarea('leadIn', 'Lời dẫn mở đầu bước 2'),
         text('chartTitle', 'Tiêu đề biểu đồ'),
         text('chartSubtitle', 'Mô tả dưới tiêu đề biểu đồ'),
@@ -520,6 +532,9 @@ export const HabitJourneyContent: GlobalConfig = {
       type: 'group',
       label: 'Bước 3: Tìm Mentor',
       fields: [
+        checkbox('useDefaultCopyStep3', vi.bx05.useDefaultCopyLabel, false, {
+          admin: { description: vi.bx05.useDefaultCopyDescription },
+        }),
         textarea('leadIn', 'Lời dẫn mở đầu bước 3'),
         text('scorecardTitle', 'Tiêu đề bảng soi một ngày'),
         textarea('scorecardDesc', 'Mô tả bảng soi một ngày'),
@@ -535,6 +550,9 @@ export const HabitJourneyContent: GlobalConfig = {
       type: 'group',
       label: 'Bước 4: Gọi tên thói quen',
       fields: [
+        checkbox('useDefaultCopyStep4', vi.bx05.useDefaultCopyLabel, false, {
+          admin: { description: vi.bx05.useDefaultCopyDescription },
+        }),
         textarea('leadIn', 'Lời dẫn mở đầu bước 4'),
         textarea('leadInEmphasis', 'Lời dẫn in đậm bước 4 (Z3)'),
         text('statementTitle', 'Tiêu đề tuyên ngôn'),
@@ -557,6 +575,9 @@ export const HabitJourneyContent: GlobalConfig = {
       type: 'group',
       label: 'Bước 5: Thiết kế vòng lặp',
       fields: [
+        checkbox('useDefaultCopyStep5', vi.bx05.useDefaultCopyLabel, false, {
+          admin: { description: vi.bx05.useDefaultCopyDescription },
+        }),
         textarea('leadIn', 'Lời dẫn mở đầu bước 5'),
         text('theoryTitle', 'Tiêu đề khối lý thuyết vòng lặp'),
         textarea('theoryDesc', 'Mô tả khối lý thuyết vòng lặp'),
@@ -568,6 +589,9 @@ export const HabitJourneyContent: GlobalConfig = {
       type: 'group',
       label: 'Bước 6: Thẻ lên tàu (Boarding Pass)',
       fields: [
+        checkbox('useDefaultCopyStep6', vi.bx05.useDefaultCopyLabel, false, {
+          admin: { description: vi.bx05.useDefaultCopyDescription },
+        }),
         textarea('leadIn', 'Lời dẫn mở đầu bước 6'),
         text('passTitle', 'Tiêu đề lớn trên thẻ'),
         text('passSubtitle', 'Tiêu đề phụ trên thẻ'),
@@ -579,6 +603,9 @@ export const HabitJourneyContent: GlobalConfig = {
       type: 'group',
       label: 'Hộp thoại Check-in ngày',
       fields: [
+        checkbox('useDefaultCopyCheckIn', vi.bx05.useDefaultCopyLabel, false, {
+          admin: { description: vi.bx05.useDefaultCopyDescription },
+        }),
         textarea('postDayHint', 'Lời dẫn ngày cần check-in'),
         textarea('restDayHint', 'Lời dẫn ngày nghỉ theo nhịp'),
         textarea('notePlaceholder', 'Placeholder ô ghi chú cảm xúc'),
@@ -589,6 +616,9 @@ export const HabitJourneyContent: GlobalConfig = {
       type: 'group',
       label: 'Chân trang Habit Tracker (Footer)',
       fields: [
+        checkbox('useDefaultCopyFooter', vi.bx05.useDefaultCopyLabel, false, {
+          admin: { description: vi.bx05.useDefaultCopyDescription },
+        }),
         text('slogan', 'Khẩu hiệu thương hiệu'),
         text('authorInfo', 'Thông tin tác giả / Coach'),
         textarea('bookCredits', 'Đoạn ghi nhận nguồn sách tham khảo'),
