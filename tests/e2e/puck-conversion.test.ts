@@ -2,6 +2,10 @@ import { randomUUID } from 'node:crypto'
 import { test, expect, type Response } from './fixtures'
 import { expectNoSeriousA11y } from './helpers/a11y'
 
+// Tên hiển thị các khối trong thanh kéo thả của Puck Builder
+const CTA_SECTION_LABEL = 'Khối kêu gọi chuyển đổi lớn (CTA Section)'
+const QUESTION_BUTTONS_LABEL = 'Câu hỏi + nút (nền màu)'
+
 test.describe('T1-03: Puck Conversion Blocks – B2BBriefForm submission & ShopeeButton UTM', () => {
   test('creates product with externalUrl, creates page with B2BBriefForm and ShopeeButton, publishes page, visitor submits brief, verifies lead in REST API, and verifies ShopeeButton UTM params', async ({
     page,
@@ -221,10 +225,10 @@ test.describe('T1-03: Puck Conversion Blocks – B2BBriefForm submission & Shope
 
     const email = `bx01-${randomUUID()}@example.test`
     const password = randomUUID()
-    const pageSlug = `e2e-bx01-${randomUUID().slice(0, 8)}`
 
     let userId: number | undefined
-    let pageId: number | undefined
+    let ctaPageId: number | undefined
+    let qbPageId: number | undefined
 
     const publicContext = await browser.newContext({ baseURL: testInfo.project.use.baseURL })
     const publicPage = await publicContext.newPage()
@@ -265,45 +269,44 @@ test.describe('T1-03: Puck Conversion Blocks – B2BBriefForm submission & Shope
         if (!userId) userId = (await (await page.request.get('/api/users/me')).json()).user.id
       }
 
-      // 2. Create empty draft page via REST
-      const created = await page.request.post('/api/pages?draft=true', {
+      // 2. Part A: Test CTASection resolveFields conditional field hiding in builder
+      const ctaPageSlug = `e2e-cta-${randomUUID().slice(0, 8)}`
+      const ctaCreated = await page.request.post('/api/pages?draft=true', {
         data: {
-          title: '[MẪU] BX-01 Builder Friendly',
-          slug: pageSlug,
+          title: '[MẪU] BX-01 CTASection',
+          slug: ctaPageSlug,
           _status: 'draft',
           puckData: { content: [], root: {} },
         },
       })
-      expect(created.ok()).toBe(true)
-      pageId = (await created.json()).doc.id
-      expect(pageId).toEqual(expect.any(Number))
+      expect(ctaCreated.ok()).toBe(true)
+      ctaPageId = (await ctaCreated.json()).doc.id
+      expect(ctaPageId).toEqual(expect.any(Number))
 
-      // 3. Open Puck editor
-      await page.goto(`/builder/${pageId}`, { waitUntil: 'networkidle' })
-      const canvas = page.frameLocator('iframe')
-      const dropzone = canvas.locator('[data-puck-dropzone]').first()
-      await expect(dropzone).toBeVisible()
+      await page.goto(`/builder/${ctaPageId}`, { waitUntil: 'networkidle' })
+      const canvas1 = page.frameLocator('iframe')
+      const dropzone1 = canvas1.locator('[data-puck-dropzone]').first()
+      await expect(dropzone1).toBeVisible()
 
-      // 4. Test CTASection resolveFields: drag CTASection into canvas
       const ctaDrawer = page.getByRole('button', {
-        name: 'Kêu gọi hành động (CTA Section)',
+        name: CTA_SECTION_LABEL,
         exact: true,
       })
       await ctaDrawer.scrollIntoViewIfNeeded()
       const ctaSource = await ctaDrawer.boundingBox()
-      const rootTarget = await dropzone.boundingBox()
-      if (!ctaSource || !rootTarget) throw new Error('CTASection drawer or root dropzone not visible')
+      const rootTarget1 = await dropzone1.boundingBox()
+      if (!ctaSource || !rootTarget1) throw new Error('CTASection drawer or root dropzone not visible')
 
       await page.mouse.move(ctaSource.x + ctaSource.width / 2, ctaSource.y + ctaSource.height / 2)
       await page.mouse.down()
       await page.mouse.move(ctaSource.x + ctaSource.width / 2 + 12, ctaSource.y + ctaSource.height / 2, {
         steps: 5,
       })
-      await page.mouse.move(rootTarget.x + rootTarget.width / 2, rootTarget.y + 60, { steps: 30 })
+      await page.mouse.move(rootTarget1.x + rootTarget1.width / 2, rootTarget1.y + 60, { steps: 30 })
       await page.mouse.up()
 
       // Click CTASection on canvas to open field inspector
-      await canvas.locator('[data-puck-component]').first().click()
+      await canvas1.locator('[data-puck-component]').first().click()
 
       // Switch to Content tab if tab bar is visible
       const contentTab = page.getByRole('tab', { name: 'Nội dung', exact: true })
@@ -312,53 +315,70 @@ test.describe('T1-03: Puck Conversion Blocks – B2BBriefForm submission & Shope
       }
 
       // Default buttonAction='link': URL input is visible, Form type is hidden
-      const actionSelect = page.getByRole('combobox', { name: 'Hành động khi bấm nút', exact: true })
+      const actionSelect = page.getByRole('combobox', { name: 'Hành động của nút chính' })
       await expect(actionSelect).toBeVisible()
-      const urlInput = page.getByRole('textbox', { name: 'Liên kết URL ngoài' })
-      const formSelect = page.getByRole('combobox', { name: 'Loại form' })
+      const urlInput = page.getByRole('textbox', { name: /Đường dẫn liên kết/i })
+      const formSelect = page.getByRole('combobox', { name: /Loại form/i })
       await expect(urlInput).toBeVisible()
       await expect(formSelect).toHaveCount(0)
 
       // Change buttonAction to 'form' ('Mở form')
-      await actionSelect.selectOption({ label: 'Mở form' })
+      await actionSelect.selectOption({ label: 'Mở form tham gia / nhận brochure (Modal)' })
       await expect(urlInput).toHaveCount(0)
       await expect(formSelect).toBeVisible()
 
-      // 5. Drag QuestionButtons into canvas dropzone below CTASection
+      // 3. Part B: Test QuestionButtons block drag, configure, publish and public responsive layout
+      const qbPageSlug = `e2e-qb-${randomUUID().slice(0, 8)}`
+      const qbCreated = await page.request.post('/api/pages?draft=true', {
+        data: {
+          title: '[MẪU] BX-01 QuestionButtons',
+          slug: qbPageSlug,
+          _status: 'draft',
+          puckData: { content: [], root: {} },
+        },
+      })
+      expect(qbCreated.ok()).toBe(true)
+      qbPageId = (await qbCreated.json()).doc.id
+      expect(qbPageId).toEqual(expect.any(Number))
+
+      await page.goto(`/builder/${qbPageId}`, { waitUntil: 'networkidle' })
+      const canvas2 = page.frameLocator('iframe')
+      const dropzone2 = canvas2.locator('[data-puck-dropzone]').first()
+      await expect(dropzone2).toBeVisible()
+
       const qbDrawer = page.getByRole('button', {
-        name: 'Câu hỏi + nút (nền màu)',
+        name: QUESTION_BUTTONS_LABEL,
         exact: true,
       })
       await qbDrawer.scrollIntoViewIfNeeded()
       const qbSource = await qbDrawer.boundingBox()
-      const lastDropzone = canvas.locator('[data-puck-dropzone]').last()
-      const qbTarget = await lastDropzone.boundingBox()
-      if (!qbSource || !qbTarget) throw new Error('QuestionButtons drawer or target dropzone not visible')
+      const rootTarget2 = await dropzone2.boundingBox()
+      if (!qbSource || !rootTarget2) throw new Error('QuestionButtons drawer or target dropzone not visible')
 
       await page.mouse.move(qbSource.x + qbSource.width / 2, qbSource.y + qbSource.height / 2)
       await page.mouse.down()
       await page.mouse.move(qbSource.x + qbSource.width / 2 + 12, qbSource.y + qbSource.height / 2, {
         steps: 5,
       })
-      await page.mouse.move(qbTarget.x + qbTarget.width / 2, qbTarget.y + 60, { steps: 30 })
+      await page.mouse.move(rootTarget2.x + rootTarget2.width / 2, rootTarget2.y + 60, { steps: 30 })
       await page.mouse.up()
 
       // Click QuestionButtons component
-      const qbComponent = canvas.locator('[data-puck-component]').last()
+      const qbComponent = canvas2.locator('[data-puck-component]').first()
       await qbComponent.click()
 
       // Verify question and default buttons are rendered in canvas
-      await expect(qbComponent.locator('p')).toContainText('Bạn muốn bắt đầu từ đâu?')
+      await expect(qbComponent.locator('p')).toContainText('Bạn muốn bắt đầu')
       await expect(qbComponent.locator('a[href="/habit/chan-doan"]')).toBeVisible()
       await expect(qbComponent.locator('a[href="/eq-buddy"]')).toBeVisible()
 
-      // 6. Publish page
+      // 4. Publish QuestionButtons page
       await page.getByRole('button', { name: 'Xuất bản', exact: true }).click()
       await expect(page.getByText(/Đã xuất bản thành công/)).toBeVisible()
 
-      // 7. Verify public page at desktop 1440px
+      // 5. Verify public page at desktop 1440px
       await publicPage.setViewportSize({ width: 1440, height: 900 })
-      await publicPage.goto(`/${pageSlug}`, { waitUntil: 'domcontentloaded' })
+      await publicPage.goto(`/${qbPageSlug}`, { waitUntil: 'domcontentloaded' })
 
       const habitBtn = publicPage.locator('a[href="/habit/chan-doan"]').first()
       const eqBtn = publicPage.locator('a[href="/eq-buddy"]').first()
@@ -372,7 +392,7 @@ test.describe('T1-03: Puck Conversion Blocks – B2BBriefForm submission & Shope
       expect(b2).toBeTruthy()
       expect(Math.abs((b1?.y ?? 0) - (b2?.y ?? 0))).toBeLessThan(15)
 
-      // 8. Verify public page at mobile 375px
+      // 6. Verify public page at mobile 375px
       await publicPage.setViewportSize({ width: 375, height: 667 })
       await publicPage.reload({ waitUntil: 'domcontentloaded' })
 
@@ -388,11 +408,14 @@ test.describe('T1-03: Puck Conversion Blocks – B2BBriefForm submission & Shope
       const clientWidth = await publicPage.evaluate(() => document.documentElement.clientWidth)
       expect(scrollWidth).toBeLessThanOrEqual(clientWidth)
 
-      // 9. Axe clean
+      // 7. Axe clean
       await expectNoSeriousA11y(publicPage)
     } finally {
-      if (pageId) {
-        await page.request.delete(`/api/pages/${pageId}`).catch(() => {})
+      if (ctaPageId) {
+        await page.request.delete(`/api/pages/${ctaPageId}`).catch(() => {})
+      }
+      if (qbPageId) {
+        await page.request.delete(`/api/pages/${qbPageId}`).catch(() => {})
       }
       if (userId) {
         await page.request.delete(`/api/users/${userId}`).catch(() => {})

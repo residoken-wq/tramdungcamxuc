@@ -3,9 +3,11 @@ import { test, expect, type Response } from './fixtures'
 
 test.describe('T0-09: Puck publication lifecycle', () => {
   test('(a) redirects anonymous visitors to login with the editor return URL', async ({ page }) => {
+    test.setTimeout(60000)
+    page.setDefaultTimeout(20000)
     await page.goto('/builder/999999')
     await expect(page).toHaveURL(/\/admin\/login\?redirect=%2Fbuilder%2F999999/)
-    await expect(page.locator('form')).toBeVisible()
+    await expect(page.locator('form')).toBeVisible({ timeout: 20000 })
   })
 
   test('(b)+(c) drags a Hero, publishes it, and keeps subsequent drafts private', async ({

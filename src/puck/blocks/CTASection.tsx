@@ -215,7 +215,9 @@ export const CTASectionBlock: ComponentConfig<CTASectionProps> = {
 
     // Nút phụ: Chữ nút phụ trống -> ẩn mọi ô nút phụ còn lại
     const hasSecondaryText = Boolean(
-      props.secondaryButtonText && props.secondaryButtonText.trim().length > 0,
+      typeof props.secondaryButtonText === 'string'
+        ? props.secondaryButtonText.trim().length > 0
+        : Boolean(props.secondaryButtonText),
     )
     if (!hasSecondaryText) {
       delete fields.secondaryButtonAction
@@ -233,6 +235,24 @@ export const CTASectionBlock: ComponentConfig<CTASectionProps> = {
         delete fields.secondaryFormType
         delete fields.secondaryFormTitle
         delete fields.secondaryFormSuccessMessage
+      }
+    }
+
+    // Nền hồng sen (bright-magenta): ẩn kiểu nút "Hồng sen" để tránh trùng màu nền
+    if (props.bgColor === 'bright-magenta') {
+      const btnVar = fields.buttonVariant
+      if (btnVar && btnVar.type === 'select') {
+        fields.buttonVariant = {
+          ...btnVar,
+          options: btnVar.options.filter((opt) => opt.value !== 'magenta'),
+        }
+      }
+      const secVar = fields.secondaryButtonVariant
+      if (secVar && secVar.type === 'select') {
+        fields.secondaryButtonVariant = {
+          ...secVar,
+          options: secVar.options.filter((opt) => opt.value !== 'magenta'),
+        }
       }
     }
 

@@ -356,6 +356,37 @@ describe('BX-01: Builder Friendly & QuestionButtons', () => {
       expect(resolvedSecForm.secondaryButtonLink).toBeUndefined()
     })
 
+    it('resolveFields filters out magenta buttonVariant options when bgColor is bright-magenta', () => {
+      const resolved = (CTASectionBlock as any).resolveFields(
+        { props: { bgColor: 'bright-magenta', secondaryButtonText: 'Nút phụ' } },
+        baseParams,
+      )
+      const btnOpts = resolved.buttonVariant?.options as Array<{ value: string }>
+      expect(btnOpts.some((o) => o.value === 'magenta')).toBe(false)
+
+      const secOpts = resolved.secondaryButtonVariant?.options as Array<{ value: string }>
+      expect(secOpts.some((o) => o.value === 'magenta')).toBe(false)
+    })
+
+    it('resolveFields handles secondaryButtonText as React element without throwing', () => {
+      const resolved = (CTASectionBlock as any).resolveFields(
+        { props: { secondaryButtonText: { type: 'span', props: { children: 'Nút phụ' } } } },
+        baseParams,
+      )
+      expect(resolved.secondaryButtonAction).toBeDefined()
+    })
+
+    it('renders without error when titleLine1/2 or secondaryButtonText are React elements', () => {
+      const { container } = render(
+        <CTASection
+          titleLine1={<span data-puck-editable="">DÒNG 1</span> as any}
+          titleLine2={<span data-puck-editable="">DÒNG 2</span> as any}
+          secondaryButtonText={<span data-puck-editable="">NÚT PHỤ</span> as any}
+        />,
+      )
+      expect(container.querySelector('h2')).not.toBeNull()
+    })
+
     it('CTASection solid renders light text when bgColor is bright-magenta', () => {
       const { container } = render(
         <CTASection

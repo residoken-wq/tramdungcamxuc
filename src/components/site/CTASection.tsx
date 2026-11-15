@@ -131,6 +131,13 @@ export function CTASection({
   const isEditing = puck?.isEditing ?? false
   const bookingProductId = _resolved?.bookingProductId ?? null
 
+  const effectiveButtonVariant =
+    bgColor === 'bright-magenta' && buttonVariant === 'magenta' ? 'primary' : buttonVariant
+  const effectiveSecondaryVariant =
+    bgColor === 'bright-magenta' && secondaryButtonVariant === 'magenta'
+      ? 'primary'
+      : secondaryButtonVariant
+
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [activeFormType, setActiveFormType] = useState<RegistrationFormType>('community-me-time')
   const [activeModalTitle, setActiveModalTitle] = useState<string | undefined>(undefined)
@@ -146,8 +153,9 @@ export function CTASection({
   const isBookingMode =
     buttonAction === 'booking' ||
     buttonLinkType === 'booking' ||
-    resolvedButtonHref?.trim() === BOOKING_PATH ||
-    resolvedButtonHref?.trim() === '/dat-phien-trai-nghiem'
+    (typeof resolvedButtonHref === 'string' &&
+      (resolvedButtonHref.trim() === BOOKING_PATH ||
+        resolvedButtonHref.trim() === '/dat-phien-trai-nghiem'))
 
   let finalButtonHref: string | null = null
   let isBookingUnavailable = false
@@ -178,11 +186,12 @@ export function CTASection({
     .slice(0, 3)
 
   const hasPhotos = validTestimonials.length > 0
-  const hasProofText = Boolean(proofText && proofText.trim().length > 0)
+  const hasProofText =
+    typeof proofText === 'string' ? proofText.trim().length > 0 : Boolean(proofText)
   const showProofStrip = hasPhotos || hasProofText
   const hasTitle = Boolean(
-    (titleLine1 && titleLine1.trim().length > 0) ||
-      (titleLine2 && titleLine2.trim().length > 0),
+    (typeof titleLine1 === 'string' ? titleLine1.trim().length > 0 : Boolean(titleLine1)) ||
+      (typeof titleLine2 === 'string' ? titleLine2.trim().length > 0 : Boolean(titleLine2)),
   )
 
   if (variant === 'solid') {
@@ -250,9 +259,9 @@ export function CTASection({
                     shape={buttonShape}
                     showPrice={true}
                     className={`min-h-[48px] px-8 py-3.5 text-[19px] font-bold uppercase tracking-tight text-white shadow-md hover:shadow-lg transition-all ${
-                      buttonVariant === 'magenta'
+                      effectiveButtonVariant === 'magenta'
                         ? '!bg-bright-magenta'
-                        : buttonVariant === 'pink'
+                        : effectiveButtonVariant === 'pink'
                           ? '!bg-accent-pink'
                           : '!bg-accent-pink'
                     }`}
@@ -271,9 +280,9 @@ export function CTASection({
                   className={`inline-flex items-center justify-center min-h-[48px] px-8 py-3.5 text-[19px] font-bold uppercase tracking-tight text-white transition-opacity active:opacity-90 hover:opacity-95 cursor-pointer ${
                     buttonShape === 'pill' ? 'rounded-full' : 'rounded-card'
                   } ${
-                    buttonVariant === 'magenta'
+                    effectiveButtonVariant === 'magenta'
                       ? 'bg-bright-magenta'
-                      : buttonVariant === 'pink'
+                      : effectiveButtonVariant === 'pink'
                         ? 'bg-accent-pink'
                         : 'bg-accent-pink'
                   }`}
@@ -286,9 +295,9 @@ export function CTASection({
                   className={`inline-flex items-center justify-center min-h-[48px] px-8 py-3.5 text-[19px] font-bold uppercase tracking-tight text-white transition-opacity active:opacity-90 hover:opacity-95 ${
                     buttonShape === 'pill' ? 'rounded-full' : 'rounded-card'
                   } ${
-                    buttonVariant === 'magenta'
+                    effectiveButtonVariant === 'magenta'
                       ? 'bg-bright-magenta'
-                      : buttonVariant === 'pink'
+                      : effectiveButtonVariant === 'pink'
                         ? 'bg-accent-pink'
                         : 'bg-accent-pink'
                   }`}
@@ -310,9 +319,9 @@ export function CTASection({
                   className={`inline-flex items-center justify-center min-h-[48px] px-8 py-3.5 text-[19px] font-bold uppercase tracking-tight text-white transition-opacity active:opacity-90 hover:opacity-95 cursor-pointer ${
                     buttonShape === 'pill' ? 'rounded-full' : 'rounded-card'
                   } ${
-                    secondaryButtonVariant === 'magenta'
+                    effectiveSecondaryVariant === 'magenta'
                       ? 'bg-bright-magenta'
-                      : secondaryButtonVariant === 'pink'
+                      : effectiveSecondaryVariant === 'pink'
                         ? 'bg-accent-pink'
                         : 'bg-accent-pink'
                   }`}
@@ -325,9 +334,9 @@ export function CTASection({
                   className={`inline-flex items-center justify-center min-h-[48px] px-8 py-3.5 text-[19px] font-bold uppercase tracking-tight text-white transition-opacity active:opacity-90 hover:opacity-95 ${
                     buttonShape === 'pill' ? 'rounded-full' : 'rounded-card'
                   } ${
-                    secondaryButtonVariant === 'magenta'
+                    effectiveSecondaryVariant === 'magenta'
                       ? 'bg-bright-magenta'
-                      : secondaryButtonVariant === 'pink'
+                      : effectiveSecondaryVariant === 'pink'
                         ? 'bg-accent-pink'
                         : 'bg-accent-pink'
                   }`}

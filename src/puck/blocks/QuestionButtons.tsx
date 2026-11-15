@@ -84,19 +84,19 @@ export const QuestionButtonsBlock: ComponentConfig<QuestionButtonsProps> = {
   },
   defaultProps: {
     version: 1,
-    question: '[MẪU] Bạn thực sự muốn tìm được lối ra nhưng chưa biết bắt đầu từ đâu?',
+    question: '[MẪU] Bạn muốn bắt đầu hành trình từ đâu?',
     bgColor: 'bright-magenta',
     padding: 'md',
     buttons: [
       {
-        text: '[MẪU] Điểm nghẽn Thói quen',
+        text: '[MẪU] Bắt đầu với Thói quen',
         action: 'link',
         linkType: 'url',
         url: '/habit/chan-doan',
         variant: 'solid',
       },
       {
-        text: '[MẪU] Điểm nghẽn Cảm xúc',
+        text: '[MẪU] Khám phá Cảm xúc',
         action: 'link',
         linkType: 'url',
         url: '/eq-buddy',
