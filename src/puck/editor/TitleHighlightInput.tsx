@@ -72,6 +72,8 @@ export function TitleHighlightInput({
             onChange={(e) => onChange(e.target.value)}
             placeholder={placeholder}
             readOnly={readOnly}
+            aria-label={label}
+            title={label}
             className="w-full h-9 px-3 text-xs rounded-lg border border-deep-navy/20 bg-white text-deep-navy focus:outline-none focus:border-accent-pink focus:ring-1 focus:ring-accent-pink transition"
           />
         </FieldLabelWithAa>

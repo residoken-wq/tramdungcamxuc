@@ -32,12 +32,7 @@ export function FieldLabelWithAa({
   const [isPopoverOpen, setIsPopoverOpen] = useState(false)
 
   const fieldName = useCurrentField()
-  let selectedItem: any
-  try {
-    selectedItem = usePuckSelector((s) => s.selectedItem)
-  } catch {
-    selectedItem = undefined
-  }
+  const selectedItem = usePuckSelector((s) => s.selectedItem)
   const blockType = selectedItem?.type as string | undefined
 
   // Find target definition

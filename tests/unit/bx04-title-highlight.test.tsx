@@ -1,6 +1,14 @@
 import React from 'react'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
+
+vi.mock('@puckeditor/core', async (importOriginal) => {
+  const actual = await importOriginal<Record<string, unknown>>()
+  return {
+    ...actual,
+    createUsePuck: () => () => undefined,
+  }
+})
 import { renderToStaticMarkup } from 'react-dom/server'
 import {
   TwoToneTitle,
@@ -395,7 +403,7 @@ describe('BX-04: Tiêu đề – Chọn kiểu nhấn chữ & gạch ngang tươ
     })
 
     it('only renders in "content" tab and hides in "style" tab', () => {
-      const { rerender } = render(
+      render(
         <StylePanelProvider ds={DEFAULT_DESIGN_SYSTEM}>
           <TabSwitcherTest />
         </StylePanelProvider>,
