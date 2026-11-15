@@ -1,5 +1,6 @@
 import React from 'react'
 import { TwoToneTitle } from '@/components/ui/TwoToneTitle'
+import type { TitleHighlightAnimation, TitleHighlightStyle } from '@/components/ui/TwoToneTitle'
 
 export type MatrixTableVariant = 'grid' | 'list'
 
@@ -31,6 +32,8 @@ export interface MatrixTableProps {
   seriesLabel?: string
   titleLine1?: string
   titleLine2?: string
+  titleHighlightStyle?: TitleHighlightStyle
+  titleHighlightAnimation?: TitleHighlightAnimation
   emotionLine?: string
   titleCase?: 'upper' | 'none'
   showAccentBar?: boolean
@@ -83,6 +86,8 @@ export function MatrixTable({
   seriesLabel,
   titleLine1,
   titleLine2,
+  titleHighlightStyle,
+  titleHighlightAnimation,
   emotionLine,
   titleCase = 'upper',
   showAccentBar = false,
@@ -121,6 +126,8 @@ export function MatrixTable({
                   } tracking-tight !leading-[var(--tdcx-title-lh,1.3)]`}
                 >
                   <TwoToneTitle
+                    highlightStyle={titleHighlightStyle}
+                    highlightAnimation={titleHighlightAnimation}
                     line1={titleLine1}
                     line2={titleLine2}
                     line1ClassName={isDeepNavy ? 'text-white' : 'text-deep-navy'}

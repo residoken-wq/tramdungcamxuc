@@ -6,6 +6,7 @@ import { EmptySlotHint } from '@/components/ui/EmptySlotHint'
 import { CarouselTrack } from '@/components/ui/CarouselTrack'
 import { vi } from '@/lib/i18n/vi'
 import type { BrandIcon as BrandIconKey } from '@/lib/brand/icons'
+import type { TitleHighlightAnimation, TitleHighlightStyle } from '@/components/ui/TwoToneTitle'
 
 export interface IconCardItem {
   icon?: BrandIconKey | string
@@ -21,6 +22,8 @@ export interface IconCardGridProps {
   seriesLabel?: string
   titleLine1?: string
   titleLine2?: string
+  titleHighlightStyle?: TitleHighlightStyle
+  titleHighlightAnimation?: TitleHighlightAnimation
   emotionLine?: string
   marker?: 'icon' | 'number'
   /** PK-21: 'carousel' = cards in one row that scrolls sideways, with arrows. PK-26: 5 columns */
@@ -66,6 +69,8 @@ export function IconCardGrid({
   seriesLabel,
   titleLine1,
   titleLine2,
+  titleHighlightStyle,
+  titleHighlightAnimation,
   emotionLine,
   titleCase = 'upper',
   showAccentBar = false,
@@ -199,6 +204,8 @@ export function IconCardGrid({
         {hasHeader && (
           <div className="mb-8 sm:mb-12">
             <SectionHeader
+              titleHighlightStyle={titleHighlightStyle}
+              titleHighlightAnimation={titleHighlightAnimation}
               id={id}
               seriesLabel={seriesLabel}
               titleLine1={titleLine1 || ''}

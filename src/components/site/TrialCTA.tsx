@@ -5,6 +5,7 @@ import { SectionHeader } from '@/components/ui/SectionHeader'
 import { Button } from '@/components/ui/Button'
 import { resolveProductCta, type PublicProduct } from '@/lib/products'
 import { useClientProduct } from '@/puck/client-preview'
+import type { TitleHighlightAnimation, TitleHighlightStyle } from '@/components/ui/TwoToneTitle'
 
 export interface TrialCTAProps {
   version?: number
@@ -12,6 +13,8 @@ export interface TrialCTAProps {
   seriesLabel?: string
   titleLine1: string
   titleLine2: string
+  titleHighlightStyle?: TitleHighlightStyle
+  titleHighlightAnimation?: TitleHighlightAnimation
   emotionLine?: string
   bgColor?:
     'warm-ivory' | 'soft-pink' | 'lavender-mist' | 'mint-haze' | 'butter-cream' | 'deep-navy'
@@ -44,6 +47,8 @@ export function TrialCTA({
   seriesLabel,
   titleLine1,
   titleLine2,
+  titleHighlightStyle,
+  titleHighlightAnimation,
   emotionLine,
   bgColor = 'warm-ivory',
   padding = 'md',
@@ -105,6 +110,8 @@ export function TrialCTA({
     <section className={`w-full ${BG_COLORS[bgColor]} ${PADDINGS[padding]} transition-colors`}>
       <div className="mx-auto max-w-4xl flex flex-col items-center text-center">
         <SectionHeader
+          titleHighlightStyle={titleHighlightStyle}
+          titleHighlightAnimation={titleHighlightAnimation}
           seriesLabel={seriesLabel}
           titleLine1={titleLine1}
           titleLine2={titleLine2}

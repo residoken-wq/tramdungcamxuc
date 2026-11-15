@@ -16,6 +16,7 @@ import {
 } from '@/puck/client-preview'
 import { vi } from '@/lib/i18n/vi'
 import { TwoToneTitle } from '@/components/ui/TwoToneTitle'
+import type { TitleHighlightAnimation, TitleHighlightStyle } from '@/components/ui/TwoToneTitle'
 
 export type { PublicServiceSummary, PublicProgramSummary }
 
@@ -58,6 +59,8 @@ export interface SolutionEcosystemProps {
   seriesLabel?: string
   titleLine1?: string
   titleLine2?: string
+  titleHighlightStyle?: TitleHighlightStyle
+  titleHighlightAnimation?: TitleHighlightAnimation
   emotionLine?: string
   description?: string
   // Column 1: Products
@@ -127,6 +130,8 @@ export function SolutionEcosystem({
   seriesLabel,
   titleLine1,
   titleLine2,
+  titleHighlightStyle,
+  titleHighlightAnimation,
   emotionLine,
   description,
   col1Title = '[MẪU] Đào tạo cá nhân',
@@ -598,6 +603,8 @@ export function SolutionEcosystem({
             {titleLine1 && (
               <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl uppercase tracking-tight !leading-[var(--tdcx-title-lh,1.3)]">
                 <TwoToneTitle
+                  highlightStyle={titleHighlightStyle}
+                  highlightAnimation={titleHighlightAnimation}
                   line1={titleLine1}
                   line2={titleLine2}
                   line1ClassName={isDeepNavy ? 'text-white' : 'text-deep-navy'}

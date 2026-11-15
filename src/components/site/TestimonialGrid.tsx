@@ -6,12 +6,15 @@ import { TestimonialCard } from './TestimonialCard'
 import type { PublicTestimonial } from '@/lib/testimonials'
 import { useClientTestimonials } from '@/puck/client-preview'
 import { vi } from '@/lib/i18n/vi'
+import type { TitleHighlightAnimation, TitleHighlightStyle } from '@/components/ui/TwoToneTitle'
 
 export interface TestimonialGridProps {
   version?: number
   seriesLabel?: string
   titleLine1?: string
   titleLine2?: string
+  titleHighlightStyle?: TitleHighlightStyle
+  titleHighlightAnimation?: TitleHighlightAnimation
   emotionLine?: string
   variant?: 'quote' | 'story' | 'stages' | 'featured'
   mode?: 'manual' | 'recent'
@@ -55,6 +58,8 @@ export function TestimonialGrid({
   seriesLabel,
   titleLine1,
   titleLine2,
+  titleHighlightStyle,
+  titleHighlightAnimation,
   emotionLine,
   variant = 'quote',
   mode = 'manual',
@@ -107,6 +112,8 @@ export function TestimonialGrid({
         {hasHeader && (
           <div className="mb-8 sm:mb-12">
             <SectionHeader
+              titleHighlightStyle={titleHighlightStyle}
+              titleHighlightAnimation={titleHighlightAnimation}
               id={id}
               seriesLabel={seriesLabel}
               titleLine1={titleLine1 || ''}
