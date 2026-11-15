@@ -30,6 +30,15 @@ export interface ChildBgOptions {
 }
 
 /**
+ * Kiểm tra xem một màu nền brand có phải là nền tối (cần chữ sáng: white / soft-pink) hay không.
+ * Nền tối trong hệ thống màu Trạm Dừng Cảm Xúc: deep-navy, bright-magenta.
+ * Nền sáng (pastel/ngà): warm-ivory, soft-pink, lavender-mist, mint-haze, butter-cream.
+ */
+export function isDarkBrandBg(color?: string | null): boolean {
+  return color === 'deep-navy' || color === 'bright-magenta'
+}
+
+/**
  * Xác định màu nền thật của khối con (Card, Stat, Step) dựa trên cấu hình parent và trạng thái nổi bật.
  *
  * Quy tắc:

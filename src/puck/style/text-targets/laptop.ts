@@ -46,6 +46,9 @@ export const LAPTOP_TEXT_TARGETS: Record<string, TextTargetDef[]> = {
     { key: 'imageLabel', label: 'Nhãn nhỏ góc ảnh' },
     { key: 'buttonText', label: 'Chữ trên nút' },
   ],
+  QuestionButtons: [
+    { key: 'question', label: 'Câu hỏi / câu nghiêng' },
+  ],
   CTASection: [
     { key: 'seriesLabel', label: 'Nhãn series' },
     { key: 'titleLine1', label: 'Tiêu đề dòng 1' },

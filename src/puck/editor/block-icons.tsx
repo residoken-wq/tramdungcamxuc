@@ -367,6 +367,7 @@ const blockIconMap: Record<string, React.ComponentType> = {
 
   // Chuyển đổi
   CTAButton: ButtonIcon,
+  QuestionButtons: ButtonIcon,
   CTASection: ButtonIcon,
   TwoPathCards: HeroTwoEntriesIcon,
   LeadForm: FormIcon,
