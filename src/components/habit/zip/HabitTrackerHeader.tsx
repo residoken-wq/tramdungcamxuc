@@ -56,13 +56,17 @@ export function HabitTrackerHeader({
 
       {/* Main Title: Font Anton. Xây Thói Quen màu Navy, Dựng Thương Hiệu màu Magenta */}
       <div className="space-y-1.5 text-left">
-        {(headerContent.titleLine1 || headerContent.titleLine2) && (
+        {headerContent.titleLine1 || headerContent.titleLine2 ? (
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-display font-black tracking-wide uppercase leading-tight">
             {headerContent.titleLine1 && <span className="text-deep-navy">{headerContent.titleLine1}</span>}
             {headerContent.titleLine1 && headerContent.titleLine2 && (
               <span className="text-deep-navy/70 mx-2 font-black">—</span>
             )}
             {headerContent.titleLine2 && <span className="text-bright-magenta">{headerContent.titleLine2}</span>}
+          </h1>
+        ) : (
+          <h1 className="sr-only">
+            {DEFAULT_DP01_CONTENT.header.titleLine1} — {DEFAULT_DP01_CONTENT.header.titleLine2}
           </h1>
         )}
 

@@ -280,11 +280,7 @@ export function withDp01Defaults(
   return {
     header: {
       badgeText: pickString(header.badgeText, DEFAULT_DP01_CONTENT.header.badgeText, useDefaultHeader),
-      titleLine1:
-        pickString(header.titleLine1, DEFAULT_DP01_CONTENT.header.titleLine1, useDefaultHeader) ||
-        (!pickString(header.titleLine2, DEFAULT_DP01_CONTENT.header.titleLine2, useDefaultHeader)
-          ? DEFAULT_DP01_CONTENT.header.titleLine1
-          : ''),
+      titleLine1: pickString(header.titleLine1, DEFAULT_DP01_CONTENT.header.titleLine1, useDefaultHeader),
       titleLine2: pickString(header.titleLine2, DEFAULT_DP01_CONTENT.header.titleLine2, useDefaultHeader),
       seriesBadge: pickString(header.seriesBadge, DEFAULT_DP01_CONTENT.header.seriesBadge, useDefaultHeader),
       tagline: pickString(header.tagline, DEFAULT_DP01_CONTENT.header.tagline, useDefaultHeader),

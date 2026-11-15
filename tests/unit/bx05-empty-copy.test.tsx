@@ -9,6 +9,8 @@ import { FAQ } from '@/components/site/FAQ'
 import { SolutionEcosystem } from '@/components/site/SolutionEcosystem'
 import { QuoteBlockConfig } from '@/puck/blocks/QuoteBlock'
 import { Callout } from '@/components/site/Callout'
+import { HabitTrackerHeader } from '@/components/habit/zip/HabitTrackerHeader'
+import { withDp01Defaults } from '@/lib/habit/dp01-content'
 import { vi as viLocale } from '@/lib/i18n/vi'
 
 vi.mock('server-only', () => ({}))
@@ -266,5 +268,53 @@ describe('BX-05: Puck blocks empty means hidden', () => {
     expect(
       screen.getByText(/\[MẪU\] Bạn không cần phải tự mình đối diện/i),
     ).toBeDefined()
+  })
+})
+
+describe('BX-05: Source 3 – Habit Journey Content', () => {
+  it('HabitTrackerHeader: trống + useDefaultCopyHeader = false -> không có chữ mặc định ở phần tử nhìn thấy được, có h1.sr-only', () => {
+    const resolved = withDp01Defaults({
+      useDefaultCopyHeader: false,
+      header: {
+        titleLine1: '',
+        titleLine2: '',
+        badgeText: '',
+        seriesBadge: '',
+        tagline: '',
+        introText: '',
+      },
+    })
+
+    const { container } = render(
+      <HabitTrackerHeader currentStep={1} headerContent={resolved.header} />,
+    )
+
+    // Không có chữ mặc định ở phần tử nhìn thấy được
+    expect(container.querySelector('h1.font-display')).toBeNull()
+    expect(screen.queryByText('CONTENT CREATOR HUB')).toBeNull()
+    expect(screen.queryByText('FORM HABIT · BUILD IDENTITY')).toBeNull()
+
+    // Nhưng vẫn có h1.sr-only cho SEO / a11y
+    const srHeading = container.querySelector('h1.sr-only')
+    expect(srHeading).not.toBeNull()
+    expect(srHeading?.textContent).toBe('Xây Thói Quen — Dựng Thương Hiệu')
+  })
+
+  it('HabitTrackerHeader: trống + useDefaultCopyHeader = true -> hiện chữ mặc định ở h1 nhìn thấy được', () => {
+    const resolved = withDp01Defaults({
+      useDefaultCopyHeader: true,
+      header: {
+        titleLine1: '',
+        titleLine2: '',
+      },
+    })
+
+    const { container } = render(
+      <HabitTrackerHeader currentStep={1} headerContent={resolved.header} />,
+    )
+    const visibleHeading = container.querySelector('h1.font-display')
+    expect(visibleHeading).not.toBeNull()
+    expect(screen.getByText('Xây Thói Quen')).toBeDefined()
+    expect(screen.getByText('Dựng Thương Hiệu')).toBeDefined()
   })
 })
