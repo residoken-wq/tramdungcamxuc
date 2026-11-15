@@ -200,23 +200,24 @@ Khi chuyển từ môi trường thử nghiệm sang môi trường production c
 
 Từ đợt cập nhật BX-05, quy tắc hiển thị là: **ô nội dung trong CMS để trống thì ngoài trang công khai sẽ ẩn đi**, trừ khi nhóm đó có bật checkbox *"Dùng chữ mặc định cho ô để trống"*.
 
-Trước khi deploy hoặc sau khi cập nhật nội dung CMS, kỹ thuật viên có thể chạy script kiểm tra chỉ đọc (read-only) để rà soát toàn bộ các ô để trống trên toàn hệ thống (Sản phẩm, EQ Buddy, Habit Journey, Puck Blocks):
+Script **chỉ đọc**, không in dữ liệu cá nhân (chỉ tên trang / phần / ô). Nó chạy được cả khi DB **chưa có** cột của BX-05: cờ "Dùng chữ mặc định" chưa có thì coi là tắt, đúng như ngay sau khi deploy.
 
-- **Chạy trên máy dev (Local)**:
-  ```bash
-  pnpm report:empty-copy
-  ```
-  hoặc:
-  ```bash
-  node --import tsx scripts/report-empty-copy.ts
-  ```
+**Trước khi deploy BX-05 lên site thật (bắt buộc)** – theo đúng thứ tự:
 
-- **Chạy trên server (Docker Compose)**:
-  ```bash
-  docker compose -p tdcx-demo -f docker-compose.prod.yml exec app node --import tsx scripts/report-empty-copy.ts
-  ```
+1. BX-05 đã merge vào `main` và CI trên `main` xanh (đã đẩy image `latest` + `tools-latest` mới).
+2. Trên server, kéo image **tools** mới và chạy script (container `app` đang chạy là bản cũ, chạy Next gọn – không có thư mục `scripts/`, nên không dùng `exec app`):
+   ```bash
+   cd /opt/tdcx
+   docker compose -p tdcx -f docker-compose.prod.yml --profile tools pull seed < /dev/null
+   docker compose -p tdcx -f docker-compose.prod.yml --profile tools run --rm seed pnpm report:empty-copy
+   ```
+3. Gửi bảng in ra cho Hana. Các dòng *"Sẽ ẩn khi deploy (Tắt)"* là phần đang hiện chữ mẫu của hệ thống và sẽ **ẩn ngay** sau deploy.
+4. Chạy `./scripts/deploy.sh` như thường lệ.
+5. Phần nào Hana muốn giữ: bật *"Dùng chữ mặc định cho ô để trống"* ở đúng phần đó (CMS hoặc builder), hoặc điền chữ thật.
 
-Script sẽ in bảng tổng kết chi tiết gồm: Nguồn/Trang, Nhóm/Phần, Danh sách các ô đang để trống, và Trạng thái tương ứng (*Sẽ ẩn khi deploy (Tắt)* hoặc *Dùng chữ mẫu hệ thống (Bật)*).
+**Chạy trên máy dev:** `pnpm report:empty-copy`.
+
+Script sẽ in bảng tổng kết chi tiết gồm: Nguồn/Trang, Nhóm/Phần, Danh sách các ô đang để trống, và Trạng thái tương ứng (*Sẽ ẩn khi deploy (Tắt)* hoặc *Hiện chữ mặc định (Bật)*).
 
 ---
 
