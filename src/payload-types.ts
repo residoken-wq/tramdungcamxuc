@@ -642,6 +642,30 @@ export interface Product {
    */
   relatedProducts?: (number | Product)[] | null;
   /**
+   * Bật để ẩn phần này trên trang. Nội dung đã nhập vẫn giữ, tắt là hiện lại.
+   */
+  hideOfferIncludes?: boolean | null;
+  /**
+   * Bật để ẩn phần này trên trang. Nội dung đã nhập vẫn giữ, tắt là hiện lại.
+   */
+  hideOfferStats?: boolean | null;
+  /**
+   * Bật để ẩn phần này trên trang. Nội dung đã nhập vẫn giữ, tắt là hiện lại.
+   */
+  hideOfferCurriculum?: boolean | null;
+  /**
+   * Bật để ẩn phần này trên trang. Nội dung đã nhập vẫn giữ, tắt là hiện lại.
+   */
+  hideOfferFeatures?: boolean | null;
+  /**
+   * Bật để ẩn phần này trên trang. Nội dung đã nhập vẫn giữ, tắt là hiện lại.
+   */
+  hideOfferFaq?: boolean | null;
+  /**
+   * Bật để ẩn phần này trên trang. Nội dung đã nhập vẫn giữ, tắt là hiện lại.
+   */
+  hideOfferBottom?: boolean | null;
+  /**
    * Để trống = dùng chữ mặc định
    */
   offerSeriesLabel?: string | null;
@@ -2839,6 +2863,12 @@ export interface ProductsSelect<T extends boolean = true> {
         id?: T;
       };
   relatedProducts?: T;
+  hideOfferIncludes?: T;
+  hideOfferStats?: T;
+  hideOfferCurriculum?: T;
+  hideOfferFeatures?: T;
+  hideOfferFaq?: T;
+  hideOfferBottom?: T;
   offerSeriesLabel?: T;
   offerTitleLine1?: T;
   offerTitleLine2?: T;

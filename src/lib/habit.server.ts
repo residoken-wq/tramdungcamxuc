@@ -68,6 +68,12 @@ export interface HabitProductData {
   featureItems?: Array<{ title: string; description?: string | null }> | null
   bottomTitle?: string | null
   bottomDescription?: string | null
+  hideOfferIncludes?: boolean | null
+  hideOfferStats?: boolean | null
+  hideOfferCurriculum?: boolean | null
+  hideOfferFeatures?: boolean | null
+  hideOfferFaq?: boolean | null
+  hideOfferBottom?: boolean | null
 }
 
 /** Lỗi kỹ thuật dạng ZodError để action trả câu tiếng Việt cho người dùng (không thành lỗi máy chủ). */
@@ -314,6 +320,12 @@ export async function getHabitProduct(
     featureItems: featureItems.length > 0 ? featureItems : null,
     bottomTitle: doc.bottomTitle?.trim() || null,
     bottomDescription: doc.bottomDescription?.trim() || null,
+    hideOfferIncludes: Boolean(doc.hideOfferIncludes),
+    hideOfferStats: Boolean(doc.hideOfferStats),
+    hideOfferCurriculum: Boolean(doc.hideOfferCurriculum),
+    hideOfferFeatures: Boolean(doc.hideOfferFeatures),
+    hideOfferFaq: Boolean(doc.hideOfferFaq),
+    hideOfferBottom: Boolean(doc.hideOfferBottom),
   }
 }
 

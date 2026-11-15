@@ -44,6 +44,7 @@ import * as migration_20261108_092111_pk32_site_settings_tiktok from './20261108
 import * as migration_20261110_150000_au04_navigation_badge from './20261110_150000_au04_navigation_badge';
 import * as migration_20261111_100000_au02_eq_buddy_fields from './20261111_100000_au02_eq_buddy_fields';
 import * as migration_20261111_164500_au03_habit_fields from './20261111_164500_au03_habit_fields';
+import * as migration_20261115_180000_bx03_product_sections from './20261115_180000_bx03_product_sections';
 
 export const migrations = [
   {
@@ -275,5 +276,10 @@ export const migrations = [
     up: migration_20261111_164500_au03_habit_fields.up,
     down: migration_20261111_164500_au03_habit_fields.down,
     name: '20261111_164500_au03_habit_fields'
+  },
+  {
+    up: migration_20261115_180000_bx03_product_sections.up,
+    down: migration_20261115_180000_bx03_product_sections.down,
+    name: '20261115_180000_bx03_product_sections'
   },
 ];

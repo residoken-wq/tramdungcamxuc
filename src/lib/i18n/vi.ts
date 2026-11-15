@@ -4824,6 +4824,14 @@ export const vi = {
   },
   pk30: {
     tabIntro: 'Trang giới thiệu',
+    groupHideSections: 'Ẩn / hiện các phần',
+    groupHideSectionsDescription: 'Bật ô tương ứng để ẩn phần đó trên trang. Nội dung đã nhập vẫn giữ nguyên, tắt là hiện lại.',
+    hideOfferIncludes: 'Ẩn: Danh sách "Bộ tài liệu tự học…" trong hero',
+    hideOfferStats: 'Ẩn: Thanh số liệu (video, kỹ thuật, ngày, lộ trình)',
+    hideOfferCurriculum: 'Ẩn: Lộ trình (module / giai đoạn)',
+    hideOfferFeatures: 'Ẩn: Tại sao Habit Tracker số khác biệt?',
+    hideOfferFaq: 'Ẩn: Câu hỏi thường gặp',
+    hideOfferBottom: 'Ẩn: Khối kêu gọi cuối trang',
     offerSeriesLabel: 'Nhãn nhỏ trên tiêu đề',
     offerTitleLine1: 'Tiêu đề dòng 1 (xanh thẫm)',
     offerTitleLine2: 'Tiêu đề dòng 2 (hồng sen)',
@@ -4842,6 +4850,7 @@ export const vi = {
     bottomTitle: 'Tiêu đề kêu gọi cuối trang (ghi {ngay} để chèn số ngày hành trình)',
     bottomDescription: 'Mô tả kêu gọi cuối trang',
     descriptions: {
+      hideOffer: 'Bật để ẩn phần này trên trang. Nội dung đã nhập vẫn giữ, tắt là hiện lại.',
       offerSeriesLabel: 'Để trống = dùng chữ mặc định',
       offerTitleLine1: 'Để trống = dùng chữ mặc định',
       offerTitleLine2: 'Để trống = dùng chữ mặc định',

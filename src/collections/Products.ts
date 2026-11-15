@@ -1,6 +1,7 @@
 import type { CollectionBeforeChangeHook, CollectionConfig } from 'payload'
 import {
   contentCollection,
+  checkbox,
   date,
   image,
   lines,
@@ -295,6 +296,46 @@ export const Products: CollectionConfig = {
             condition: showFor(['digital_tool']),
           },
           fields: [
+            {
+              type: 'collapsible',
+              label: vi.pk30.groupHideSections,
+              admin: {
+                initCollapsed: false,
+                description: vi.pk30.groupHideSectionsDescription,
+              },
+              fields: [
+                checkbox('hideOfferIncludes', vi.pk30.hideOfferIncludes, false, {
+                  admin: {
+                    description: vi.pk30.descriptions.hideOffer,
+                  },
+                }),
+                checkbox('hideOfferStats', vi.pk30.hideOfferStats, false, {
+                  admin: {
+                    description: vi.pk30.descriptions.hideOffer,
+                  },
+                }),
+                checkbox('hideOfferCurriculum', vi.pk30.hideOfferCurriculum, false, {
+                  admin: {
+                    description: vi.pk30.descriptions.hideOffer,
+                  },
+                }),
+                checkbox('hideOfferFeatures', vi.pk30.hideOfferFeatures, false, {
+                  admin: {
+                    description: vi.pk30.descriptions.hideOffer,
+                  },
+                }),
+                checkbox('hideOfferFaq', vi.pk30.hideOfferFaq, false, {
+                  admin: {
+                    description: vi.pk30.descriptions.hideOffer,
+                  },
+                }),
+                checkbox('hideOfferBottom', vi.pk30.hideOfferBottom, false, {
+                  admin: {
+                    description: vi.pk30.descriptions.hideOffer,
+                  },
+                }),
+              ],
+            },
             text('offerSeriesLabel', vi.pk30.offerSeriesLabel, false, {
               admin: {
                 description: vi.pk30.descriptions.offerSeriesLabel,

@@ -82,6 +82,41 @@ export function HabitOfferClient({ product, journeyDays = 28 }: HabitOfferClient
     ? product.bottomDescription
     : vi.habit.offer.bottomDesc(videoCount, techniqueCount)
 
+  // BX-03: Điều kiện hiển thị từng phần (mặc định hiện, tắt khi product.hideOffer... = true)
+  const showIncludes = !product?.hideOfferIncludes && includesList.length > 0
+  const showStats = !product?.hideOfferStats
+  const showCurriculum = !product?.hideOfferCurriculum
+  const showFeatures = !product?.hideOfferFeatures && featureItems.length > 0
+  const showFaq = !product?.hideOfferFaq && faqList.length > 0
+  const showBottom = !product?.hideOfferBottom
+
+  // Xen kẽ màu nền: Hero luôn là warm-ivory, các phần ở giữa xen kẽ white <-> warm-ivory
+  let currentBg: 'warm-ivory' | 'white' = 'warm-ivory'
+
+  let statsBg: 'white' | 'warm-ivory' = 'white'
+  if (showStats) {
+    statsBg = currentBg === 'warm-ivory' ? 'white' : 'warm-ivory'
+    currentBg = statsBg
+  }
+
+  let curriculumBg: 'white' | 'warm-ivory' = 'warm-ivory'
+  if (showCurriculum) {
+    curriculumBg = currentBg === 'warm-ivory' ? 'white' : 'warm-ivory'
+    currentBg = curriculumBg
+  }
+
+  let featuresBg: 'white' | 'warm-ivory' = 'white'
+  if (showFeatures) {
+    featuresBg = currentBg === 'warm-ivory' ? 'white' : 'warm-ivory'
+    currentBg = featuresBg
+  }
+
+  let faqBg: 'white' | 'warm-ivory' = 'warm-ivory'
+  if (showFaq) {
+    faqBg = currentBg === 'warm-ivory' ? 'white' : 'warm-ivory'
+    currentBg = faqBg
+  }
+
   return (
     <div className="w-full">
       {/* 1. HERO SECTION */}
@@ -129,7 +164,7 @@ export function HabitOfferClient({ product, journeyDays = 28 }: HabitOfferClient
             )}
 
             {/* Includes list from CMS if present */}
-            {includesList.length > 0 && (
+            {showIncludes && (
               <div className="mb-6 text-left border-t border-b border-lavender-mist/40 py-4">
                 <p className="text-xs font-bold uppercase tracking-wider text-deep-navy/70 mb-2 font-ui">
                   {includesHeadingText}
@@ -177,86 +212,118 @@ export function HabitOfferClient({ product, journeyDays = 28 }: HabitOfferClient
       </section>
 
       {/* 2. STATS BAR (Đếm động từ DB: số lessons và techniques) */}
-      <section className="py-8 bg-white border-b border-lavender-mist/40">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-            {/* Số đếm từ DB: chưa có bài học / kỹ thuật nào thì ẩn ô đó */}
-            {videoCount > 0 && (
-              <div className="p-4 rounded-xl bg-warm-ivory">
+      {showStats && (
+        <section
+          className={`py-8 ${
+            statsBg === 'white'
+              ? 'bg-white border-b border-lavender-mist/40'
+              : 'bg-warm-ivory border-b border-lavender-mist/40'
+          }`}
+        >
+          <div className="max-w-4xl mx-auto px-4 sm:px-6">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+              {/* Số đếm từ DB: chưa có bài học / kỹ thuật nào thì ẩn ô đó */}
+              {videoCount > 0 && (
+                <div
+                  className={`p-4 rounded-xl ${statsBg === 'white' ? 'bg-warm-ivory' : 'bg-white'}`}
+                >
+                  <span className="font-display text-2xl sm:text-3xl text-bright-magenta block mb-1">
+                    {videoCount}
+                  </span>
+                  <span className="text-xs sm:text-sm font-semibold text-deep-navy">
+                    {vi.habit.offer.stats.videos}
+                  </span>
+                </div>
+              )}
+              {techniqueCount > 0 && (
+                <div
+                  className={`p-4 rounded-xl ${statsBg === 'white' ? 'bg-warm-ivory' : 'bg-white'}`}
+                >
+                  <span className="font-display text-2xl sm:text-3xl text-bright-magenta block mb-1">
+                    {techniqueCount}
+                  </span>
+                  <span className="text-xs sm:text-sm font-semibold text-deep-navy">
+                    {vi.habit.offer.stats.techniques}
+                  </span>
+                </div>
+              )}
+              <div
+                className={`p-4 rounded-xl ${statsBg === 'white' ? 'bg-warm-ivory' : 'bg-white'}`}
+              >
                 <span className="font-display text-2xl sm:text-3xl text-bright-magenta block mb-1">
-                  {videoCount}
+                  {journeyDays}
                 </span>
                 <span className="text-xs sm:text-sm font-semibold text-deep-navy">
-                  {vi.habit.offer.stats.videos}
+                  {vi.habit.offer.stats.tracker(journeyDays)}
                 </span>
               </div>
-            )}
-            {techniqueCount > 0 && (
-              <div className="p-4 rounded-xl bg-warm-ivory">
+              <div
+                className={`p-4 rounded-xl ${statsBg === 'white' ? 'bg-warm-ivory' : 'bg-white'}`}
+              >
                 <span className="font-display text-2xl sm:text-3xl text-bright-magenta block mb-1">
-                  {techniqueCount}
+                  {modulesCount}
                 </span>
                 <span className="text-xs sm:text-sm font-semibold text-deep-navy">
-                  {vi.habit.offer.stats.techniques}
+                  {curriculumUnitStatLabel}
                 </span>
               </div>
-            )}
-            <div className="p-4 rounded-xl bg-warm-ivory">
-              <span className="font-display text-2xl sm:text-3xl text-bright-magenta block mb-1">
-                {journeyDays}
-              </span>
-              <span className="text-xs sm:text-sm font-semibold text-deep-navy">
-                {vi.habit.offer.stats.tracker(journeyDays)}
-              </span>
-            </div>
-            <div className="p-4 rounded-xl bg-warm-ivory">
-              <span className="font-display text-2xl sm:text-3xl text-bright-magenta block mb-1">
-                {modulesCount}
-              </span>
-              <span className="text-xs sm:text-sm font-semibold text-deep-navy">
-                {curriculumUnitStatLabel}
-              </span>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* 3. 4 MODULES CURRICULUM */}
-      <section className="py-12 sm:py-16 bg-warm-ivory">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6">
-          <div className="text-center mb-10">
-            <h2 className="font-display text-2xl sm:text-3xl text-deep-navy mb-2">
-              {curriculumHeading}
-            </h2>
-            <p className="text-sm sm:text-base text-deep-navy/70">
-              {curriculumSubheading}
-            </p>
-          </div>
+      {showCurriculum && (
+        <section
+          className={`py-12 sm:py-16 ${
+            curriculumBg === 'warm-ivory'
+              ? 'bg-warm-ivory'
+              : 'bg-white border-b border-lavender-mist/40'
+          }`}
+        >
+          <div className="max-w-4xl mx-auto px-4 sm:px-6">
+            <div className="text-center mb-10">
+              <h2 className="font-display text-2xl sm:text-3xl text-deep-navy mb-2">
+                {curriculumHeading}
+              </h2>
+              <p className="text-sm sm:text-base text-deep-navy/70">
+                {curriculumSubheading}
+              </p>
+            </div>
 
-          <div className="space-y-4">
-            {curriculumModules.map((mod, index) => (
-              <div
-                key={index}
-                className="bg-white rounded-card p-6 border border-lavender-mist shadow-soft flex items-start gap-4"
-              >
-                <div className="w-10 h-10 rounded-full bg-soft-pink text-deep-navy font-bold flex items-center justify-center shrink-0 text-sm">
-                  {index + 1 < 10 ? `0${index + 1}` : index + 1}
+            <div className="space-y-4">
+              {curriculumModules.map((mod, index) => (
+                <div
+                  key={index}
+                  className={`${
+                    curriculumBg === 'warm-ivory' ? 'bg-white' : 'bg-warm-ivory'
+                  } rounded-card p-6 border border-lavender-mist shadow-soft flex items-start gap-4`}
+                >
+                  <div className="w-10 h-10 rounded-full bg-soft-pink text-deep-navy font-bold flex items-center justify-center shrink-0 text-sm">
+                    {index + 1 < 10 ? `0${index + 1}` : index + 1}
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-base sm:text-lg text-deep-navy mb-1">
+                      {mod.title}
+                    </h3>
+                    {mod.desc && <p className="text-sm text-deep-navy/70 leading-relaxed">{mod.desc}</p>}
+                  </div>
                 </div>
-                <div>
-                  <h3 className="font-semibold text-base sm:text-lg text-deep-navy mb-1">
-                    {mod.title}
-                  </h3>
-                  {mod.desc && <p className="text-sm text-deep-navy/70 leading-relaxed">{mod.desc}</p>}
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* 4. WHY DIFFERENT – ẩn hoàn toàn nếu CMS để trống danh sách */}
-      {featureItems.length > 0 && (
-        <section className="py-12 sm:py-16 bg-white border-t border-lavender-mist/40">
+      {showFeatures && (
+        <section
+          className={`py-12 sm:py-16 ${
+            featuresBg === 'white'
+              ? 'bg-white border-t border-lavender-mist/40'
+              : 'bg-warm-ivory border-t border-lavender-mist/40'
+          }`}
+        >
           <div className="max-w-4xl mx-auto px-4 sm:px-6">
             <div className="text-center mb-10">
               <h2 className="font-display text-2xl sm:text-3xl text-deep-navy mb-2">
@@ -269,7 +336,9 @@ export function HabitOfferClient({ product, journeyDays = 28 }: HabitOfferClient
               {featureItems.map((feat, index) => (
                 <div
                   key={index}
-                  className="p-6 rounded-card bg-warm-ivory border border-lavender-mist text-left"
+                  className={`p-6 rounded-card ${
+                    featuresBg === 'white' ? 'bg-warm-ivory' : 'bg-white shadow-soft'
+                  } border border-lavender-mist text-left`}
                 >
                   <span className="w-8 h-8 rounded-full bg-mint-haze text-deep-navy flex items-center justify-center font-bold text-sm mb-4">
                     ✓
@@ -286,8 +355,14 @@ export function HabitOfferClient({ product, journeyDays = 28 }: HabitOfferClient
       )}
 
       {/* 5. FAQ – chỉ hiện khi CMS có câu hỏi (không hiện FAQ mẫu ra trang công khai) */}
-      {faqList.length > 0 && (
-        <section className="py-12 sm:py-16 bg-warm-ivory">
+      {showFaq && (
+        <section
+          className={`py-12 sm:py-16 ${
+            faqBg === 'warm-ivory'
+              ? 'bg-warm-ivory'
+              : 'bg-white border-t border-lavender-mist/40'
+          }`}
+        >
           <div className="max-w-3xl mx-auto px-4 sm:px-6">
             <h2 className="font-display text-2xl sm:text-3xl text-deep-navy text-center mb-8">
               {vi.habit.offer.faq.heading}
@@ -297,7 +372,9 @@ export function HabitOfferClient({ product, journeyDays = 28 }: HabitOfferClient
               {faqList.map((item, index) => (
                 <div
                   key={index}
-                  className="bg-white rounded-card p-6 border border-lavender-mist shadow-soft"
+                  className={`${
+                    faqBg === 'warm-ivory' ? 'bg-white' : 'bg-warm-ivory'
+                  } rounded-card p-6 border border-lavender-mist shadow-soft`}
                 >
                   <h3 className="font-semibold text-deep-navy text-base mb-2">{item.question}</h3>
                   {item.answer && (
@@ -311,42 +388,44 @@ export function HabitOfferClient({ product, journeyDays = 28 }: HabitOfferClient
       )}
 
       {/* 6. BOTTOM CTA */}
-      <section className="py-16 bg-brand-gradient border-t border-lavender-mist">
-        <div className="max-w-2xl mx-auto px-4 text-center">
-          <h2 className="font-display text-3xl sm:text-4xl text-deep-navy mb-4">
-            {bottomTitle}
-          </h2>
-          <p className="text-base text-deep-navy/80 mb-8 max-w-lg mx-auto">
-            {bottomDescription}
-          </p>
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            {cta &&
-              (cta.external ? (
-                <a
-                  href={cta.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center px-8 py-4 rounded-full bg-accent-pink text-white font-bold text-[19px] tracking-tight shadow-soft hover:bg-bright-magenta transition-colors"
-                >
-                  {cta.label} →
-                </a>
-              ) : (
-                <Link
-                  href={cta.href}
-                  className="inline-flex items-center justify-center px-8 py-4 rounded-full bg-accent-pink text-white font-bold text-[19px] tracking-tight shadow-soft hover:bg-bright-magenta transition-colors"
-                >
-                  {cta.label} →
-                </Link>
-              ))}
-            <Link
-              href={HABIT_LOOP_PATH}
-              className="inline-flex items-center justify-center px-6 py-4 rounded-full bg-white text-deep-navy font-semibold text-base hover:bg-soft-pink transition-colors border border-lavender-mist"
-            >
-              {vi.habit.offer.habitLoopCta}
-            </Link>
+      {showBottom && (
+        <section className="py-16 bg-brand-gradient border-t border-lavender-mist">
+          <div className="max-w-2xl mx-auto px-4 text-center">
+            <h2 className="font-display text-3xl sm:text-4xl text-deep-navy mb-4">
+              {bottomTitle}
+            </h2>
+            <p className="text-base text-deep-navy/80 mb-8 max-w-lg mx-auto">
+              {bottomDescription}
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              {cta &&
+                (cta.external ? (
+                  <a
+                    href={cta.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center justify-center px-8 py-4 rounded-full bg-accent-pink text-white font-bold text-[19px] tracking-tight shadow-soft hover:bg-bright-magenta transition-colors"
+                  >
+                    {cta.label} →
+                  </a>
+                ) : (
+                  <Link
+                    href={cta.href}
+                    className="inline-flex items-center justify-center px-8 py-4 rounded-full bg-accent-pink text-white font-bold text-[19px] tracking-tight shadow-soft hover:bg-bright-magenta transition-colors"
+                  >
+                    {cta.label} →
+                  </Link>
+                ))}
+              <Link
+                href={HABIT_LOOP_PATH}
+                className="inline-flex items-center justify-center px-6 py-4 rounded-full bg-white text-deep-navy font-semibold text-base hover:bg-soft-pink transition-colors border border-lavender-mist"
+              >
+                {vi.habit.offer.habitLoopCta}
+              </Link>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
     </div>
   )
 }
