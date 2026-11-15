@@ -145,6 +145,8 @@ describe('Conversion Blocks Unit Tests (T1-03)', () => {
         id: '301',
         name: 'Phiên trải nghiệm Growth Mirror',
         slug: 'growth-mirror-trial',
+        // BX-06: only a coaching_trial product can be booked
+        type: 'coaching_trial',
         price: 250000,
         salePrice: 149000,
         saleEndsAt: new Date(Date.now() + 86400000).toISOString(),
@@ -169,6 +171,8 @@ describe('Conversion Blocks Unit Tests (T1-03)', () => {
         id: '301',
         name: 'Phiên trải nghiệm Growth Mirror',
         slug: 'growth-mirror-trial',
+        // BX-06: only a coaching_trial product can be booked
+        type: 'coaching_trial',
         price: 250000,
         salePrice: 149000,
         saleEndsAt: new Date(Date.now() - 86400000).toISOString(),
