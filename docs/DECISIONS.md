@@ -418,3 +418,15 @@ Chi tiết: `docs/plan/AUDIT-HANA-2026-11-09.md` mục "Kết quả trả lời 
 - **Áp dụng ngay khi deploy** (checkbox mặc định tắt cho cả dữ liệu cũ); trước deploy chạy script báo các phần sẽ ẩn cho Hana xem.
 - Nhãn chức năng (nhãn ô nhập, nút gửi / mua, thông báo lỗi, câu cảm ơn sau gửi form, `aria-label`, chữ pháp lý) **luôn** giữ chữ mặc định.
 - Task: BX-05 (`docs/tasks/prompts/BX-05.md`).
+
+## Video bài học tạm dùng YouTube – chốt 16/11/2026
+
+- Chưa có Bunny Stream → **tạm thời** cho bài học Habit Hack chọn "Nguồn video = YouTube (tạm thời)" và dán link YouTube.
+- Chủ dự án **chấp nhận rủi ro**: video YouTube (kể cả *Không công khai*) **ai có link cũng xem được**. Người đã mua có thể chia sẻ link. Đây là **ngoại lệ có thời hạn** với AGENTS mục 4 (video trả phí qua Bunny) và mục 14 ("không lưu video trả phí ở nơi ai có link cũng xem được").
+- Giảm rủi ro trong lúc tạm:
+  - link / ID chỉ trả về cho khách **có quyền** (cùng kiểm tra `hasAccess` như Bunny), REST công khai không đọc được;
+  - nhúng qua `youtube-nocookie.com`;
+  - video để **Không công khai**, không Công khai.
+- Đích cuối vẫn là **Bunny Stream**. Khi có Bunny: chuyển từng bài sang "Bunny Stream" và xoá / để riêng tư video YouTube tương ứng.
+- Task: BX-07 (`docs/tasks/prompts/BX-07.md`).
+
