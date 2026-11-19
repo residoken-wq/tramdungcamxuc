@@ -914,7 +914,11 @@ Bạn có thể mở trình hướng dẫn bằng 3 cách rất thuận tiện:
      - **Thời lượng (giây)**: Tổng số giây của video (ví dụ: `300` tương đương 5 phút).
      - **Thứ tự**: Thứ tự xuất hiện trong nhóm (số nhỏ hơn đứng trước).
      - **Cho phép xem thử**: Tích chọn ô này nếu bạn muốn bài học mở tự do cho mọi người xem trước (kể cả khách chưa đăng nhập hoặc chưa mua gói). Nếu bỏ tích, bài học sẽ yêu cầu khách hàng đăng nhập và kích hoạt dùng thử 21 ngày hoặc mua sản phẩm Habit Tracker số mới xem được.
-     - **Mã video**: Điền mã định danh video từ dịch vụ lưu trữ Bunny Stream. Ô này được bảo mật tuyệt đối, chỉ quản trị viên nhìn thấy trong admin. Khi hệ thống ở chế độ thử nghiệm nội bộ (sandbox), bài học sẽ hiển thị khung phát thử nghiệm; khi kết nối dịch vụ Bunny chính thức, video sẽ được phát an toàn chống tải lậu cho học viên.
+     - **Nguồn video**: Chọn nguồn phát video cho bài học:
+       - _Bunny Stream_ (mặc định): Sử dụng khi bài học lưu trên Bunny Stream.
+       - _YouTube (tạm thời)_: Dùng tạm thời khi chưa có tài khoản Bunny Stream.
+     - **Link YouTube (tạm thời)**: Chỉ xuất hiện khi chọn _YouTube (tạm thời)_. Dán link video YouTube (xem mục 3.10.1b).
+     - **Mã video**: Chỉ xuất hiện khi chọn _Bunny Stream_. Điền mã định danh video từ dịch vụ lưu trữ Bunny Stream. Ô này được bảo mật tuyệt đối, chỉ quản trị viên nhìn thấy trong admin. Khi hệ thống ở chế độ thử nghiệm nội bộ (sandbox), bài học sẽ hiển thị khung phát thử nghiệm; khi kết nối dịch vụ Bunny chính thức, video sẽ được phát an toàn chống tải lậu cho học viên.
    - Bấm **Xuất bản** để đưa bài học lên Góc học tập.
 
 ### 3.10.1. Cách nhập video Bunny Stream cho bài học
@@ -942,6 +946,48 @@ Bạn có thể mở trình hướng dẫn bằng 3 cách rất thuận tiện:
 4. **Kiểm tra hiển thị**:
    - Bấm nút mở bài học trên Góc học tập (`/habit/hoc/[id]`).
    - Video được phát qua trình phát bảo mật của hệ thống; tiến độ xem của học viên được tự động ghi nhận sau mỗi 15 giây.
+
+---
+
+### 3.10.1b. Cách dùng video YouTube tạm thời (khi chưa có Bunny Stream)
+
+**Mục đích**: Cho phép đăng tải và phát video bài học Habit Hack thông qua YouTube trong thời gian chờ kích hoạt tài khoản lưu trữ video chuyên dụng Bunny Stream.
+
+> [!WARNING]
+> **Lưu ý bảo mật quan trọng về video YouTube:**
+> - Video YouTube (kể cả khi để ở chế độ Không công khai) thì **bất kỳ ai có đường link đều có thể xem và chia sẻ cho người khác**.
+> - Vì vậy, đây chỉ là **giải pháp tình thế tạm thời**. Đích đến chuẩn của Trạm Dừng Cảm Xúc vẫn là Bunny Stream với link ký bảo mật chống sao chép và chống tải lậu.
+
+**Các bước thiết lập video YouTube cho bài học:**
+
+1. **Chuẩn bị video trên YouTube Studio**:
+   - Tải video bài học lên kênh YouTube của bạn tại [YouTube Studio](https://studio.youtube.com).
+   - **Chế độ hiển thị**: Bắt buộc chọn **Không công khai (Unlisted)**. Tuyệt đối **không** để chế độ Công khai (Public).
+   - **Cài đặt nhúng**: Trong phần cài đặt chi tiết của video, cuộn xuống mục _Giấy phép và phân phối_ -> Đảm bảo **giữ bật ô "Cho phép nhúng" (Allow embedding)** để video có thể phát được trên website Trạm Dừng Cảm Xúc.
+
+2. **Lấy đường link video**:
+   - Sao chép đường dẫn video từ trình duyệt hoặc nút chia sẻ của YouTube. Hệ thống hỗ trợ đầy đủ các dạng link thông dụng:
+     - `https://www.youtube.com/watch?v=...`
+     - `https://youtu.be/...`
+     - `https://www.youtube.com/embed/...`
+     - `https://www.youtube.com/shorts/...`
+
+3. **Cấu hình bài học trong CMS**:
+   - Vào CMS (`/admin`) -> **Khóa Habit** -> chọn **Bài học** cần gắn video.
+   - Tại ô **Nguồn video**, chọn **YouTube (tạm thời)**.
+   - Ô **Link YouTube (tạm thời)** sẽ xuất hiện: dán link video vừa sao chép vào ô này.
+   - Bấm **Lưu** hoặc **Xuất bản**.
+
+4. **Kiểm tra phát video và ghi nhận tiến độ**:
+   - Truy cập trang bài học tại `/habit/hoc/[id]`.
+   - Video YouTube sẽ được phát trong khung phát 16:9 đồng bộ giao diện thương hiệu thông qua tên miền bảo mật `youtube-nocookie.com`.
+   - Hệ thống tự động lắng nghe sự kiện từ trình phát qua postMessage: khi học viên xem đạt từ **80% thời lượng bài học trở lên**, hệ thống sẽ tự động ghi nhận hoàn thành bài học.
+
+5. **Cách chuyển đổi sang Bunny Stream sau này**:
+   - Khi dự án kích hoạt tài khoản Bunny Stream, tải video gốc lên kho Bunny Stream và sao chép mã Video ID (GUID).
+   - Mở bài học trong CMS, đổi **Nguồn video** từ _YouTube (tạm thời)_ sang **Bunny Stream**.
+   - Dán mã Video ID vào ô **Mã video** và bấm **Xuất bản**.
+   - Sau khi bài học trên website đã chuyển sang Bunny Stream, bạn có thể chuyển video cũ trên YouTube sang chế độ **Riêng tư (Private)** hoặc xóa đi để bảo vệ bản quyền nội dung.
 
 ---
 
