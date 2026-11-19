@@ -1,6 +1,6 @@
-# Deploy BX-01 → BX-06 lên tramdungcamxuc.com
+# Deploy BX-01 → BX-07 lên tramdungcamxuc.com
 
-Viết ngày 15/11/2026. Quy trình chung: `docs/RUNBOOK.md` mục "Deploy một lệnh", "Backup / Rollback" và **mục 6** (báo cáo ô CMS để trống – BX-05).
+Viết ngày 15/11/2026, cập nhật 19/11/2026 (thêm BX-07). Quy trình chung: `docs/RUNBOOK.md` mục "Deploy một lệnh", "Backup / Rollback" và **mục 6** (báo cáo ô CMS để trống – BX-05).
 
 ## Đợt này lên những gì
 
@@ -15,16 +15,19 @@ Viết ngày 15/11/2026. Quy trình chung: `docs/RUNBOOK.md` mục "Deploy một
 | #393 | Công cụ nhấn chữ cho 20 khối tiêu đề (gồm "Khối các gói Growth Mirror") | – |
 | #396 BX-05 | **Ô CMS để trống thì ẨN** (không hiện chữ mẫu), checkbox "Dùng chữ mặc định cho ô để trống" theo từng phần | `20261115_210000_bx05_empty_means_hidden` |
 | #398 BX-06 | Nút đặt lịch không dẫn tới 404; link cũ chuyển hướng / trang "tạm ngưng"; khung trạng thái đặt lịch trong form sản phẩm | – |
+| #401 BX-07 | Bài học Habit Hack tạm dùng video YouTube ("Nguồn video" Bunny / YouTube tạm thời), link chỉ trả cho khách có quyền | `20261116_120000_bx07_youtube_lessons` |
 
-- 2 migration đều **chỉ thêm cột boolean `DEFAULT false`**, vài ms. Không xoá / sửa dữ liệu cũ.
+- 3 migration đều **chỉ thêm cột**, vài ms. Không xoá / sửa dữ liệu cũ:
+  - BX-03, BX-05: cột boolean `DEFAULT false`;
+  - BX-07: cột "Nguồn video" `DEFAULT 'bunny'` + "Link YouTube" (bài học cũ vẫn là Bunny).
 - **Không** có biến môi trường mới, `docker-compose.prod.yml` không đổi.
-- Nếu BX-01 → BX-03 đã deploy trước đó thì lần này chỉ chạy migration BX-05.
+- Nếu BX-01 → BX-03 đã deploy trước đó thì lần này chỉ chạy migration BX-05 và BX-07.
 
 > ⚠️ **BX-05 đổi cách hiển thị ngay khi deploy:** mọi ô chữ đang **trống** trên site thật (trước đây tự hiện chữ mẫu của hệ thống) sẽ **ẩn**. Phải chạy báo cáo ở bước 2 và gửi Hana **trước** khi deploy.
 
 ## 1. Kiểm trước khi deploy
 
-1. GitHub → **Actions** → run CI mới nhất của `main` (commit sau khi merge #398):
+1. GitHub → **Actions** → run CI mới nhất của `main` (commit sau khi merge #401 BX-07):
    - tất cả job xanh;
    - job **"Build and Push Docker image"** xanh (đã đẩy `latest` và `tools-latest`).
 2. Ghi lại 7 ký tự đầu của commit đó (VD `abc1234`).
@@ -90,7 +93,7 @@ Lỗi ở bước nào thì dừng ở đó. **Không** sửa `.env`. Nếu `git
 Mong đợi:
 
 - commit đang chạy = commit ở bước 1;
-- migration mới nhất = `20261115_210000_bx05_empty_means_hidden`.
+- migration mới nhất = `20261116_120000_bx07_youtube_lessons`.
 
 ## 4. Kiểm sau deploy (10 phút, ai cũng làm được)
 
@@ -106,6 +109,7 @@ Mở bằng điện thoại **và** máy tính:
 | `/admin` → Sản phẩm → 1 sản phẩm | Ô giá hiện `250.000 đ`, gõ số tự thêm dấu chấm; cột giá ở danh sách `250.000đ` |
 | `/admin` → Sản phẩm → "Phiên trải nghiệm" | Đầu form có khung "Trang đặt lịch đang mở / ĐÓNG" |
 | Builder → "Khối các gói Growth Mirror" | Dưới ô "Tiêu đề dòng 1" có dãy chip chữ; bấm 1 chữ thì hiện "Kiểu nhấn chữ" + "Hiệu ứng" |
+| `/admin` → Bài học → 1 bài | Có ô "Nguồn video" (Bunny Stream / YouTube (tạm thời)); chọn YouTube thì hiện ô "Link YouTube (tạm thời)" |
 
 Lỗi bất kỳ → bước 6.
 
@@ -123,16 +127,20 @@ Lỗi bất kỳ → bước 6.
    Khung đầu form chuyển sang "Trang đặt lịch đang mở".
 3. **Sản phẩm Habit Tracker số** → "Ẩn / hiện các phần": tick "Ẩn: khác biệt" và "Ẩn: Câu hỏi thường gặp" (rà soát mục 17), nếu chưa làm.
 4. **Trang Chuyển mình** → form cuối trang: khối "Khung form liên hệ" chọn "Mục đích form = Nhận brochure" (BX-02), nếu chưa làm.
-5. **Tiêu đề muốn nhấn chữ** (VD "CHUYỂN MÌNH KHÔNG CHÊNH VÊNH"):
+5. **Bài học Habit Hack (BX-07)** – nếu dùng YouTube tạm thời:
+   - trên YouTube, mỗi video bài học để **Không công khai** (không để Công khai) và **giữ bật "Cho phép nhúng"**;
+   - CMS → Bài học → từng bài → "Nguồn video" = **YouTube (tạm thời)** → dán link → **Xuất bản**;
+   - mở thử 1 bài bằng tài khoản khách đã có quyền: video phát được; tài khoản chưa có quyền không thấy video.
+6. **Tiêu đề muốn nhấn chữ** (VD "CHUYỂN MÌNH KHÔNG CHÊNH VÊNH"):
    - bấm chip "CHUYỂN" 1 lần, "CHÊNH" 2 lần;
    - chọn kiểu "Nền", hiệu ứng "Vẽ dần";
    - Xuất bản.
 
-Chi tiết từng ô: `docs/HUONG_DAN_CMS.md` (mục "Ô để trống và chữ mặc định", "Nút đặt lịch phiên trải nghiệm", tô màu chữ BX-04).
+Chi tiết từng ô: `docs/HUONG_DAN_CMS.md` (mục "Ô để trống và chữ mặc định", "Nút đặt lịch phiên trải nghiệm", tô màu chữ BX-04, bài học YouTube tạm thời BX-07).
 
 ## 6. Rollback
 
-Hai migration chỉ **thêm cột**, nên bản cũ vẫn chạy được trên DB mới. Rollback chỉ cần đổi bản app:
+Ba migration chỉ **thêm cột**, nên bản cũ vẫn chạy được trên DB mới. Rollback chỉ cần đổi bản app:
 
 ```bash
 ./scripts/deploy.sh rollback
@@ -142,7 +150,10 @@ Hai migration chỉ **thêm cột**, nên bản cũ vẫn chạy được trên 
 ./scripts/deploy.sh status
 ```
 
-Mong đợi: commit đang chạy = commit ghi ở bước 3. Sau rollback, ô trống lại hiện chữ mẫu như trước (bản cũ không đọc cột BX-05).
+Mong đợi: commit đang chạy = commit ghi ở bước 3. Sau rollback:
+
+- ô trống lại hiện chữ mẫu như trước (bản cũ không đọc cột BX-05);
+- bài học đã chuyển sang YouTube **không còn video** (bản cũ chỉ đọc Bunny) cho đến khi deploy lại.
 
 Chỉ khi dữ liệu bị hỏng mới phục hồi toàn bộ DB + media từ bản backup `deploy.sh` vừa tạo: `docs/RUNBOOK.md` → "Phục hồi toàn diện cả code, database và media". Lệnh này **xoá dữ liệu hiện tại** (lead / đơn mới sau giờ deploy sẽ mất), nên phải hỏi lại trước khi chạy.
 
