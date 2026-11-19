@@ -1438,6 +1438,14 @@ export interface Lesson {
    */
   summary?: string | null;
   /**
+   * Chọn nguồn video bài giảng (mặc định Bunny Stream; YouTube tạm thời khi chưa có Bunny).
+   */
+  videoSource?: ('bunny' | 'youtube') | null;
+  /**
+   * Tạm thời khi chưa có Bunny. Video YouTube ai có link cũng xem được – để chế độ **Không công khai**, **không** để Công khai. Khi có Bunny: chọn lại 'Bunny Stream' và nhập Mã video.
+   */
+  youtubeUrl?: string | null;
+  /**
    * Mã video trên dịch vụ lưu trữ. Chỉ quản trị viên xem được.
    */
   videoId?: string | null;
@@ -3120,6 +3128,8 @@ export interface LessonsSelect<T extends boolean = true> {
   module?: T;
   title?: T;
   summary?: T;
+  videoSource?: T;
+  youtubeUrl?: T;
   videoId?: T;
   durationSec?: T;
   stage?: T;
