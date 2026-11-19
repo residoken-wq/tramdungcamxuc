@@ -5,7 +5,8 @@ import config from '@/payload.config'
 import type { CourseModule, Lesson, LessonProgress } from '@/payload-types'
 import { hasAccess } from '@/lib/entitlements'
 import { HABIT_TRACKER_PRODUCT_SLUG } from '@/lib/habit/config'
-import { getVideoProvider } from '@/lib/video'
+import { buildYoutubeEmbedUrl, getVideoProvider, parseYoutubeVideoId, type VideoPlayback } from '@/lib/video'
+import { getSiteUrl } from '@/lib/site-url'
 import type {
   CourseDashboardData,
   CourseDashboardLesson,
@@ -69,7 +70,11 @@ async function getLessonPlaybackInternal(
   }
 
   // 1. Tìm bài học trong database
-  let lesson: (Lesson & { videoId?: string | null }) | null = null
+  let lesson: (Lesson & {
+    videoId?: string | null
+    videoSource?: ('bunny' | 'youtube') | null
+    youtubeUrl?: string | null
+  }) | null = null
   try {
     lesson = (await payload.findByID({
       collection: 'lessons',
@@ -147,10 +152,35 @@ async function getLessonPlaybackInternal(
     _status: lesson._status,
   })
 
+  // REVIEW-REQUIRED: BX-07 - Phát video YouTube tạm thời khi videoSource = youtube
+  const resolveLessonPlayback = async (): Promise<VideoPlayback | null> => {
+    if (lesson.videoSource === 'youtube') {
+      const videoId = parseYoutubeVideoId(lesson.youtubeUrl)
+      const expiresAt = new Date(now.getTime() + 3600 * 1000)
+      if (!videoId) {
+        return {
+          kind: 'iframe',
+          url: null,
+          expiresAt,
+        }
+      }
+      const siteUrl = getSiteUrl()
+      const url = buildYoutubeEmbedUrl(videoId, siteUrl)
+      return {
+        kind: 'iframe',
+        url,
+        expiresAt,
+      }
+    }
+
+    // Nhánh Bunny Stream giữ nguyên getVideoProvider()
+    const videoProvider = getVideoProvider()
+    return videoProvider.getPlayback(lesson.videoId || '')
+  }
+
   // 2. Nếu là bài xem thử: cho phép xem kể cả khi khách chưa đăng nhập
   if (isFreePreview) {
-    const videoProvider = getVideoProvider()
-    const playback = await videoProvider.getPlayback(lesson.videoId || '')
+    const playback = await resolveLessonPlayback()
     return {
       allowed: true,
       reason: null,
@@ -200,8 +230,7 @@ async function getLessonPlaybackInternal(
   }
 
   // 5. Đã xác minh có quyền -> lấy thông tin phát video
-  const videoProvider = getVideoProvider()
-  const playback = await videoProvider.getPlayback(lesson.videoId || '')
+  const playback = await resolveLessonPlayback()
 
   return {
     allowed: true,

@@ -218,6 +218,7 @@ export default async function HabitLessonPage({ params, searchParams }: LessonPa
               initialCompleted={isCompleted}
               // Admin preview never records progress (no customer session).
               isAuthenticated={Boolean(customer)}
+              lessonTitle={lesson.title}
             />
           </div>
 
