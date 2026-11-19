@@ -79,13 +79,14 @@ describe('BX-07: YouTube Video Lessons', () => {
     it('constructs correct secure embed URL with enablejsapi=1 and origin', () => {
       const url = buildYoutubeEmbedUrl('dQw4w9WgXcQ', 'https://tramdungcamxuc.com')
       expect(url).toBe(
-        'https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ?rel=0&modestbranding=1&playsinline=1&enablejsapi=1&origin=https://tramdungcamxuc.com',
+        'https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ?rel=0&modestbranding=1&playsinline=1&enablejsapi=1&origin=' +
+          encodeURIComponent('https://tramdungcamxuc.com'),
       )
     })
 
     it('trims trailing slashes from origin', () => {
       const url = buildYoutubeEmbedUrl('dQw4w9WgXcQ', 'https://tramdungcamxuc.com///')
-      expect(url).toContain('origin=https://tramdungcamxuc.com')
+      expect(url).toContain('origin=' + encodeURIComponent('https://tramdungcamxuc.com'))
     })
   })
 
@@ -133,6 +134,7 @@ describe('BX-07: YouTube Video Lessons', () => {
               type: 'digital_tool',
               saleStatus: 'on_sale',
               price: 250000,
+              isSample: true,
               _status: 'published',
             },
             overrideAccess: true,

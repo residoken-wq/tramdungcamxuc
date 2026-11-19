@@ -247,7 +247,14 @@ test.describe('Learning Dashboard & Protected Video Interface Flow (T2-05a)', ()
         await expect(unauthPage.getByRole('button', { name: /Giả lập xem hết/i })).not.toBeVisible()
 
         // 12. BX-07: Tạo bài [MẪU] nguồn YouTube
-        const ytVideoId = 'dQw4w9WgXcQ'
+        const ytVideoId = 'AAAAAAAAAAA'
+        await unauthPage.route('https://www.youtube-nocookie.com/**', (r) =>
+          r.fulfill({ contentType: 'text/html', body: '<!doctype html><title>YouTube (stub)</title>' }),
+        )
+        await guestPage.route('https://www.youtube-nocookie.com/**', (r) =>
+          r.fulfill({ contentType: 'text/html', body: '<!doctype html><title>YouTube (stub)</title>' }),
+        )
+
         const ytLessonRes = await page.request.post('/api/lessons', {
           data: {
             title: `[MẪU] E2E Bài Học YouTube ${randomUUID().slice(0, 6)}`,
@@ -289,7 +296,9 @@ test.describe('Learning Dashboard & Protected Video Interface Flow (T2-05a)', ()
           return document.documentElement.scrollWidth > document.documentElement.clientWidth
         })
         expect(hasHorizontalScroll).toBe(false)
-        await expectNoSeriousA11y(guestPage, 'habit-hoc-youtube-lesson-375')
+        await expectNoSeriousA11y(guestPage, 'habit-hoc-youtube-lesson-375', {
+          exclude: ['iframe[src*="youtube-nocookie.com"]'],
+        })
       } finally {
         await unauthContext.close().catch(() => {})
       }

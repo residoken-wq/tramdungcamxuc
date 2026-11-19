@@ -73,5 +73,5 @@ export function parseYoutubeVideoId(url: string | null | undefined): string | nu
  */
 export function buildYoutubeEmbedUrl(videoId: string, siteUrl: string): string {
   const cleanSiteUrl = siteUrl.trim().replace(/\/+$/, '')
-  return `https://www.youtube-nocookie.com/embed/${videoId}?rel=0&modestbranding=1&playsinline=1&enablejsapi=1&origin=${cleanSiteUrl}`
+  return `https://www.youtube-nocookie.com/embed/${videoId}?rel=0&modestbranding=1&playsinline=1&enablejsapi=1&origin=${encodeURIComponent(cleanSiteUrl)}`
 }
