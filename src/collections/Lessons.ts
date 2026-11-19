@@ -10,6 +10,7 @@ import {
   textarea,
 } from '../fields/content'
 import { authenticated } from '../lib/auth/access'
+import { parseYoutubeVideoId } from '../lib/video/youtube'
 import { vi } from '../lib/i18n/vi'
 import { collectionLivePreview } from '../lib/live-preview'
 
@@ -17,11 +18,51 @@ export const Lessons = contentCollection('lessons', 'Bài học', vi.cms.nav.hab
   relation('module', 'Nhóm bài học', 'courseModules'),
   text('title', 'Tiêu đề', true),
   textarea('summary', 'Tóm tắt'),
+  select(
+    'videoSource',
+    'Nguồn video',
+    [
+      ['bunny', 'Bunny Stream'],
+      ['youtube', 'YouTube (tạm thời)'],
+    ],
+    {
+      defaultValue: 'bunny',
+      admin: {
+        description:
+          'Chọn nguồn video bài giảng (mặc định Bunny Stream; YouTube tạm thời khi chưa có Bunny).',
+      },
+    },
+  ),
+  // REVIEW-REQUIRED: Protect YouTube URLs for paid lessons until entitlement access is verified.
+  {
+    ...text('youtubeUrl', 'Link YouTube (tạm thời)', false, {
+      validate: (value: string | null | undefined) => {
+        if (!value || typeof value !== 'string' || !value.trim()) {
+          return true
+        }
+        const id = parseYoutubeVideoId(value)
+        if (!id) {
+          return 'Vui lòng nhập link YouTube hợp lệ (chấp nhận youtube.com/watch, youtu.be, embed, shorts).'
+        }
+        return true
+      },
+    }),
+    access: { read: authenticated },
+    admin: {
+      description:
+        'Tạm thời khi chưa có Bunny. Video YouTube ai có link cũng xem được – để chế độ **Không công khai**, **không** để Công khai. Khi có Bunny: chọn lại \'Bunny Stream\' và nhập Mã video.',
+      condition: (_, siblingData) => siblingData?.videoSource === 'youtube',
+    },
+  },
   // REVIEW-REQUIRED: Protect paid video identifiers until entitlement access is implemented.
   {
     ...text('videoId', 'Mã video'),
     access: { read: authenticated },
-    admin: { description: 'Mã video trên dịch vụ lưu trữ. Chỉ quản trị viên xem được.' },
+    admin: {
+      description: 'Mã video trên dịch vụ lưu trữ. Chỉ quản trị viên xem được.',
+      condition: (_, siblingData) =>
+        !siblingData?.videoSource || siblingData?.videoSource === 'bunny',
+    },
   },
   number('durationSec', 'Thời lượng (giây)'),
   select('stage', 'Giai đoạn', [...stageOptions, ['none', 'Không áp dụng']]),
@@ -40,7 +81,7 @@ export const Lessons = contentCollection('lessons', 'Bài học', vi.cms.nav.hab
 Lessons.admin = {
   ...Lessons.admin,
   description: 'Bài giảng video và tài liệu thực hành trong khóa Habit.',
-  defaultColumns: ['title', 'module', 'stage', 'isFreePreview', 'order'],
+  defaultColumns: ['title', 'module', 'videoSource', 'stage', 'isFreePreview', 'order'],
   listSearchableFields: ['title', 'summary'],
   livePreview: collectionLivePreview('lessons'),
   components: {

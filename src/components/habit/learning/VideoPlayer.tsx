@@ -7,6 +7,7 @@ import { vi } from '@/lib/i18n/vi'
 import { recordLessonProgress } from '@/lib/courses/actions'
 
 const BUNNY_PLAYER_ORIGIN = 'https://iframe.mediadelivery.net'
+const YOUTUBE_PLAYER_ORIGIN = 'https://www.youtube-nocookie.com'
 
 export interface VideoPlayerProps {
   lessonId: number
@@ -15,6 +16,7 @@ export interface VideoPlayerProps {
   lessonOrder?: number
   initialCompleted?: boolean
   isAuthenticated?: boolean
+  lessonTitle?: string
   onProgressRecorded?: (percent: number) => void
 }
 
@@ -25,6 +27,7 @@ export function VideoPlayer({
   lessonOrder = 0,
   initialCompleted = false,
   isAuthenticated = false,
+  lessonTitle,
   onProgressRecorded,
 }: VideoPlayerProps) {
   const [isCompleted, setIsCompleted] = useState(initialCompleted)
@@ -66,17 +69,85 @@ export function VideoPlayer({
     [isAuthenticated, lessonId, moduleId, lessonOrder, onProgressRecorded],
   )
 
-  // Xử lý sự kiện postMessage từ iframe Bunny Stream (Player.js API)
+  // Xử lý sự kiện postMessage từ iframe Bunny Stream (Player.js API) hoặc YouTube IFrame API
   useEffect(() => {
     if (playback.kind !== 'iframe' || !playback.url) return
 
     const handleMessage = (event: MessageEvent) => {
-      // BẢO MẬT: Chỉ chấp nhận message từ iframe Bunny Stream
-      if (event.origin !== BUNNY_PLAYER_ORIGIN) {
-        return
-      }
       // Only the lesson's own player iframe, not any other frame served from the same origin.
       if (!iframeRef.current || event.source !== iframeRef.current.contentWindow) {
+        return
+      }
+
+      // BẢO MẬT: Xử lý sự kiện từ YouTube NoCookie (BX-07)
+      if (event.origin === YOUTUBE_PLAYER_ORIGIN) {
+        let data: Record<string, unknown> | null = null
+        if (typeof event.data === 'string') {
+          try {
+            const parsed = JSON.parse(event.data)
+            if (parsed && typeof parsed === 'object') {
+              data = parsed as Record<string, unknown>
+            }
+          } catch {
+            return
+          }
+        } else if (event.data && typeof event.data === 'object') {
+          data = event.data as Record<string, unknown>
+        }
+
+        if (!data) {
+          return
+        }
+
+        if (data.event === 'infoDelivery' || data.event === 'initialDelivery') {
+          const info =
+            data.info && typeof data.info === 'object'
+              ? (data.info as Record<string, unknown>)
+              : null
+          if (!info) return
+
+          const currentTime = typeof info.currentTime === 'number' ? info.currentTime : null
+          const duration = typeof info.duration === 'number' ? info.duration : null
+          const playerState = typeof info.playerState === 'number' ? info.playerState : null
+
+          if (playerState === 0) {
+            lastRecordedPercentRef.current = 100
+            sendProgress(100)
+            return
+          }
+
+          if (currentTime !== null && duration !== null && duration > 0) {
+            const percent = Math.min(100, Math.round((currentTime / duration) * 100))
+            const timeSinceLast = Math.abs(currentTime - lastRecordedTimeRef.current)
+            const percentDiff = Math.abs(percent - lastRecordedPercentRef.current)
+
+            if (percent >= 80 && lastRecordedPercentRef.current < 80) {
+              lastRecordedTimeRef.current = currentTime
+              lastRecordedPercentRef.current = percent
+              sendProgress(percent)
+            } else if (percentDiff >= 5 || timeSinceLast >= 15) {
+              lastRecordedTimeRef.current = currentTime
+              lastRecordedPercentRef.current = percent
+              sendProgress(percent)
+            }
+          }
+
+          if (playerState === 2) {
+            if (currentTime !== null && duration !== null && duration > 0) {
+              const percent = Math.min(100, Math.round((currentTime / duration) * 100))
+              lastRecordedTimeRef.current = currentTime
+              lastRecordedPercentRef.current = percent
+              sendProgress(percent)
+            } else if (lastRecordedPercentRef.current > 0) {
+              sendProgress(lastRecordedPercentRef.current)
+            }
+          }
+        }
+        return
+      }
+
+      // BẢO MẬT: Chỉ chấp nhận message từ iframe Bunny Stream
+      if (event.origin !== BUNNY_PLAYER_ORIGIN) {
         return
       }
 
@@ -174,12 +245,17 @@ export function VideoPlayer({
     try {
       const target = iframeRef.current?.contentWindow
       if (!target) return
-      const events = ['timeupdate', 'pause', 'ended']
-      for (const ev of events) {
-        target.postMessage(
-          { context: 'player.js', method: 'addEventListener', value: ev },
-          BUNNY_PLAYER_ORIGIN,
-        )
+      const isYouTube = Boolean(playback.url?.includes('youtube-nocookie.com'))
+      if (isYouTube) {
+        target.postMessage(JSON.stringify({ event: 'listening' }), YOUTUBE_PLAYER_ORIGIN)
+      } else {
+        const events = ['timeupdate', 'pause', 'ended']
+        for (const ev of events) {
+          target.postMessage(
+            { context: 'player.js', method: 'addEventListener', value: ev },
+            BUNNY_PLAYER_ORIGIN,
+          )
+        }
       }
     } catch {
       // Bỏ qua lỗi gửi postMessage tới iframe
@@ -314,18 +390,24 @@ export function VideoPlayer({
     )
   }
 
-  // 2. Iframe Embed (Bunny stream player hoặc nhúng)
+  // 2. Iframe Embed (Bunny stream player hoặc YouTube nhúng)
   if (playback.kind === 'iframe' && playback.url) {
+    const isYouTube = playback.url.includes('youtube-nocookie.com')
     return (
       <div className="overflow-hidden rounded-2xl border border-lavender-mist/80 bg-deep-navy shadow-lg">
         <div className="relative aspect-video w-full">
           <iframe
             ref={iframeRef}
             src={playback.url}
-            title={vi.learning.lesson.videoTitle}
+            title={lessonTitle || vi.learning.lesson.videoTitle}
             className="absolute inset-0 h-full w-full border-0"
-            allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;"
+            allow={
+              isYouTube
+                ? 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture'
+                : 'accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;'
+            }
             allowFullScreen
+            referrerPolicy="strict-origin-when-cross-origin"
             onLoad={handleIframeLoad}
           />
         </div>

@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto'
 import { expect, test, type Page, type Response } from './fixtures'
+import { expectNoSeriousA11y } from './helpers/a11y'
 
 /**
  * End-to-End Test for Learning Dashboard & Protected Video Interface (T2-05a).
@@ -54,6 +55,7 @@ test.describe('Learning Dashboard & Protected Video Interface Flow (T2-05a)', ()
     let moduleId: number | undefined
     let freeLessonId: number | undefined
     let paidLessonId: number | undefined
+    let youtubeLessonId: number | undefined
     let customerId: number | undefined
     let entitlementId: number | undefined
 
@@ -243,6 +245,60 @@ test.describe('Learning Dashboard & Protected Video Interface Flow (T2-05a)', ()
         await unauthPage.goto(`/habit/hoc/${paidLessonId}`)
         await expect(unauthPage.getByText(/Nội dung này chưa được mở khóa/i)).toBeVisible()
         await expect(unauthPage.getByRole('button', { name: /Giả lập xem hết/i })).not.toBeVisible()
+
+        // 12. BX-07: Tạo bài [MẪU] nguồn YouTube
+        const ytVideoId = 'AAAAAAAAAAA'
+        await unauthPage.route('https://www.youtube-nocookie.com/**', (r) =>
+          r.fulfill({ contentType: 'text/html', body: '<!doctype html><title>YouTube (stub)</title>' }),
+        )
+        await guestPage.route('https://www.youtube-nocookie.com/**', (r) =>
+          r.fulfill({ contentType: 'text/html', body: '<!doctype html><title>YouTube (stub)</title>' }),
+        )
+
+        const ytLessonRes = await page.request.post('/api/lessons', {
+          data: {
+            title: `[MẪU] E2E Bài Học YouTube ${randomUUID().slice(0, 6)}`,
+            module: moduleId,
+            videoSource: 'youtube',
+            youtubeUrl: `https://www.youtube.com/watch?v=${ytVideoId}`,
+            durationSec: 300,
+            isFreePreview: false,
+            order: 3,
+            isSample: true,
+            _status: 'published',
+          },
+        })
+        expect(ytLessonRes.status()).toBe(201)
+        youtubeLessonId = (await ytLessonRes.json()).doc.id
+
+        // 13. REST GET /api/lessons/<id> không đăng nhập -> không có youtubeUrl
+        const unauthRestRes = await unauthContext.request.get(`/api/lessons/${youtubeLessonId}`)
+        expect(unauthRestRes.status()).toBe(200)
+        const unauthRestData = await unauthRestRes.json()
+        expect(unauthRestData.youtubeUrl).toBeUndefined()
+
+        // 14. Khách chưa có quyền -> không có iframe, page.content() không chứa video ID
+        await unauthPage.goto(`/habit/hoc/${youtubeLessonId}`)
+        await expect(unauthPage.getByText(/Nội dung này chưa được mở khóa/i)).toBeVisible()
+        await expect(unauthPage.locator('iframe[src*="youtube-nocookie.com/embed/"]')).not.toBeVisible()
+        const unauthHtml = await unauthPage.content()
+        expect(unauthHtml).not.toContain(ytVideoId)
+
+        // 15. Khách có quyền -> thấy iframe[src*="youtube-nocookie.com/embed/"]
+        await guestPage.goto(`/habit/hoc/${youtubeLessonId}`)
+        const ytIframe = guestPage.locator(`iframe[src*="youtube-nocookie.com/embed/${ytVideoId}"]`)
+        await expect(ytIframe).toBeVisible({ timeout: 15000 })
+        expect(await ytIframe.getAttribute('src')).toContain('enablejsapi=1&origin=')
+
+        // 16. Kiểm tra responsive 375px: không cuộn ngang và axe sạch
+        await guestPage.setViewportSize({ width: 375, height: 667 })
+        const hasHorizontalScroll = await guestPage.evaluate(() => {
+          return document.documentElement.scrollWidth > document.documentElement.clientWidth
+        })
+        expect(hasHorizontalScroll).toBe(false)
+        await expectNoSeriousA11y(guestPage, 'habit-hoc-youtube-lesson-375', {
+          exclude: ['iframe[src*="youtube-nocookie.com"]'],
+        })
       } finally {
         await unauthContext.close().catch(() => {})
       }
@@ -272,6 +328,9 @@ test.describe('Learning Dashboard & Protected Video Interface Flow (T2-05a)', ()
         await page.request.delete(`/api/customers/${customerId}`).catch(() => {})
       }
 
+      if (youtubeLessonId) {
+        await page.request.delete(`/api/lessons/${youtubeLessonId}`).catch(() => {})
+      }
       if (paidLessonId) {
         await page.request.delete(`/api/lessons/${paidLessonId}`).catch(() => {})
       }
