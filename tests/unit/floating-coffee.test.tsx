@@ -35,8 +35,8 @@ describe('FloatingCoffee & FloatingActions (CF-01)', () => {
     expect(c2.firstChild).toBeNull()
   })
 
-  it('CF-02 + AU-01: ly cà phê hiện ở các trang thông thường và ẩn trên /habit/tracker (có nút riêng); Zalo giữ danh sách ẩn', () => {
-    const coffeeHidden = ['/habit/tracker']
+  it('CF-02 + 19/11: ly cà phê hiện ở mọi trang, kể cả /habit/tracker (bỏ nút riêng); Zalo giữ danh sách ẩn', () => {
+    const coffeeHidden: string[] = []
     const zaloHidden = ['/habit/hoc', '/habit/tracker', '/eq-buddy/the/abc', '/eq-buddy/rut-the']
     for (const path of [
       '/',

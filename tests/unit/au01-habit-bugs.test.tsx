@@ -145,9 +145,10 @@ describe('AU-01 Mục 2: Ô chọn giờ AM/PM', () => {
 
 describe('AU-01 Mục 3: Ẩn nút ly cà phê toàn site trên bảng Habit 28 ngày', () => {
   it('danh sách tiền tố ẩn nút cà phê có đường dẫn bảng Habit (/habit/tracker)', () => {
-    expect(HIDE_FLOATING_COFFEE_PREFIXES).toContain('/habit/tracker')
-    expect(shouldHideFloatingCoffee('/habit/tracker')).toBe(true)
-    expect(shouldHideFloatingCoffee('/habit/tracker/chi-tiet')).toBe(true)
+    // 19/11: the tracker dropped its own "♡ Thấy công cụ này hữu ích" button → shared coffee button shows
+    expect(HIDE_FLOATING_COFFEE_PREFIXES).not.toContain('/habit/tracker')
+    expect(shouldHideFloatingCoffee('/habit/tracker')).toBe(false)
+    expect(shouldHideFloatingCoffee('/habit/tracker/chi-tiet')).toBe(false)
   })
 
   it('các trang khác không nằm trong danh sách ẩn vẫn giữ nút cà phê', () => {
