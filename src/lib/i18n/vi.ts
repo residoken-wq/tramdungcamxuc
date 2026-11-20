@@ -4982,6 +4982,17 @@ export const vi = {
     animPop: 'Nổi lên',
     chipHelp: 'Bấm chip: lần 1 nhấn (*), lần 2 gạch ngang (~), lần 3 bỏ.',
   },
+  bx08: {
+    category: 'Trang sản phẩm',
+    chooseProduct: 'Chọn sản phẩm ở bảng bên phải để hiện nội dung khối này.',
+    loading: 'Đang tải dữ liệu sản phẩm…',
+    productUnavailable:
+      'Sản phẩm này chưa xuất bản hoặc đang Ẩn nên khối không hiện trên trang. Kiểm tra lại ở Sản phẩm.',
+    sectionEmpty: (section: string) =>
+      `Phần "${section}" của sản phẩm đang trống nên khách sẽ không thấy khối này. Nhập nội dung ở Sản phẩm → tab "Trang giới thiệu".`,
+    reservedSlug: (slug: string) =>
+      `Đường dẫn "/${slug}" là trang ứng dụng (học, tracker, rút thẻ, thanh toán, tài khoản…) nên không dựng bằng builder được. Chọn đường dẫn khác.`,
+  },
   bx06: {
     bannerOpenLabel: 'Trang đặt lịch đang mở:',
     bannerClosedLabel: 'Trang đặt lịch đang ĐÓNG',

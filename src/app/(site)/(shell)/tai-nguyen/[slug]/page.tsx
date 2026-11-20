@@ -11,6 +11,14 @@ import { RefreshOnSave } from '@/components/site/RefreshOnSave'
 import { getAdminPreviewUser } from '@/lib/live-preview.server'
 import { vi } from '@/lib/i18n/vi'
 import { PATHS } from '@/lib/paths'
+import {
+  BuilderPage,
+  builderPageMetadata,
+  findPublishedBuilderPage,
+} from '@/lib/pages/puck-override.server'
+
+/** BX-08: a published builder page `tai-nguyen/<slug>` replaces the coded resource page. */
+const builderSlug = (slug: string) => `tai-nguyen/${slug}`
 
 export const dynamic = 'force-dynamic'
 
@@ -21,6 +29,8 @@ interface ResourcePageProps {
 
 export async function generateMetadata({ params }: ResourcePageProps): Promise<Metadata> {
   const { slug } = await params
+  const builderPage = await findPublishedBuilderPage(builderSlug(slug))
+  if (builderPage) return builderPageMetadata(builderPage)
   const payload = await getPayload({ config })
   const res = await payload.find({
     collection: 'products',
@@ -55,6 +65,11 @@ export default async function ResourcePage({ params, searchParams }: ResourcePag
   // REVIEW-REQUIRED: Chỉ phiên admin Payload (users collection) mới được đọc bản nháp của tài nguyên.
   // Khách vãng lai và học viên dù có preview=1 vẫn chỉ đọc bản đã xuất bản.
   const adminUser = await getAdminPreviewUser(search)
+
+  const builderPage = await findPublishedBuilderPage(builderSlug(slug))
+  if (builderPage) {
+    return <BuilderPage doc={builderPage} slug={builderSlug(slug)} />
+  }
   const isDraft = Boolean(adminUser)
 
   const whereConditions = isDraft

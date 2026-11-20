@@ -228,6 +228,51 @@ export async function getHabitProduct(
     return null
   }
 
+  return mapOfferProduct(doc, {
+    videoCount: lessonCountRes.totalDocs,
+    techniqueCount: techniqueCountRes.totalDocs,
+  })
+}
+
+/**
+ * BX-08: offer-page data of any product, for the builder blocks of the "Trang sản phẩm" group.
+ * Published and not hidden only (the blocks render on public pages); null otherwise.
+ */
+export async function getOfferProductById(
+  id: string | number,
+  payloadInstance?: Payload,
+): Promise<HabitProductData | null> {
+  const payload = await resolvePayload(payloadInstance)
+  try {
+    const [productRes, lessonCountRes, techniqueCountRes] = await Promise.all([
+      payload.find({
+        collection: 'products',
+        where: {
+          and: [{ id: { equals: id } }, { _status: { equals: 'published' } }],
+        } as unknown as Where,
+        limit: 1,
+        depth: 1,
+        draft: false,
+      }),
+      payload.count({ collection: 'lessons', where: { _status: { equals: 'published' } } }),
+      payload.count({ collection: 'techniques', where: { _status: { equals: 'published' } } }),
+    ])
+    const doc = productRes.docs[0] as Product | undefined
+    if (!doc || doc.saleStatus === 'hidden') return null
+    return mapOfferProduct(doc, {
+      videoCount: lessonCountRes.totalDocs,
+      techniqueCount: techniqueCountRes.totalDocs,
+    })
+  } catch {
+    return null
+  }
+}
+
+/** Maps a product doc to the offer-page shape (shared by the coded page and the builder blocks). */
+export function mapOfferProduct(
+  doc: Product,
+  counts: { videoCount: number; techniqueCount: number },
+): HabitProductData {
   // Trích xuất includes
   const includes: string[] = []
   if (Array.isArray(doc.includes)) {
@@ -312,8 +357,8 @@ export async function getHabitProduct(
     faq,
     coverImage,
     cta,
-    videoCount: lessonCountRes.totalDocs,
-    techniqueCount: techniqueCountRes.totalDocs,
+    videoCount: counts.videoCount,
+    techniqueCount: counts.techniqueCount,
     offerSeriesLabel: doc.offerSeriesLabel?.trim() || null,
     offerTitleLine1: doc.offerTitleLine1?.trim() || null,
     offerTitleLine2: doc.offerTitleLine2?.trim() || null,
