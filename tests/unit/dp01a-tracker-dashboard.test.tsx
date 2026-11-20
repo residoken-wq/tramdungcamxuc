@@ -1,12 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import fs from 'fs'
 import path from 'path'
-import {
-  ALL_CHECKIN_EMOTIONS,
-  CONFIDENCE_EMOTIONS,
-  EMOTIONS,
-  getEmotion,
-} from '@/lib/emotions'
+import { ALL_CHECKIN_EMOTIONS, CONFIDENCE_EMOTIONS, EMOTIONS, getEmotion } from '@/lib/emotions'
 
 describe('DP-01 Khối 5: Tracker & Dashboard28Days', () => {
   it('enforces brand tokens in created zip tracker components', () => {
@@ -77,6 +72,12 @@ describe('DP-01 Khối 5: Tracker & Dashboard28Days', () => {
     expect(content).not.toContain('DonateModal')
     expect(content).not.toContain('Ủng hộ Trạm Dừng')
     expect(content).not.toContain('Mời một ly cà phê')
-    expect(content).toContain('Đặt lịch với Habit Coach')
+    // The Habit Coach link now lives in AfterJourneyPanel, rendered inline by the dashboard
+    expect(content).toContain('<AfterJourneyPanel')
+    const panel = fs.readFileSync(
+      path.join(process.cwd(), 'src/components/habit/AfterJourneyPanel.tsx'),
+      'utf8',
+    )
+    expect(panel).toContain('vi.hb14.coachButton')
   })
 })
