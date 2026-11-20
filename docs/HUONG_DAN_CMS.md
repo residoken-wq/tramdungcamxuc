@@ -3714,7 +3714,7 @@ Mỗi khi có khách điền form nhận brochure trên trang, hệ thống sẽ
 
 ### 5.48. Chỉnh bố cục trang sản phẩm bằng builder (BX-08)
 
-Trang giới thiệu **Habit Tracker số** (`/habit/1-percent-better`) và trang **tài nguyên miễn phí** (`/tai-nguyen/<slug>`) giờ có thể đổi bố cục bằng trình kéo thả: đổi thứ tự các phần, bỏ bớt phần, đổi màu nền, đặt ảnh bìa trái/phải, chia cột, thêm chữ/ảnh/nút/trích dẫn vào giữa.
+Trang giới thiệu **Habit Tracker số** (`/habit/1-percent-better`), trang **tài nguyên miễn phí** (`/tai-nguyen/<slug>`) và trang **EQ Buddy** (`/eq-buddy`) giờ có thể đổi bố cục bằng trình kéo thả: đổi thứ tự các phần, bỏ bớt phần, đổi màu nền, đặt ảnh bìa trái/phải, chia cột, thêm chữ/ảnh/nút/trích dẫn vào giữa.
 
 **Nguyên tắc:** chữ, giá, danh sách, câu hỏi… **vẫn sửa ở form Sản phẩm** (tab "Trang giới thiệu"). Builder chỉ quyết định **bố cục**. Sửa giá ở sản phẩm thì trang builder tự cập nhật.
 
@@ -3745,10 +3745,29 @@ Trang giới thiệu **Habit Tracker số** (`/habit/1-percent-better`) và tran
 - Có thể kéo thêm bất kỳ khối thường nào (Hero ảnh, Testimonial, FAQ, Cột…) xen giữa các khối sản phẩm.
 - Nếu phần nào của sản phẩm đang trống, builder hiện ghi chú nhắc nhập nội dung; khách sẽ không thấy khối đó.
 
+#### 2b. Trang EQ Buddy (`/eq-buddy`)
+
+1. Vào **EQ Buddy → Nội dung EQ Buddy**. Ô tím **"Bố cục trang EQ Buddy"** nằm trên cùng → bấm **Chỉnh bố cục bằng builder**.
+2. Trang nháp có sẵn: **Khung EQ Buddy** (bên trong có *Bộ thẻ là gì* và *Nút rút thẻ*) + **Nút mua bộ thẻ trên Shopee**.
+3. Nhóm khối **"EQ Buddy"**:
+
+| Khối | Tùy chọn bố cục |
+| --- | --- |
+| Khung EQ Buddy (đầu trang) | Bật/tắt thanh series + châm ngôn, nút "Hướng dẫn", tiêu đề; căn tiêu đề; màu nền khung; ô **Nội dung trong khung** |
+| Bộ thẻ là gì (4 ô thông tin) | 1 / 2 / 4 cột, hiện biểu tượng |
+| Nút rút thẻ | Cỡ nút (tự động / lớn / gọn), kèm nút "Hướng dẫn" |
+| Hướng dẫn 3 bước | Hiện thẳng trên trang hoặc nút mở cửa sổ |
+| Nút mua bộ thẻ trên Shopee (EQ Buddy) | Dùng link Shopee trong Nội dung EQ Buddy (hoặc link của sản phẩm bộ thẻ vật lý) |
+
+- Chữ (tiêu đề, 4 ô, các bước hướng dẫn, link Shopee) **vẫn sửa ở các tab của Nội dung EQ Buddy**.
+- Nút rút thẻ luôn dẫn tới trang rút thẻ; quy định dùng thử / miễn phí không đổi theo bố cục. Banner dùng thử vẫn hiện trên đầu trang như cũ.
+- Khối "Bộ thẻ là gì", "Nút rút thẻ", "Hướng dẫn" nên đặt **bên trong** Khung EQ Buddy. Nếu kéo ra ngoài, chọn **Tự đóng khung = Có** để khối có viền và lề đẹp.
+- **Không** chỉnh được bằng builder: trang rút thẻ (`/eq-buddy/rut-the`) và trang thẻ mở từ QR (`/eq-buddy/the/...`) – đây là trang ứng dụng, đường dẫn QR đã in trên thẻ.
+
 #### 3. Xuất bản và quay lại trang mặc định
 
 - Bấm **Xuất bản** trong builder → khách thấy trang builder ngay.
-- Muốn quay về trang mặc định: vào **Trang** (`pages`) → mở trang có đường dẫn `habit/1-percent-better` (hoặc `tai-nguyen/<slug>`) → chọn **Ẩn tài liệu** (gỡ xuất bản). Không cần xoá trang.
+- Muốn quay về trang mặc định: vào **Trang** (`pages`) → mở trang có đường dẫn `habit/1-percent-better` (hoặc `tai-nguyen/<slug>`, `eq-buddy`) → chọn **Ẩn tài liệu** (gỡ xuất bản). Không cần xoá trang.
 - Đường dẫn của các trang ứng dụng (học, tracker, rút thẻ, thanh toán, tài khoản…) **không** dùng cho trang builder được – CMS sẽ báo lỗi nếu nhập nhầm.
 
 ---

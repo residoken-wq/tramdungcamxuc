@@ -60,6 +60,18 @@ import {
   type ProductOfferHeroProps,
   type ProductOfferStatsProps,
 } from './blocks/ProductPage'
+import {
+  EqBuddyDrawButtonBlock,
+  EqBuddyFrameBlock,
+  EqBuddyGuideBlock,
+  EqBuddyShopeeBlock,
+  EqBuddyWhatIsBlock,
+  type EqBuddyDrawButtonProps,
+  type EqBuddyFrameProps,
+  type EqBuddyGuideProps,
+  type EqBuddyShopeeProps,
+  type EqBuddyWhatIsProps,
+} from './blocks/EqBuddyPage'
 import { TestimonialGridBlock, type TestimonialGridProps } from './blocks/TestimonialGrid'
 import { TestimonialSliderBlock, type TestimonialSliderProps } from './blocks/TestimonialSlider'
 import { LogoStripBlock, type LogoStripProps } from './blocks/LogoStrip'
@@ -328,6 +340,11 @@ export type PageComponentsProps = {
   ProductOfferFaq: ProductOfferFaqProps
   ProductOfferBottom: ProductOfferBottomProps
   ProductResourceForm: ProductResourceFormProps
+  EqBuddyFrame: EqBuddyFrameProps
+  EqBuddyWhatIs: EqBuddyWhatIsProps
+  EqBuddyDrawButton: EqBuddyDrawButtonProps
+  EqBuddyGuide: EqBuddyGuideProps
+  EqBuddyShopee: EqBuddyShopeeProps
 }
 
 const basePuckConfig: Config<PageComponentsProps> = {
@@ -409,6 +426,16 @@ const basePuckConfig: Config<PageComponentsProps> = {
         'ProductOfferFaq',
         'ProductOfferBottom',
         'ProductResourceForm',
+      ],
+    },
+    eqBuddyPage: {
+      title: vi.bx08.eq.category,
+      components: [
+        'EqBuddyFrame',
+        'EqBuddyWhatIs',
+        'EqBuddyDrawButton',
+        'EqBuddyGuide',
+        'EqBuddyShopee',
       ],
     },
     trust: {
@@ -957,6 +984,11 @@ const basePuckConfig: Config<PageComponentsProps> = {
     ProductOfferFaq: ProductOfferFaqBlock,
     ProductOfferBottom: ProductOfferBottomBlock,
     ProductResourceForm: ProductResourceFormBlock,
+    EqBuddyFrame: EqBuddyFrameBlock,
+    EqBuddyWhatIs: EqBuddyWhatIsBlock,
+    EqBuddyDrawButton: EqBuddyDrawButtonBlock,
+    EqBuddyGuide: EqBuddyGuideBlock,
+    EqBuddyShopee: EqBuddyShopeeBlock,
     ZaloButton: ZaloButtonBlock,
     LibraryPreview: withTitleHighlight(LibraryPreviewBlock),
     LeadMagnetCarousel: withTitleHighlight(LeadMagnetCarouselBlock),

@@ -4997,6 +4997,28 @@ export const vi = {
           ? 'Khách đang thấy: trang builder (đã xuất bản).'
           : 'Khách đang thấy: trang mặc định. Trang builder đang là bản nháp – bấm Xuất bản trong builder để thay.',
       hint: 'Chữ, giá, danh sách vẫn sửa ở form sản phẩm này; builder chỉ đổi bố cục. Gỡ xuất bản trang builder để quay về trang mặc định.',
+      showingNone: 'Khách đang thấy: trang mặc định. Chưa có trang builder.',
+    },
+    eq: {
+      category: 'EQ Buddy',
+      panelTitle: 'Bố cục trang EQ Buddy (/eq-buddy)',
+      panelHint:
+        'Chữ vẫn sửa ở các tab bên dưới; builder chỉ đổi bố cục trang /eq-buddy. Trang rút thẻ và trang thẻ QR không đổi. Gỡ xuất bản trang builder để quay về trang mặc định.',
+      pageTitle: 'Trang EQ Buddy',
+      defaultTagline: 'EQ Buddy • Thẻ Trạm Dừng Cảm Xúc',
+      defaultQuoteTop: 'Dừng để vững vàng bước tới.',
+      contentUnavailable: 'Không tải được Nội dung EQ Buddy. Thử tải lại trang.',
+      sectionEmpty: (section: string) =>
+        `Phần "${section}" đang trống nên khách sẽ không thấy khối này. Nhập nội dung ở EQ Buddy → Nội dung EQ Buddy.`,
+      sections: {
+        frame: 'Đầu trang EQ',
+        whatIs: 'Bộ thẻ là gì',
+        draw: 'Nút rút thẻ',
+        guide: 'Hướng dẫn 3 bước',
+        shopee: 'Nút Shopee',
+      },
+      noShopeeUrl:
+        'Chưa có link Shopee (Nội dung EQ Buddy hoặc sản phẩm bộ thẻ vật lý) nên khách sẽ không thấy nút này.',
     },
     category: 'Trang sản phẩm',
     chooseProduct: 'Chọn sản phẩm ở bảng bên phải để hiện nội dung khối này.',

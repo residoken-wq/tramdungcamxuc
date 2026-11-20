@@ -4,13 +4,24 @@ import { getPayload } from 'payload'
 import config from '@/payload.config'
 import type { Product } from '@/payload-types'
 import { EQ_BUDDY_PRODUCT_SLUG } from '@/lib/eq/config'
+import { getEqIntroData } from '@/lib/eq/intro-data.server'
 import { EQBuddyIntro } from '@/components/eq/zip/EQBuddyIntro'
 import { TrialBanner } from '@/components/habit/TrialBanner'
+import {
+  BuilderPage,
+  builderPageMetadata,
+  findPublishedBuilderPage,
+} from '@/lib/pages/puck-override.server'
 import { vi } from '@/lib/i18n/vi'
 
 export const dynamic = 'force-dynamic'
 
+/** BX-08b: a published builder page with this slug replaces the coded intro below. */
+const BUILDER_SLUG = 'eq-buddy'
+
 export async function generateMetadata(): Promise<Metadata> {
+  const builderPage = await findPublishedBuilderPage(BUILDER_SLUG)
+  if (builderPage) return builderPageMetadata(builderPage)
   try {
     const payload = await getPayload({ config: await config })
     const res = await payload.find({
@@ -37,50 +48,28 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function EqBuddyIntroPage() {
   const payload = await getPayload({ config: await config })
-  const [res, physicalRes, eqContent] = await Promise.all([
-    payload.find({
-      collection: 'products',
-      where: { slug: { equals: EQ_BUDDY_PRODUCT_SLUG } },
-      limit: 1,
-      overrideAccess: true,
-    }),
-    payload.find({
-      collection: 'products',
-      where: {
-        and: [
-          { type: { equals: 'physical_external' } },
-          { web: { equals: 'eq' } },
-          { saleStatus: { not_equals: 'hidden' } },
-          { _status: { equals: 'published' } },
-        ],
-      },
-      limit: 1,
-      overrideAccess: true,
-    }),
-    payload.findGlobal({ slug: 'eqBuddyContent', overrideAccess: true }).catch(() => null),
+  const [{ content, isFreeMode }, builderPage] = await Promise.all([
+    getEqIntroData(payload),
+    findPublishedBuilderPage(BUILDER_SLUG),
   ])
-  const _product = res.docs[0] as Product | undefined
-  const physicalProduct = physicalRes.docs[0] as Product | undefined
+  // Trial / entitlement rules do not depend on the layout: the banner stays above either page.
+  const trialBanner = isFreeMode ? null : <TrialBanner productSlug={EQ_BUDDY_PRODUCT_SLUG} />
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const rawContent = (eqContent || {}) as any
-  const isFreeMode = rawContent?.eqAccessMode === 'free'
-  const shopeeUrl =
-    rawContent?.shopeeUrl?.trim() ||
-    physicalProduct?.externalUrl?.trim() ||
-    ''
-
-  const contentProps = {
-    ...rawContent,
-    shopeeUrl,
+  if (builderPage) {
+    return (
+      <>
+        {/* TrialBanner renders nothing for visitors without a trial: `empty:hidden` drops the gap */}
+        {trialBanner ? (
+          <div className="w-full px-4 pt-6 empty:hidden sm:px-6 sm:pt-10">{trialBanner}</div>
+        ) : null}
+        <BuilderPage doc={builderPage} slug={BUILDER_SLUG} />
+      </>
+    )
   }
 
   return (
     <div className="w-full py-6 sm:py-10 px-4 sm:px-6">
-      <EQBuddyIntro
-        content={contentProps}
-        trialBanner={isFreeMode ? null : <TrialBanner productSlug={EQ_BUDDY_PRODUCT_SLUG} />}
-      />
+      <EQBuddyIntro content={content} trialBanner={trialBanner} />
     </div>
   )
 }

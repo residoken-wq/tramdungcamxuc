@@ -27,6 +27,16 @@ export const EqBuddyContent: GlobalConfig = {
     ],
   },
   fields: [
+    // BX-08b: create / open the builder page that replaces the coded /eq-buddy intro
+    {
+      name: 'eqBuilderPanel',
+      type: 'ui',
+      admin: {
+        components: {
+          Field: '@/components/admin/EqBuilderButton#EqBuilderButton',
+        },
+      },
+    },
     {
       name: 'eqAccessMode',
       label: 'Chế độ truy cập EQ Buddy',
