@@ -5,9 +5,7 @@ import { BookOpen, X, Wind, Sparkles, Compass } from 'lucide-react'
 import { vi } from '@/lib/i18n/vi'
 import { pickCopy } from '@/lib/copy'
 
-export interface GuideModalProps {
-  isOpen: boolean
-  onClose: () => void
+export interface GuideCopyProps {
   useDefaultCopy?: boolean
   title?: string | null
   quote?: string | null
@@ -18,12 +16,16 @@ export interface GuideModalProps {
   step2Desc?: string | null
   step3Title?: string | null
   step3Desc?: string | null
+}
+
+export interface GuideModalProps extends GuideCopyProps {
+  isOpen: boolean
+  onClose: () => void
   onConfirm?: () => void
 }
 
-export function GuideModal({
-  isOpen,
-  onClose,
+/** BX-05 fallbacks of the guide copy; shared by the modal and the inline guide block (BX-08b). */
+export function resolveGuideCopy({
   useDefaultCopy,
   title,
   quote,
@@ -34,8 +36,34 @@ export function GuideModal({
   step2Desc,
   step3Title,
   step3Desc,
-  onConfirm,
-}: GuideModalProps) {
+}: GuideCopyProps) {
+  // BX-05: Khi useDefaultCopy không truyền (undefined), giữ hành vi fallback mặc định (tương thích các nơi gọi cũ không có CMS)
+  const allowDefault = useDefaultCopy ?? true
+  const effectiveStep1Title = pickCopy(step1Title, vi.au02.step1Title, allowDefault)
+  const effectiveStep1Desc = pickCopy(step1Desc, vi.au02.step1Desc, allowDefault)
+  const effectiveStep2Title = pickCopy(step2Title, vi.au02.step2Title, allowDefault)
+  const effectiveStep2Desc = pickCopy(step2Desc, vi.au02.step2Desc, allowDefault)
+  const effectiveStep3Title = pickCopy(step3Title, vi.au02.step3Title, allowDefault)
+  const effectiveStep3Desc = pickCopy(step3Desc, vi.au02.step3Desc, allowDefault)
+  return {
+    effectiveTitle: pickCopy(title, vi.au02.guideModalTitle, allowDefault),
+    effectiveQuote: pickCopy(quote, vi.au02.guideModalQuote, allowDefault),
+    effectiveButtonText: buttonText?.trim() || vi.au02.guideModalButton,
+    effectiveStep1Title,
+    effectiveStep1Desc,
+    effectiveStep2Title,
+    effectiveStep2Desc,
+    effectiveStep3Title,
+    effectiveStep3Desc,
+    showStep1: Boolean(effectiveStep1Title || effectiveStep1Desc),
+    showStep2: Boolean(effectiveStep2Title || effectiveStep2Desc),
+    showStep3: Boolean(effectiveStep3Title || effectiveStep3Desc),
+  }
+}
+
+export type GuideCopy = ReturnType<typeof resolveGuideCopy>
+
+export function GuideModal({ isOpen, onClose, onConfirm, ...copyProps }: GuideModalProps) {
   useEffect(() => {
     if (!isOpen) return
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -54,21 +82,9 @@ export function GuideModal({
     onClose()
   }
 
-  // BX-05: Khi useDefaultCopy không truyền (undefined), giữ hành vi fallback mặc định (tương thích các nơi gọi cũ không có CMS)
-  const allowDefault = useDefaultCopy ?? true
-  const effectiveTitle = pickCopy(title, vi.au02.guideModalTitle, allowDefault)
-  const effectiveQuote = pickCopy(quote, vi.au02.guideModalQuote, allowDefault)
-  const effectiveButtonText = buttonText?.trim() || vi.au02.guideModalButton
-  const effectiveStep1Title = pickCopy(step1Title, vi.au02.step1Title, allowDefault)
-  const effectiveStep1Desc = pickCopy(step1Desc, vi.au02.step1Desc, allowDefault)
-  const effectiveStep2Title = pickCopy(step2Title, vi.au02.step2Title, allowDefault)
-  const effectiveStep2Desc = pickCopy(step2Desc, vi.au02.step2Desc, allowDefault)
-  const effectiveStep3Title = pickCopy(step3Title, vi.au02.step3Title, allowDefault)
-  const effectiveStep3Desc = pickCopy(step3Desc, vi.au02.step3Desc, allowDefault)
-
-  const showStep1 = Boolean(effectiveStep1Title || effectiveStep1Desc)
-  const showStep2 = Boolean(effectiveStep2Title || effectiveStep2Desc)
-  const showStep3 = Boolean(effectiveStep3Title || effectiveStep3Desc)
+  const copy = resolveGuideCopy(copyProps)
+  const { effectiveTitle, effectiveQuote, effectiveButtonText, showStep1, showStep2, showStep3 } =
+    copy
 
   return (
     <div
@@ -113,83 +129,7 @@ export function GuideModal({
         {/* Modal Body: 3 Bước theo rà soát của Hana */}
         {(showStep1 || showStep2 || showStep3) && (
           <div className="space-y-3 text-left font-ui">
-            {/* Bước 1: Gọi tên mong muốn và cảm xúc */}
-            {showStep1 && (
-              <div className="p-3.5 rounded-2xl bg-warm-ivory border border-lavender-mist flex items-start gap-3">
-                <div className="w-8 h-8 rounded-xl bg-mint-haze text-deep-navy flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">
-                  <Wind className="w-4 h-4 text-deep-navy" />
-                </div>
-                <div className="space-y-0.5 flex-1">
-                  <div className="flex items-center gap-2">
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-mint-haze text-deep-navy">
-                      1
-                    </span>
-                    {effectiveStep1Title && (
-                      <h4 className="font-semibold text-xs sm:text-sm text-deep-navy">
-                        {effectiveStep1Title}
-                      </h4>
-                    )}
-                  </div>
-                  {effectiveStep1Desc && (
-                    <p className="text-xs text-deep-navy/75 leading-relaxed pt-1">
-                      {effectiveStep1Desc}
-                    </p>
-                  )}
-                </div>
-              </div>
-            )}
-
-            {/* Bước 2: Chọn thông điệp */}
-            {showStep2 && (
-              <div className="p-3.5 rounded-2xl bg-warm-ivory border border-lavender-mist flex items-start gap-3">
-                <div className="w-8 h-8 rounded-xl bg-soft-pink text-bright-magenta flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">
-                  <Sparkles className="w-4 h-4 text-bright-magenta" />
-                </div>
-                <div className="space-y-0.5 flex-1">
-                  <div className="flex items-center gap-2">
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-soft-pink text-bright-magenta">
-                      2
-                    </span>
-                    {effectiveStep2Title && (
-                      <h4 className="font-semibold text-xs sm:text-sm text-deep-navy">
-                        {effectiveStep2Title}
-                      </h4>
-                    )}
-                  </div>
-                  {effectiveStep2Desc && (
-                    <p className="text-xs text-deep-navy/75 leading-relaxed pt-1">
-                      {effectiveStep2Desc}
-                    </p>
-                  )}
-                </div>
-              </div>
-            )}
-
-            {/* Bước 3: Khám phá */}
-            {showStep3 && (
-              <div className="p-3.5 rounded-2xl bg-warm-ivory border border-lavender-mist flex items-start gap-3">
-                <div className="w-8 h-8 rounded-xl bg-butter-cream text-deep-navy flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">
-                  <Compass className="w-4 h-4 text-deep-navy" />
-                </div>
-                <div className="space-y-0.5 flex-1">
-                  <div className="flex items-center gap-2">
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-butter-cream text-deep-navy">
-                      3
-                    </span>
-                    {effectiveStep3Title && (
-                      <h4 className="font-semibold text-xs sm:text-sm text-deep-navy">
-                        {effectiveStep3Title}
-                      </h4>
-                    )}
-                  </div>
-                  {effectiveStep3Desc && (
-                    <p className="text-xs text-deep-navy/75 leading-relaxed pt-1">
-                      {effectiveStep3Desc}
-                    </p>
-                  )}
-                </div>
-              </div>
-            )}
+            <GuideStepsList copy={copy} />
           </div>
         )}
 
@@ -214,5 +154,95 @@ export function GuideModal({
         </div>
       </div>
     </div>
+  )
+}
+
+/** The 3 guide steps (no frame); shared by the modal and the inline guide block (BX-08b). */
+export function GuideStepsList({ copy }: { copy: GuideCopy }) {
+  const {
+    effectiveStep1Title,
+    effectiveStep1Desc,
+    effectiveStep2Title,
+    effectiveStep2Desc,
+    effectiveStep3Title,
+    effectiveStep3Desc,
+    showStep1,
+    showStep2,
+    showStep3,
+  } = copy
+  return (
+    <>
+      {/* Bước 1: Gọi tên mong muốn và cảm xúc */}
+      {showStep1 && (
+        <div className="p-3.5 rounded-2xl bg-warm-ivory border border-lavender-mist flex items-start gap-3">
+          <div className="w-8 h-8 rounded-xl bg-mint-haze text-deep-navy flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">
+            <Wind className="w-4 h-4 text-deep-navy" />
+          </div>
+          <div className="space-y-0.5 flex-1">
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-mint-haze text-deep-navy">
+                1
+              </span>
+              {effectiveStep1Title && (
+                <h4 className="font-semibold text-xs sm:text-sm text-deep-navy">
+                  {effectiveStep1Title}
+                </h4>
+              )}
+            </div>
+            {effectiveStep1Desc && (
+              <p className="text-xs text-deep-navy/75 leading-relaxed pt-1">{effectiveStep1Desc}</p>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Bước 2: Chọn thông điệp */}
+      {showStep2 && (
+        <div className="p-3.5 rounded-2xl bg-warm-ivory border border-lavender-mist flex items-start gap-3">
+          <div className="w-8 h-8 rounded-xl bg-soft-pink text-bright-magenta flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">
+            <Sparkles className="w-4 h-4 text-bright-magenta" />
+          </div>
+          <div className="space-y-0.5 flex-1">
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-soft-pink text-bright-magenta">
+                2
+              </span>
+              {effectiveStep2Title && (
+                <h4 className="font-semibold text-xs sm:text-sm text-deep-navy">
+                  {effectiveStep2Title}
+                </h4>
+              )}
+            </div>
+            {effectiveStep2Desc && (
+              <p className="text-xs text-deep-navy/75 leading-relaxed pt-1">{effectiveStep2Desc}</p>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Bước 3: Khám phá */}
+      {showStep3 && (
+        <div className="p-3.5 rounded-2xl bg-warm-ivory border border-lavender-mist flex items-start gap-3">
+          <div className="w-8 h-8 rounded-xl bg-butter-cream text-deep-navy flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">
+            <Compass className="w-4 h-4 text-deep-navy" />
+          </div>
+          <div className="space-y-0.5 flex-1">
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-butter-cream text-deep-navy">
+                3
+              </span>
+              {effectiveStep3Title && (
+                <h4 className="font-semibold text-xs sm:text-sm text-deep-navy">
+                  {effectiveStep3Title}
+                </h4>
+              )}
+            </div>
+            {effectiveStep3Desc && (
+              <p className="text-xs text-deep-navy/75 leading-relaxed pt-1">{effectiveStep3Desc}</p>
+            )}
+          </div>
+        </div>
+      )}
+    </>
   )
 }

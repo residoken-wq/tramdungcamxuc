@@ -17,6 +17,7 @@ import { loadLeadMagnetItems } from '@/lib/lead-magnets.server'
 
 import { walkPuckItems } from './walk'
 import { resolveProductPageBlocks } from './product-page.server'
+import { resolveEqPageBlocks } from './eq-page.server'
 import { normalizePuckData } from './migrations'
 
 const PUBLIC_PRODUCT_SELECT = {
@@ -1765,6 +1766,8 @@ export async function resolveServerData(
 
   // BX-08: "Trang sản phẩm" blocks read the full offer data of their product
   await resolveProductPageBlocks(resolvedData, payload)
+  // BX-08b: "EQ Buddy" blocks read the eqBuddyContent global
+  await resolveEqPageBlocks(resolvedData, payload)
 
   return resolvedData
 }
