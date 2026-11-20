@@ -11,7 +11,6 @@ import {
   Check,
   ChevronDown,
   Lock,
-  ExternalLink,
   FileSpreadsheet,
 } from 'lucide-react'
 import type { TrackerDayItem, WeeklyReflections } from '../types'
@@ -26,6 +25,7 @@ import { formatTimeAmPm, planDayDate } from '@/lib/habit/tracker-stats'
 import { weekdayOfDay, type Weekday } from '@/lib/habit/rhythm'
 import { weekdaysToDays } from '../draft-adapter'
 import { TrackerSummaryCard } from '@/components/habit/TrackerSummaryCard'
+import { AfterJourneyPanel } from '@/components/habit/AfterJourneyPanel'
 import { CertificateShareButtons } from '@/components/habit/CertificateShareButtons'
 import { CertificatePublicToggle } from '@/components/habit/CertificatePublicToggle'
 import type { PublicCertificateData, CertificateEligibility } from '@/lib/habit/certificate-types'
@@ -112,7 +112,6 @@ export function Dashboard28Days({
   const [checkins, setCheckins] = useState<InitialCheckinData[]>(initialCheckins)
   const [selectedDayItem, setSelectedDayItem] = useState<TrackerDayItem | null>(null)
   const [copiedSummary, setCopiedSummary] = useState(false)
-  const [isFabOpen, setIsFabOpen] = useState(false)
   const [statusMessage, setStatusMessage] = useState<string | null>(null)
 
   // Reflections state
@@ -1194,56 +1193,14 @@ Nhịp điệu: ${rateText}
         </div>
       )}
 
-      {/* 9. NÚT NỔI GÓC DƯỚI BÊN PHẢI (FAB) - CHỈ CÓ ĐỒNG HÀNH SAU 28 NGÀY (H8: BỎ ỦNG HỘ) */}
-      <div className="fixed bottom-4 right-4 z-40 flex flex-col items-end">
-        {isFabOpen && (
-          <div className="mb-3 w-80 sm:w-96 p-5 rounded-2xl bg-white border border-lavender-mist shadow-soft-lg space-y-4 text-deep-navy font-ui">
-            <div className="flex items-center justify-between pb-2 border-b border-lavender-mist/60">
-              <h4 className="font-bold text-sm text-deep-navy flex items-center gap-1.5">
-                <span className="text-bright-magenta">♡</span>
-                <span>{afterJourneyTitle || 'Đồng hành cùng Trạm Dừng'}</span>
-              </h4>
-              <button
-                type="button"
-                aria-label={vi.dp01.close}
-                onClick={() => setIsFabOpen(false)}
-                className="text-deep-navy/70 hover:text-deep-navy text-xs font-bold cursor-pointer p-1"
-              >
-                ✕
-              </button>
-            </div>
-
-            {/* Đồng hành sau 28 ngày */}
-            <div className="space-y-1.5">
-              <p className="text-xs text-deep-navy/75 leading-relaxed">
-                {afterJourneyText ||
-                  'Nếu cần một Habit Coach đồng hành cùng bạn sau hành trình 28 ngày này, đặt một buổi trò chuyện với Hana.'}
-              </p>
-              {/* QA DP-01e: link only from CMS (siteSettings.habitCoachBookingUrl), no hardcoded URL. */}
-              {coachBookingUrl && (
-                <a
-                  href={coachBookingUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-deep-navy text-white text-xs font-semibold hover:bg-deep-navy/90 transition-all shadow-soft-md"
-                >
-                  <span>Đặt lịch với Habit Coach</span>
-                  <ExternalLink className="w-3 h-3" />
-                </a>
-              )}
-            </div>
-          </div>
-        )}
-
-        <button
-          type="button"
-          onClick={() => setIsFabOpen((prev) => !prev)}
-          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-white hover:bg-soft-pink/40 text-deep-navy font-ui font-semibold text-xs sm:text-sm border border-bright-magenta/30 shadow-soft-md hover:shadow-soft-lg transition-all active:scale-95 cursor-pointer"
-        >
-          <span className="text-bright-magenta text-base font-bold">♡</span>
-          <span>Thấy công cụ này hữu ích</span>
-        </button>
-      </div>
+      {/* 9. After-journey companion block, inline (19/11): the bottom-right floating button gave
+          way to the site-wide coffee button; the Habit Coach link still comes from the CMS. */}
+      <AfterJourneyPanel
+        title={afterJourneyTitle}
+        text={afterJourneyText}
+        coachBookingUrl={coachBookingUrl}
+        journeyDays={plannedAll}
+      />
 
       {/* Check-in Modal */}
       {selectedDayItem && (

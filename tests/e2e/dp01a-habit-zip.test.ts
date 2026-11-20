@@ -96,7 +96,7 @@ test.describe('DP-01a: Habit Zip Flow & 28-Day Tracker', () => {
     try {
       adminId = await bootstrapAdmin(page)
 
-      // 0. Bật coffeeDonation tạm thời để kiểm chứng AU-01 (nút cà phê hiện ở /habit/5-phut nhưng ẩn ở /habit/tracker)
+      // 0. Bật coffeeDonation tạm thời để kiểm chứng nút cà phê hiện ở /habit/5-phut và /habit/tracker (19/11)
       const settingsRes = await page.request.get('/api/globals/siteSettings?depth=0')
       if (settingsRes.ok()) {
         settingsBefore = await settingsRes.json()
@@ -373,22 +373,20 @@ test.describe('DP-01a: Habit Zip Flow & 28-Day Tracker', () => {
         }),
       ).toBeVisible({ timeout: 15000 })
 
-      // AU-01 Mục 3: Trên bảng 28 ngày chỉ có 1 nút nổi góc phải dưới ("Thấy công cụ này hữu ích"), nút cà phê toàn site bị ẩn
-      const helpfulFab = guestPage.getByRole('button', { name: /Thấy công cụ này hữu ích/i })
-      await expect(helpfulFab).toBeVisible()
+      // 19/11: bảng 28 ngày bỏ nút nổi riêng "♡ Thấy công cụ này hữu ích" → nút ly cà phê
+      // dùng chung toàn site hiện ở góc phải (đã bật coffeeDonation ở bước 0)
       await expect(
-        guestPage.locator(`aside[aria-label="${vi.cf01.floatingActions.ariaLabel}"]`),
+        guestPage.getByRole('button', { name: /Thấy công cụ này hữu ích/i }),
       ).toHaveCount(0)
-      await expect(guestPage.getByRole('button', { name: /Mời Trạm một ly cà phê/i })).toHaveCount(
-        0,
-      )
+      const coffeeButton = guestPage.getByRole('button', { name: /Mời Trạm một ly cà phê/i })
+      await expect(coffeeButton).toBeVisible()
       if (saveScreenshots) {
         await guestPage.screenshot({ path: join(screenshotDir, 'after-tracker-fab-1440.png') })
       }
-      // Kiểm tra viewport mobile 375px: chỉ 1 nút nổi, không tràn cạnh phải
+      // Kiểm tra viewport mobile 375px: nút cà phê không tràn cạnh phải
       await guestPage.setViewportSize({ width: 375, height: 812 })
-      await expect(helpfulFab).toBeVisible()
-      const fabBoxMobile = await helpfulFab.boundingBox()
+      await expect(coffeeButton).toBeVisible()
+      const fabBoxMobile = await coffeeButton.boundingBox()
       expect(fabBoxMobile).not.toBeNull()
       expect(fabBoxMobile!.x + fabBoxMobile!.width).toBeLessThanOrEqual(375)
       if (saveScreenshots) {

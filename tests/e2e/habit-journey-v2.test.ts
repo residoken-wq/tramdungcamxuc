@@ -337,8 +337,7 @@ test.describe('Habit Journey V2 Full E2E Flow (HB-15)', () => {
       // Reload trang để hiển thị khối đồng hành
       await guestPage.reload()
 
-      // Nút nổi "Thấy công cụ này hữu ích" mở khối đồng hành sau 28 ngày
-      await guestPage.getByRole('button', { name: /Thấy công cụ này hữu ích/ }).click()
+      // 19/11: khối "Đồng hành sau 28 ngày" nằm thẳng trong trang (bỏ nút nổi "Thấy công cụ này hữu ích")
       const coachBookingLink = guestPage.getByRole('link', {
         name: /Đặt lịch với Habit Coach/i,
       })

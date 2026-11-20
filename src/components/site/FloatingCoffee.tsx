@@ -12,10 +12,10 @@ import type { FloatingCoffeeData } from '@/lib/site-shell.server'
 import { shouldHidePathWithPrefixes } from './FloatingChat'
 
 /**
- * Tiền tố đường dẫn ẩn nút ly cà phê toàn site vì trang đó đã có nút nổi riêng
- * (bảng Habit 28 ngày /habit/tracker có nút "♡ Thấy công cụ này hữu ích").
+ * Tiền tố đường dẫn ẩn nút ly cà phê toàn site. Trống từ 19/11: bảng Habit 28 ngày
+ * (/habit/tracker) bỏ nút nổi riêng "♡ Thấy công cụ này hữu ích", dùng nút cà phê chung.
  */
-export const HIDE_FLOATING_COFFEE_PREFIXES = ['/habit/tracker'] as const
+export const HIDE_FLOATING_COFFEE_PREFIXES: readonly string[] = []
 
 /**
  * Kiểm tra pathname có thuộc danh sách ẩn nút ly cà phê không.
