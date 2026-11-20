@@ -44,6 +44,22 @@ import { ProductFeatureBlock, type ProductFeatureProps } from './blocks/ProductF
 import { PackageComparisonBlock, type PackageComparisonProps } from './blocks/PackageComparison'
 import { PriceTagBlock, type ProductPriceTagProps } from './blocks/PriceTag'
 import { TrialCTABlock, type TrialCTAProps } from './blocks/TrialCTA'
+import {
+  ProductOfferBottomBlock,
+  ProductResourceFormBlock,
+  type ProductResourceFormProps,
+  ProductOfferCurriculumBlock,
+  ProductOfferFaqBlock,
+  ProductOfferFeaturesBlock,
+  ProductOfferHeroBlock,
+  ProductOfferStatsBlock,
+  type ProductOfferBottomProps,
+  type ProductOfferCurriculumProps,
+  type ProductOfferFaqProps,
+  type ProductOfferFeaturesProps,
+  type ProductOfferHeroProps,
+  type ProductOfferStatsProps,
+} from './blocks/ProductPage'
 import { TestimonialGridBlock, type TestimonialGridProps } from './blocks/TestimonialGrid'
 import { TestimonialSliderBlock, type TestimonialSliderProps } from './blocks/TestimonialSlider'
 import { LogoStripBlock, type LogoStripProps } from './blocks/LogoStrip'
@@ -305,6 +321,13 @@ export type PageComponentsProps = {
   LeadMagnetCarousel: LeadMagnetCarouselProps
   NewsletterForm: NewsletterFormProps
   ContactForms: ContactFormsProps
+  ProductOfferHero: ProductOfferHeroProps
+  ProductOfferStats: ProductOfferStatsProps
+  ProductOfferCurriculum: ProductOfferCurriculumProps
+  ProductOfferFeatures: ProductOfferFeaturesProps
+  ProductOfferFaq: ProductOfferFaqProps
+  ProductOfferBottom: ProductOfferBottomProps
+  ProductResourceForm: ProductResourceFormProps
 }
 
 const basePuckConfig: Config<PageComponentsProps> = {
@@ -374,6 +397,18 @@ const basePuckConfig: Config<PageComponentsProps> = {
         'SolutionEcosystem',
         'PriceTag',
         'TrialCTA',
+      ],
+    },
+    productPage: {
+      title: vi.bx08.category,
+      components: [
+        'ProductOfferHero',
+        'ProductOfferStats',
+        'ProductOfferCurriculum',
+        'ProductOfferFeatures',
+        'ProductOfferFaq',
+        'ProductOfferBottom',
+        'ProductResourceForm',
       ],
     },
     trust: {
@@ -915,6 +950,13 @@ const basePuckConfig: Config<PageComponentsProps> = {
     B2BBriefForm: B2BBriefFormBlock,
     QuizCTA: withTitleHighlight(QuizCTABlock),
     ShopeeButton: ShopeeButtonBlock,
+    ProductOfferHero: ProductOfferHeroBlock,
+    ProductOfferStats: ProductOfferStatsBlock,
+    ProductOfferCurriculum: ProductOfferCurriculumBlock,
+    ProductOfferFeatures: ProductOfferFeaturesBlock,
+    ProductOfferFaq: ProductOfferFaqBlock,
+    ProductOfferBottom: ProductOfferBottomBlock,
+    ProductResourceForm: ProductResourceFormBlock,
     ZaloButton: ZaloButtonBlock,
     LibraryPreview: withTitleHighlight(LibraryPreviewBlock),
     LeadMagnetCarousel: withTitleHighlight(LeadMagnetCarouselBlock),

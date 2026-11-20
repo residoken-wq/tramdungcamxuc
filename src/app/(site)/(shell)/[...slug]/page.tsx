@@ -1,12 +1,11 @@
 import React from 'react'
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
-import { getPayload } from 'payload'
-import config from '@/payload.config'
-import type { Data } from '@puckeditor/core'
-import { StyledRender } from '@/components/design/StyledRender'
-import { puckConfig } from '@/puck/config'
-import { resolveServerData } from '@/puck/resolve.server'
+import {
+  BuilderPage,
+  builderPageMetadata,
+  findPublishedBuilderPage,
+} from '@/lib/pages/puck-override.server'
 
 // Pages read published CMS content on each request; never prerender at build (Docker builds have no DB or secret).
 export const dynamic = 'force-dynamic'
@@ -19,41 +18,8 @@ type CatchAllPageProps = {
 
 export async function generateMetadata({ params }: CatchAllPageProps): Promise<Metadata> {
   const { slug } = await params
-  const pageSlug = slug.join('/')
-  const payloadConfig = await config
-  const payload = await getPayload({ config: payloadConfig })
-
-  try {
-    const result = await payload.find({
-      collection: 'pages',
-      where: {
-        and: [
-          { slug: { equals: pageSlug } },
-          { _status: { equals: 'published' } },
-          { kind: { equals: 'page' } },
-        ],
-      },
-      limit: 1,
-      draft: false,
-    })
-
-    const doc = result.docs[0]
-    if (doc) {
-      const ogMedia =
-        typeof doc.seo?.ogImage === 'object' && doc.seo.ogImage !== null
-          ? (doc.seo.ogImage as { url?: string })
-          : null
-
-      return {
-        title: doc.seo?.title || doc.title || 'Trạm Dừng Cảm Xúc',
-        description: doc.seo?.description || undefined,
-        openGraph: ogMedia?.url ? { images: [ogMedia.url] } : undefined,
-      }
-    }
-  } catch {
-    // Return default on error
-  }
-
+  const doc = await findPublishedBuilderPage(slug.join('/'))
+  if (doc) return builderPageMetadata(doc)
   return {
     title: 'Trang không tồn tại | Trạm Dừng Cảm Xúc',
   }
@@ -62,38 +28,9 @@ export async function generateMetadata({ params }: CatchAllPageProps): Promise<M
 export default async function CatchAllPage({ params }: CatchAllPageProps) {
   const { slug } = await params
   const pageSlug = slug.join('/')
-  const payloadConfig = await config
-  const payload = await getPayload({ config: payloadConfig })
-
-  let pageDoc = null
-  try {
-    const result = await payload.find({
-      collection: 'pages',
-      where: {
-        and: [
-          { slug: { equals: pageSlug } },
-          { _status: { equals: 'published' } },
-          { kind: { equals: 'page' } },
-        ],
-      },
-      limit: 1,
-      draft: false,
-    })
-    pageDoc = result.docs[0] || null
-  } catch {
+  const doc = await findPublishedBuilderPage(pageSlug)
+  if (!doc) {
     notFound()
   }
-
-  if (!pageDoc) {
-    notFound()
-  }
-
-  const initialData: Data = (pageDoc.puckData as Data) || {
-    content: [],
-    root: { props: { title: pageDoc.title || '' } },
-  }
-
-  const resolvedData = await resolveServerData(initialData, { pageSlug })
-
-  return <StyledRender config={puckConfig} data={resolvedData} />
+  return <BuilderPage doc={doc} slug={pageSlug} />
 }

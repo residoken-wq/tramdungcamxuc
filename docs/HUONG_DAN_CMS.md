@@ -85,6 +85,7 @@
    - [5.43. Mẫu trang Cộng đồng 100% bản thiết kế slide 48–57 (CD-01)](#543-mẫu-trang-cộng-đồng-100-bản-thiết-kế-slide-4857-cd-01)
    - [5.44. Các tùy chọn tinh chỉnh chi tiết giao diện theo bản thiết kế (CD-04)](#544-các-tùy-chọn-tinh-chỉnh-chi-tiết-giao-diện-theo-bản-thiết-kế-cd-04)
    - [5.45. Tính năng dùng chung mới (AU-04): Tô màu chữ nổi bật, Nút đặt lịch dùng chung và Form Modal](#545-tính-năng-dùng-chung-mới-au-04-tô-màu-chữ-nổi-bật-nút-đặt-lịch-dùng-chung-và-form-modal)
+   - [5.48. Chỉnh bố cục trang sản phẩm bằng builder (BX-08)](#548-chỉnh-bố-cục-trang-sản-phẩm-bằng-builder-bx-08)
 6. [Quản lý Trang pháp lý và Thông tin người bán](#6-quản-lý-trang-pháp-lý-và-thông-tin-người-bán)
 7. [Cài đặt Website, Kênh liên hệ và Thanh toán](#7-cài-đặt-website-kênh-liên-hệ-và-thanh-toán)
    - [7.5. Xác nhận chuyển khoản đơn hàng](#75-xác-nhận-chuyển-khoản-đơn-hàng)
@@ -3710,6 +3711,45 @@ Mỗi khi có khách điền form nhận brochure trên trang, hệ thống sẽ
    - **Trang gửi form**: Đường dẫn trang khách đã đăng ký (ví dụ: `/chuyen-minh`).
    - **Đồng ý bảo mật (`consentAt`)**: Thời điểm khách bấm đồng ý điều khoản bảo mật thông tin (tuân thủ Nghị định 13/2023/NĐ-CP).
 4. Hana có thể đổi **Trạng thái xử lý** sang *Đang liên hệ* hoặc *Đã tư vấn* và bấm lưu.
+
+### 5.48. Chỉnh bố cục trang sản phẩm bằng builder (BX-08)
+
+Trang giới thiệu **Habit Tracker số** (`/habit/1-percent-better`) và trang **tài nguyên miễn phí** (`/tai-nguyen/<slug>`) giờ có thể đổi bố cục bằng trình kéo thả: đổi thứ tự các phần, bỏ bớt phần, đổi màu nền, đặt ảnh bìa trái/phải, chia cột, thêm chữ/ảnh/nút/trích dẫn vào giữa.
+
+**Nguyên tắc:** chữ, giá, danh sách, câu hỏi… **vẫn sửa ở form Sản phẩm** (tab "Trang giới thiệu"). Builder chỉ quyết định **bố cục**. Sửa giá ở sản phẩm thì trang builder tự cập nhật.
+
+#### 1. Tạo trang builder cho sản phẩm
+
+1. Vào **Sản phẩm** → mở sản phẩm (VD _Habit Tracker số_, hoặc một ebook/toolkit đang _Miễn phí_).
+2. Tìm ô tím **"Bố cục trang sản phẩm"** → bấm **Chỉnh bố cục bằng builder**.
+3. Hệ thống tạo một trang **bản nháp** đã xếp sẵn các khối giống trang hiện tại và mở builder ở tab mới.
+4. Lần sau ô này hiện nút **Mở trang builder** và dòng _Khách đang thấy: …_ để biết trang nào đang hiện cho khách.
+
+> Khi trang builder còn là **bản nháp**, khách vẫn thấy trang mặc định – Hana cứ thử thoải mái.
+
+#### 2. Các khối nhóm "Trang sản phẩm"
+
+| Khối                   | Tùy chọn bố cục                                                                                                                                           |
+| ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Hero sản phẩm          | Ảnh bìa (không / trái / phải), căn chữ, hiện giá, hiện danh sách ✓, nút chính, nút phụ (Habit Loop 5 phút / không / tự chọn), màu nền, ô **Thêm phần tử** |
+| Thanh số liệu sản phẩm | Bật/tắt từng ô số liệu, số ô trên điện thoại, màu nền                                                                                                     |
+| Lộ trình sản phẩm      | Danh sách dọc / lưới 2 cột / lưới 3 cột, đánh số 01, 02…, màu nền                                                                                         |
+| Khác biệt của sản phẩm | Bố cục, hiện dấu ✓, màu nền                                                                                                                               |
+| Câu hỏi của sản phẩm   | 1 hoặc 2 cột, màu nền                                                                                                                                     |
+| Khối cuối sản phẩm     | Nút phụ, màu nền (có "Chuyển màu thương hiệu"), ô **Thêm phần tử**                                                                                        |
+| Form nhận tài nguyên   | Form để khách để lại email nhận file (dùng cho trang tài nguyên)                                                                                          |
+
+- Mỗi khối có ô **Sản phẩm** – đã chọn sẵn, không cần đổi.
+- Ô **Thêm phần tử** nhận khối nhỏ: Tiêu đề, Văn bản, Nút, Danh sách icon, Ảnh, Trích dẫn.
+- Muốn bỏ một phần: xoá khối đó trong builder (các nút "Ẩn phần này" trong form sản phẩm chỉ áp dụng cho trang mặc định).
+- Có thể kéo thêm bất kỳ khối thường nào (Hero ảnh, Testimonial, FAQ, Cột…) xen giữa các khối sản phẩm.
+- Nếu phần nào của sản phẩm đang trống, builder hiện ghi chú nhắc nhập nội dung; khách sẽ không thấy khối đó.
+
+#### 3. Xuất bản và quay lại trang mặc định
+
+- Bấm **Xuất bản** trong builder → khách thấy trang builder ngay.
+- Muốn quay về trang mặc định: vào **Trang** (`pages`) → mở trang có đường dẫn `habit/1-percent-better` (hoặc `tai-nguyen/<slug>`) → chọn **Ẩn tài liệu** (gỡ xuất bản). Không cần xoá trang.
+- Đường dẫn của các trang ứng dụng (học, tracker, rút thẻ, thanh toán, tài khoản…) **không** dùng cho trang builder được – CMS sẽ báo lỗi nếu nhập nhầm.
 
 ---
 

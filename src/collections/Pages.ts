@@ -12,6 +12,7 @@ import { validatePageLockedBlocks, validatePageKindBlocks } from '@/puck/locks'
 import { guardCustomCodeHook } from '@/puck/custom-code-guard'
 import { vi } from '../lib/i18n/vi'
 import { isOwnerUser } from '../lib/auth/access'
+import { isReservedAppSlug } from '../lib/pages/reserved-slugs'
 
 export function normalizePageSlug(value: string, req?: Partial<PayloadRequest>): string {
   const trimmed = value.trim()
@@ -20,6 +21,16 @@ export function normalizePageSlug(value: string, req?: Partial<PayloadRequest>):
     throw new ValidationError(
       {
         errors: [{ path: 'slug', message: 'Đường dẫn không được chứa hai dấu / liên tiếp.' }],
+        req,
+      },
+      req?.t,
+    )
+  }
+  // BX-08: application screens (learning, tracker, card draw, checkout…) are never builder pages.
+  if (isReservedAppSlug(normalized)) {
+    throw new ValidationError(
+      {
+        errors: [{ path: 'slug', message: vi.bx08.reservedSlug(normalized) }],
         req,
       },
       req?.t,

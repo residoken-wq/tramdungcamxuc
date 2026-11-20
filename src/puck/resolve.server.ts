@@ -16,6 +16,7 @@ import { buildSiteShellFromPayloadData, type SiteShellData } from '@/lib/site-sh
 import { loadLeadMagnetItems } from '@/lib/lead-magnets.server'
 
 import { walkPuckItems } from './walk'
+import { resolveProductPageBlocks } from './product-page.server'
 import { normalizePuckData } from './migrations'
 
 const PUBLIC_PRODUCT_SELECT = {
@@ -1761,6 +1762,9 @@ export async function resolveServerData(
       }
     }
   })
+
+  // BX-08: "Trang sản phẩm" blocks read the full offer data of their product
+  await resolveProductPageBlocks(resolvedData, payload)
 
   return resolvedData
 }

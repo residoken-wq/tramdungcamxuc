@@ -9,16 +9,29 @@ import { HabitOfferClient } from '@/components/habit/HabitOfferClient'
 
 import { RefreshOnSave } from '@/components/site/RefreshOnSave'
 import { getAdminPreviewUser } from '@/lib/live-preview.server'
+import {
+  BuilderPage,
+  builderPageMetadata,
+  findPublishedBuilderPage,
+} from '@/lib/pages/puck-override.server'
+
+/** BX-08: a published builder page with this slug replaces the coded offer page. */
+const BUILDER_SLUG = 'habit/1-percent-better'
 
 export const dynamic = 'force-dynamic'
 
-export const metadata: Metadata = {
+const DEFAULT_METADATA: Metadata = {
   title: vi.habit.metadata.offerPage.title,
   description: vi.habit.metadata.offerPage.description,
   openGraph: {
     title: vi.habit.metadata.offerPage.ogTitle,
     description: vi.habit.metadata.offerPage.ogDescription,
   },
+}
+
+export async function generateMetadata(): Promise<Metadata> {
+  const builderPage = await findPublishedBuilderPage(BUILDER_SLUG)
+  return builderPage ? builderPageMetadata(builderPage) : DEFAULT_METADATA
 }
 
 interface HabitOfferPageProps {
@@ -30,6 +43,11 @@ export default async function HabitOfferPage({ searchParams }: HabitOfferPagePro
   // REVIEW-REQUIRED: Chỉ phiên admin Payload (users collection) mới được đọc bản nháp của sản phẩm.
   // Khách vãng lai và học viên dù có preview=1 vẫn chỉ đọc bản đã xuất bản.
   const adminUser = await getAdminPreviewUser(search)
+
+  const builderPage = await findPublishedBuilderPage(BUILDER_SLUG)
+  if (builderPage) {
+    return <BuilderPage doc={builderPage} slug={BUILDER_SLUG} />
+  }
 
   const product = await getHabitProduct(undefined, {
     draft: Boolean(adminUser),
