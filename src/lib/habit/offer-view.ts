@@ -99,8 +99,7 @@ export function buildOfferView(
   const seriesLabel = pickCopy(product?.offerSeriesLabel, vi.habit.offer.badge, useDefaultHero)
   const rawTitle1 = pickCopy(product?.offerTitleLine1, vi.habit.offer.titleLine1, useDefaultHero)
   const titleLine2 = pickCopy(product?.offerTitleLine2, vi.habit.offer.titleLine2, useDefaultHero)
-  const titleLine1 =
-    rawTitle1 || (!titleLine2 ? product?.name || vi.habit.offer.titleLine1 : '')
+  const titleLine1 = rawTitle1 || (!titleLine2 ? product?.name || vi.habit.offer.titleLine1 : '')
   const emotionLine = pickCopy(
     product?.offerEmotionLine,
     vi.habit.offer.emotionalLine,
@@ -222,7 +221,8 @@ export function buildOfferView(
       features: !hide(product?.hideOfferFeatures) && featureItems.length > 0,
       faq: !hide(product?.hideOfferFaq) && faq.length > 0,
       bottom:
-        !hide(product?.hideOfferBottom) && (Boolean(bottomTitle || bottomDescription) || Boolean(cta)),
+        !hide(product?.hideOfferBottom) &&
+        (Boolean(bottomTitle || bottomDescription) || Boolean(cta)),
     },
   }
 }

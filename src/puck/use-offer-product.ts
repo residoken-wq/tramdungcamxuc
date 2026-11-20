@@ -14,8 +14,8 @@ export function useOfferProduct(
   resolved?: ProductPageResolved | null,
 ): { data: ProductPageResolved | null; loading: boolean } {
   const id = productId ? String(productId) : ''
-  const [state, setState] = useState<{ id: string; data: ProductPageResolved | null } | null>(
-    () => (id && cache.has(id) ? { id, data: cache.get(id) ?? null } : null),
+  const [state, setState] = useState<{ id: string; data: ProductPageResolved | null } | null>(() =>
+    id && cache.has(id) ? { id, data: cache.get(id) ?? null } : null,
   )
 
   useEffect(() => {

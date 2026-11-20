@@ -22,7 +22,5 @@ export interface ProductPageResolved {
 }
 
 export function isProductPageBlockType(type: unknown): type is ProductPageBlockType {
-  return (
-    typeof type === 'string' && (PRODUCT_PAGE_BLOCK_TYPES as readonly string[]).includes(type)
-  )
+  return typeof type === 'string' && (PRODUCT_PAGE_BLOCK_TYPES as readonly string[]).includes(type)
 }

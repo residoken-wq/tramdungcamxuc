@@ -4983,6 +4983,21 @@ export const vi = {
     chipHelp: 'Bấm chip: lần 1 nhấn (*), lần 2 gạch ngang (~), lần 3 bỏ.',
   },
   bx08: {
+    builderPanel: {
+      title: 'Bố cục trang sản phẩm',
+      saveFirst: 'Lưu sản phẩm trước khi chỉnh bố cục bằng builder.',
+      noTarget:
+        'Sản phẩm loại này chưa có trang riêng để chỉnh bằng builder (hiện áp dụng cho Habit Tracker số và tài nguyên miễn phí).',
+      create: 'Chỉnh bố cục bằng builder',
+      creating: 'Đang tạo trang…',
+      open: 'Mở trang builder',
+      createFailed: 'Không tạo được trang builder. Thử lại hoặc báo kỹ thuật.',
+      showing: (published: boolean) =>
+        published
+          ? 'Khách đang thấy: trang builder (đã xuất bản).'
+          : 'Khách đang thấy: trang mặc định. Trang builder đang là bản nháp – bấm Xuất bản trong builder để thay.',
+      hint: 'Chữ, giá, danh sách vẫn sửa ở form sản phẩm này; builder chỉ đổi bố cục. Gỡ xuất bản trang builder để quay về trang mặc định.',
+    },
     category: 'Trang sản phẩm',
     chooseProduct: 'Chọn sản phẩm ở bảng bên phải để hiện nội dung khối này.',
     loading: 'Đang tải dữ liệu sản phẩm…',

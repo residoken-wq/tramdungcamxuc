@@ -6,10 +6,7 @@ import { PriceTag } from '@/components/ui/PriceTag'
 import { vi } from '@/lib/i18n/vi'
 import { HABIT_LOOP_PATH } from '@/lib/habit'
 import type { OfferBg, OfferView } from '@/lib/habit/offer-view'
-import type {
-  TitleHighlightAnimation,
-  TitleHighlightStyle,
-} from '@/components/ui/TwoToneTitle'
+import type { TitleHighlightAnimation, TitleHighlightStyle } from '@/components/ui/TwoToneTitle'
 
 /**
  * BX-08: the six sections of the product offer page. The coded page (`HabitOfferClient`) and the
@@ -18,12 +15,7 @@ import type {
  */
 
 /** Section backgrounds offered to the builder (Brand Book palette + white). */
-export type OfferSectionBg =
-  | OfferBg
-  | 'soft-pink'
-  | 'lavender-mist'
-  | 'mint-haze'
-  | 'butter-cream'
+export type OfferSectionBg = OfferBg | 'soft-pink' | 'lavender-mist' | 'mint-haze' | 'butter-cream'
 
 const SECTION_BG: Record<OfferSectionBg, string> = {
   'warm-ivory': 'bg-warm-ivory',
@@ -41,9 +33,7 @@ const PRIMARY_CTA_CLASS =
   'inline-flex items-center justify-center px-8 py-4 rounded-full bg-accent-pink text-white font-bold text-[19px] tracking-tight shadow-soft hover:bg-bright-magenta transition-colors'
 
 export type OfferSecondaryButton =
-  | { kind: 'habitLoop' }
-  | { kind: 'none' }
-  | { kind: 'custom'; label: string; href: string }
+  { kind: 'habitLoop' } | { kind: 'none' } | { kind: 'custom'; label: string; href: string }
 
 function PrimaryCta({ cta }: { cta: OfferView['cta'] }) {
   if (!cta) return null
@@ -58,13 +48,7 @@ function PrimaryCta({ cta }: { cta: OfferView['cta'] }) {
   )
 }
 
-function SecondaryCta({
-  button,
-  className,
-}: {
-  button: OfferSecondaryButton
-  className: string
-}) {
+function SecondaryCta({ button, className }: { button: OfferSecondaryButton; className: string }) {
   if (button.kind === 'none') return null
   if (button.kind === 'custom') {
     if (!button.label || !button.href) return null
@@ -168,7 +152,9 @@ export function OfferHero({
         </div>
       )}
 
-      <div className={`flex flex-col sm:flex-row gap-3 ${isLeft ? 'justify-start' : 'justify-center'}`}>
+      <div
+        className={`flex flex-col sm:flex-row gap-3 ${isLeft ? 'justify-start' : 'justify-center'}`}
+      >
         {showPrimaryCta && <PrimaryCta cta={view.cta} />}
         <SecondaryCta
           button={secondaryButton}
@@ -206,7 +192,9 @@ export function OfferHero({
   return (
     <section className={`py-12 sm:py-20 ${SECTION_BG[bg]} border-b border-lavender-mist/40`}>
       <div className="max-w-6xl mx-auto px-4 sm:px-6 grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
-        <div className={`${imagePosition === 'right' ? 'lg:order-1' : 'lg:order-2'} ${isLeft ? 'text-left' : 'text-center'}`}>
+        <div
+          className={`${imagePosition === 'right' ? 'lg:order-1' : 'lg:order-2'} ${isLeft ? 'text-left' : 'text-center'}`}
+        >
           {header}
           {card}
         </div>
@@ -251,7 +239,8 @@ export function OfferStats({
   const tile = cardBgFor(bg)
   const cells: Record<OfferStatKey, { value: number; label: string } | null> = {
     // DB counts: no lesson / technique yet → hide that tile
-    videos: view.videoCount > 0 ? { value: view.videoCount, label: vi.habit.offer.stats.videos } : null,
+    videos:
+      view.videoCount > 0 ? { value: view.videoCount, label: vi.habit.offer.stats.videos } : null,
     techniques:
       view.techniqueCount > 0
         ? { value: view.techniqueCount, label: vi.habit.offer.stats.techniques }
@@ -294,11 +283,19 @@ const LIST_LAYOUT: Record<OfferListLayout, string> = {
   'grid-3': 'grid grid-cols-1 md:grid-cols-3 gap-4',
 }
 
-function SectionIntro({ heading, subheading }: { heading: string | null; subheading: string | null }) {
+function SectionIntro({
+  heading,
+  subheading,
+}: {
+  heading: string | null
+  subheading: string | null
+}) {
   if (!heading && !subheading) return null
   return (
     <div className="text-center mb-10">
-      {heading && <h2 className="font-display text-2xl sm:text-3xl text-deep-navy mb-2">{heading}</h2>}
+      {heading && (
+        <h2 className="font-display text-2xl sm:text-3xl text-deep-navy mb-2">{heading}</h2>
+      )}
       {subheading && <p className="text-sm sm:text-base text-deep-navy/70">{subheading}</p>}
     </div>
   )
@@ -336,8 +333,12 @@ export function OfferCurriculum({
                 </div>
               )}
               <div>
-                <h3 className="font-semibold text-base sm:text-lg text-deep-navy mb-1">{mod.title}</h3>
-                {mod.desc && <p className="text-sm text-deep-navy/70 leading-relaxed">{mod.desc}</p>}
+                <h3 className="font-semibold text-base sm:text-lg text-deep-navy mb-1">
+                  {mod.title}
+                </h3>
+                {mod.desc && (
+                  <p className="text-sm text-deep-navy/70 leading-relaxed">{mod.desc}</p>
+                )}
               </div>
             </div>
           ))}
@@ -365,8 +366,7 @@ export function OfferFeatures({
   showIcon = true,
 }: OfferFeaturesProps) {
   if (view.featureItems.length === 0) return null
-  const grid =
-    layout === 'grid-3' ? 'grid grid-cols-1 md:grid-cols-3 gap-6' : LIST_LAYOUT[layout]
+  const grid = layout === 'grid-3' ? 'grid grid-cols-1 md:grid-cols-3 gap-6' : LIST_LAYOUT[layout]
   return (
     <section className={`py-12 sm:py-16 ${SECTION_BG[bg]} border-t border-lavender-mist/40`}>
       <div className="max-w-4xl mx-auto px-4 sm:px-6">
@@ -385,7 +385,9 @@ export function OfferFeatures({
                 </span>
               )}
               <h3 className="font-semibold text-deep-navy text-base mb-2">{feat.title}</h3>
-              {feat.desc && <p className="text-sm text-deep-navy/70 leading-relaxed">{feat.desc}</p>}
+              {feat.desc && (
+                <p className="text-sm text-deep-navy/70 leading-relaxed">{feat.desc}</p>
+              )}
             </div>
           ))}
         </div>
@@ -421,7 +423,9 @@ export function OfferFaq({ view, bg = 'warm-ivory', columns = 1 }: OfferFaqProps
               className={`${cardBgFor(bg)} rounded-card p-6 border border-lavender-mist shadow-soft`}
             >
               <h3 className="font-semibold text-deep-navy text-base mb-2">{item.question}</h3>
-              {item.answer && <p className="text-sm text-deep-navy/80 leading-relaxed">{item.answer}</p>}
+              {item.answer && (
+                <p className="text-sm text-deep-navy/80 leading-relaxed">{item.answer}</p>
+              )}
             </div>
           ))}
         </div>
@@ -455,10 +459,14 @@ export function OfferBottom({
     <section className={`py-16 ${bgClass} border-t border-lavender-mist`}>
       <div className="max-w-2xl mx-auto px-4 text-center">
         {view.bottomTitle && (
-          <h2 className="font-display text-3xl sm:text-4xl text-deep-navy mb-4">{view.bottomTitle}</h2>
+          <h2 className="font-display text-3xl sm:text-4xl text-deep-navy mb-4">
+            {view.bottomTitle}
+          </h2>
         )}
         {view.bottomDescription && (
-          <p className="text-base text-deep-navy/80 mb-8 max-w-lg mx-auto">{view.bottomDescription}</p>
+          <p className="text-base text-deep-navy/80 mb-8 max-w-lg mx-auto">
+            {view.bottomDescription}
+          </p>
         )}
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <PrimaryCta cta={view.cta} />

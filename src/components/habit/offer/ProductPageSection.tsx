@@ -86,14 +86,16 @@ export function ProductPageSection(
     }
     case 'curriculum': {
       if (!view.show.curriculum) return isEditing ? empty : null
-      const { section: _s, ...rest } = props as { section: 'curriculum' } &
-        Omitted<OfferCurriculumProps>
+      const { section: _s, ...rest } = props as {
+        section: 'curriculum'
+      } & Omitted<OfferCurriculumProps>
       return <OfferCurriculum view={view} {...pickSectionProps(rest)} />
     }
     case 'features': {
       if (!view.show.features) return isEditing ? empty : null
-      const { section: _s, ...rest } = props as { section: 'features' } &
-        Omitted<OfferFeaturesProps>
+      const { section: _s, ...rest } = props as {
+        section: 'features'
+      } & Omitted<OfferFeaturesProps>
       return <OfferFeatures view={view} {...pickSectionProps(rest)} />
     }
     case 'faq': {

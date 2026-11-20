@@ -22,6 +22,7 @@ import { brandIconOptions } from '../lib/brand/icons'
 import { authenticated } from '../lib/auth/access'
 import { computePackageValue } from '../lib/pricing'
 import { vi } from '../lib/i18n/vi'
+import { productPageTarget } from '../puck/templates/product-page'
 import {
   showFor,
   showForTypesOrFree,
@@ -109,6 +110,18 @@ export const Products: CollectionConfig = {
       admin: {
         components: {
           Field: '@/components/admin/BookingStatusBanner#BookingStatusBanner',
+        },
+      },
+    },
+
+    // BX-08: create / open the builder page that replaces this product's coded page
+    {
+      name: 'productBuilderPanel',
+      type: 'ui',
+      admin: {
+        condition: (data) => productPageTarget(data ?? {}) !== null,
+        components: {
+          Field: '@/components/admin/ProductBuilderButton#ProductBuilderButton',
         },
       },
     },

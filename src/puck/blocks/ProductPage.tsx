@@ -7,10 +7,7 @@ import {
 } from '@/components/site/ProductResourceFormBlock'
 import type { OfferSecondaryButton, OfferSectionBg } from '@/components/habit/offer/OfferSections'
 import type { OfferListLayout } from '@/components/habit/offer/OfferSections'
-import type {
-  TitleHighlightAnimation,
-  TitleHighlightStyle,
-} from '@/components/ui/TwoToneTitle'
+import type { TitleHighlightAnimation, TitleHighlightStyle } from '@/components/ui/TwoToneTitle'
 import { safeHref } from '@/lib/safe-href'
 import { createProductExternalField } from '../product-field'
 import { titleHighlightAnimationField, titleHighlightStyleField } from '../title-highlight-field'

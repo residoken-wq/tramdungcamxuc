@@ -45,7 +45,10 @@ export async function resolveProductPageBlocks(data: Data, payload: Payload): Pr
   await walkPuckItems(data, (item) => {
     if (!isProductPageBlockType(item.type)) return
     const id = item.props.productId ? String(item.props.productId) : ''
-    const resolved: ProductPageResolved = { offer: id ? (offers.get(id) ?? null) : null, journeyDays }
+    const resolved: ProductPageResolved = {
+      offer: id ? (offers.get(id) ?? null) : null,
+      journeyDays,
+    }
     item.props._resolved = resolved
   })
 

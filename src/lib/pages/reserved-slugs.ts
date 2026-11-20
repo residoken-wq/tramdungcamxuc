@@ -25,7 +25,10 @@ export const RESERVED_APP_SLUG_PREFIXES = [
 /** True when `slug` (no leading slash) is an application screen or lives under one. */
 export function isReservedAppSlug(slug: string | null | undefined): boolean {
   if (typeof slug !== 'string') return false
-  const clean = slug.trim().replace(/^\/+|\/+$/g, '').toLowerCase()
+  const clean = slug
+    .trim()
+    .replace(/^\/+|\/+$/g, '')
+    .toLowerCase()
   if (!clean) return false
   return RESERVED_APP_SLUG_PREFIXES.some((p) => clean === p || clean.startsWith(`${p}/`))
 }
