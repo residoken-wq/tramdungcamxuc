@@ -8,6 +8,38 @@ export const vi = {
       customers: 'Học viên & khách',
       system: 'Hệ thống',
     },
+    siteMap: {
+      navLink: 'Sơ đồ website',
+      eyebrow: 'Bản đồ nội dung',
+      title: 'Sơ đồ website & chỗ sửa nội dung',
+      intro:
+        'Mỗi trang của tramdungcamxuc.com: nó là gì, sửa ở đâu trong CMS. Bấm nút để mở đúng chỗ sửa; bấm đường dẫn để xem trang ngoài website.',
+      kinds: {
+        builder: { label: 'Kéo thả', hint: 'Sửa bố cục và chữ ngay trên trang (builder).' },
+        form: { label: 'Form CMS', hint: 'Trang có sẵn, chữ và giá nhập trong form.' },
+        app: { label: 'Ứng dụng', hint: 'Màn hình công cụ: bố cục cố định, chỉ sửa chữ / dữ liệu.' },
+        shared: { label: 'Dùng chung', hint: 'Sửa một lần, mọi trang cùng đổi.' },
+      },
+      menuTitle: 'Menu khách đang thấy',
+      menuDesc:
+        'Cây menu lấy từ "Menu điều hướng". Mỗi mục có nút mở thẳng chỗ sửa trang đích.',
+      mainMenu: 'Menu chính',
+      footerMenu: 'Menu chân trang',
+      menuEmpty: 'Menu đang dùng mặc định (chưa nhập trong "Menu điều hướng").',
+      editMenu: 'Sửa menu',
+      externalLink: 'Liên kết ngoài',
+      seeBelow: 'Xem danh sách bên dưới',
+      searchLabel: 'Tìm trang',
+      searchPlaceholder: 'Tìm trang, đường dẫn hoặc nội dung… (VD: thẻ EQ, giá, quiz)',
+      filterLabel: 'Lọc theo loại',
+      filterAll: 'Tất cả',
+      jumpLabel: 'Nhảy tới nhóm',
+      noResult: 'Không tìm thấy trang phù hợp. Thử từ khoá khác.',
+      editAt: 'Sửa ở:',
+      nothingToEdit: 'Không có nội dung cần sửa.',
+      guide: 'Hướng dẫn:',
+      openPage: 'Mở trang trên website (tab mới)',
+    },
     dashboard: {
       ariaLabel: 'Bảng việc hôm nay',
       eyebrow: 'Trang quản trị trung tâm',
@@ -70,6 +102,10 @@ export const vi = {
         },
       },
       guides: {
+        siteMap: {
+          title: '🗺️ Sơ đồ website & chỗ sửa nội dung',
+          description: 'Mỗi trang trên website sửa ở đâu – bấm là mở đúng chỗ.',
+        },
         products: {
           title: 'Tạo & quản lý sản phẩm, gói đồng hành',
           description: 'Cách định giá, thiết lập dùng thử và cấu phần gói.',

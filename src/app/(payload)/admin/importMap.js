@@ -47,8 +47,10 @@ import { EqBuilderButton as EqBuilderButton_a61ce4edafbf63bdbce1d5a334c6f4f5 } f
 import { AdminIcon as AdminIcon_d724e3c9fa2fc7ba502c18e1e0541534 } from '@/components/admin/brand/Icon'
 import { AdminLogo as AdminLogo_f5b90b1f137d54d2b96fee0d0c4d5b67 } from '@/components/admin/brand/Logo'
 import { TodayDashboard as TodayDashboard_0d3cad73da0bac992d197d8e88c9e3cd } from '@/components/admin/dashboard/TodayDashboard'
+import { SiteMapNavLink as SiteMapNavLink_deb0f0a99fc6a49bd3ae238e7956f787 } from '@/components/admin/site-map/SiteMapNavLink'
 import { ProductWizardView as ProductWizardView_8f354467b2158b3508b409ee61903a48 } from '@/components/admin/product-wizard/ProductWizardView'
 import { LessonWizardView as LessonWizardView_21c2c02bf6a97019810f9bcf3a4a1a5c } from '@/components/admin/lesson-wizard/LessonWizardView'
+import { SiteMapView as SiteMapView_b945a482f82e16f301a301791342ae8d } from '@/components/admin/site-map/SiteMapView'
 import { WorkshopWizardView as WorkshopWizardView_a4703348d9752b2b071d157e36283cae } from '@/components/admin/workshop-wizard/WorkshopWizardView'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
 import { S3ClientUploadHandler as S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24 } from '@payloadcms/storage-s3/client'
@@ -104,8 +106,10 @@ export const importMap = {
   "@/components/admin/brand/Icon#AdminIcon": AdminIcon_d724e3c9fa2fc7ba502c18e1e0541534,
   "@/components/admin/brand/Logo#AdminLogo": AdminLogo_f5b90b1f137d54d2b96fee0d0c4d5b67,
   "@/components/admin/dashboard/TodayDashboard#TodayDashboard": TodayDashboard_0d3cad73da0bac992d197d8e88c9e3cd,
+  "@/components/admin/site-map/SiteMapNavLink#SiteMapNavLink": SiteMapNavLink_deb0f0a99fc6a49bd3ae238e7956f787,
   "@/components/admin/product-wizard/ProductWizardView#ProductWizardView": ProductWizardView_8f354467b2158b3508b409ee61903a48,
   "@/components/admin/lesson-wizard/LessonWizardView#LessonWizardView": LessonWizardView_21c2c02bf6a97019810f9bcf3a4a1a5c,
+  "@/components/admin/site-map/SiteMapView#SiteMapView": SiteMapView_b945a482f82e16f301a301791342ae8d,
   "@/components/admin/workshop-wizard/WorkshopWizardView#WorkshopWizardView": WorkshopWizardView_a4703348d9752b2b071d157e36283cae,
   "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1,
   "@payloadcms/storage-s3/client#S3ClientUploadHandler": S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24

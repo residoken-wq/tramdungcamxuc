@@ -89,6 +89,7 @@
 6. [Quản lý Trang pháp lý và Thông tin người bán](#6-quản-lý-trang-pháp-lý-và-thông-tin-người-bán)
 7. [Cài đặt Website, Kênh liên hệ và Thanh toán](#7-cài-đặt-website-kênh-liên-hệ-và-thanh-toán)
    - [7.5. Xác nhận chuyển khoản đơn hàng](#75-xác-nhận-chuyển-khoản-đơn-hàng)
+   - [7.8. Sơ đồ website & chỗ sửa nội dung](#78-sơ-đồ-website--chỗ-sửa-nội-dung)
 8. [Quản lý Khách tiềm năng (Leads) và Xuất file CSV](#8-quản-lý-khách-tiềm-năng-leads-và-xuất-file-csv)
 9. [Quản lý Câu hỏi Quiz chẩn đoán thói quen](#9-quản-lý-câu-hỏi-quiz-chẩn-đoán-thói-quen)
 10. [Xử lý sự cố và Nhận biết thông báo lỗi thường gặp](#10-xử-lý-sự-cố-và-nhận-biết-thông-báo-lỗi-thường-gặp)
@@ -4241,6 +4242,25 @@ Khi anh IT thông báo đã cấu hình Google xong, Hana thực hiện theo 3 b
 3. **Bước 3 – Xác nhận thực tế**: Mở một cửa sổ trình duyệt ẩn danh mới (Incognito / Khách), vào lại `/tai-khoan/dang-nhap`. Lúc này form OTP đã biến mất hoàn toàn, chỉ còn nút Google gọn gàng kèm 2 ô chọn đồng ý điều khoản. Nếu sau này cần mở lại OTP, Hana chỉ cần gạt bật lại công tắc và Lưu.
 
 ---
+
+### 7.8. Sơ đồ website & chỗ sửa nội dung
+
+Không nhớ trang nào sửa ở đâu? Mở **Sơ đồ website**:
+
+- Nút **🗺️ Sơ đồ website** trên cùng menu trái của CMS, hoặc ô đầu tiên trong "Hướng dẫn sử dụng" trên trang chủ CMS. Địa chỉ: `/admin/so-do-website`.
+
+Trang gồm:
+
+1. **Menu khách đang thấy**: cây menu chính và menu chân trang (lấy từ "Menu điều hướng"). Cạnh mỗi mục có nút mở thẳng chỗ sửa trang đó.
+2. **Ô tìm kiếm**: gõ tên trang, đường dẫn hoặc thứ muốn sửa (VD `thẻ EQ`, `giá`, `quiz`; gõ không dấu cũng được).
+3. **Lọc theo loại**:
+   - **Kéo thả**: trang dựng bằng builder, sửa bố cục và chữ ngay trên trang. Danh sách lấy từ CMS, có nhãn *Đã xuất bản* / *Bản nháp – khách chưa thấy* / *Có trên menu*.
+   - **Form CMS**: trang có sẵn, chữ và giá nhập trong form (sản phẩm, dịch vụ, bài viết, trang pháp lý…).
+   - **Ứng dụng**: màn hình công cụ (quiz, 5 phút, tracker, học bài, rút thẻ, thanh toán…). Bố cục cố định, chỉ sửa chữ / dữ liệu.
+   - **Dùng chung**: menu, đầu & chân trang, màu & font, liên hệ, Zalo, ly cà phê.
+4. Mỗi thẻ trang có: đường dẫn (bấm để xem trang ngoài website), **nút "Sửa ở"** mở đúng form / builder, ghi chú (nền vàng) và link tới mục hướng dẫn chi tiết trong tài liệu này.
+
+> Trang Habit Hack và EQ Buddy có nhãn **"Đổi bố cục được"** / **"Đang hiện trang builder"** (BX-08, mục 5.48).
 
 ## 8. Quản lý Khách tiềm năng (Leads) và Xuất file CSV
 
