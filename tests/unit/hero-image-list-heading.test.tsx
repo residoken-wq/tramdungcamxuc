@@ -9,6 +9,7 @@ const props = {
   layout: 'side' as const,
   bgColor: 'deep-navy' as const,
   titleLine1: '[MẪU] Chuyển mình',
+  titleLine2: '[MẪU] không chênh vênh',
   listTitle: 'PHASE 1',
   listItems: [
     { text: '[MẪU] 01 · Mục một' },
