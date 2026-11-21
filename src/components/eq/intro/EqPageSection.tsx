@@ -172,7 +172,7 @@ function EqSectionBody(
                 className="inline-flex items-center gap-2 px-5 py-3 rounded-full bg-white hover:bg-soft-pink/40 border border-lavender-mist hover:border-bright-magenta text-deep-navy text-xs sm:text-sm font-semibold transition-all shadow-soft-md cursor-pointer"
               >
                 <BookOpen className="w-4 h-4 text-bright-magenta" />
-                <span>📖 {vi.dp01eq.guide}</span>
+                <span className="whitespace-nowrap">{vi.dp01eq.guide}</span>
               </button>
             </div>
             {modal}

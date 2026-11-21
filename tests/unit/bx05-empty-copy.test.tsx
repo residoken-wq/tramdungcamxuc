@@ -107,7 +107,7 @@ describe('BX-05: Source 2 – EQ Buddy Content', () => {
     expect(container.querySelector('h1')).toBeNull()
 
     // Nhãn chức năng: nút "Hướng dẫn" vẫn luôn hiển thị
-    expect(screen.getAllByText(`📖 ${viLocale.dp01eq.guide}`).length).toBeGreaterThan(0)
+    expect(screen.getAllByText(viLocale.dp01eq.guide).length).toBeGreaterThan(0)
   })
 
   it('EQBuddyIntro: ô trống + useDefaultCopyIntro = true thì hiện chữ mẫu mặc định', () => {

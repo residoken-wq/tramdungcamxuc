@@ -63,26 +63,29 @@ export function EqSeriesBar({
   const { tagline, quoteTop } = view
   return (
     <div className="flex items-center justify-between border-b border-lavender-mist pb-3 sm:pb-4 mb-4 sm:mb-6 font-ui">
-      <div className="flex items-center gap-1.5 sm:gap-2">
+      <div className="flex min-w-0 items-center gap-1.5 sm:gap-2">
         {tagline && (
           <>
-            <span className="w-2 h-2 rounded-full bg-bright-magenta animate-pulse" />
-            <span className="text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider text-deep-navy/70">
+            <span className="w-2 h-2 shrink-0 rounded-full bg-bright-magenta animate-pulse" />
+            {/* Fluid size keeps the series name on one line on phones (320–430px);
+                an ellipsis is only a last resort on very narrow screens. */}
+            <span className="min-w-0 truncate text-[clamp(9px,2.6vw,11px)] font-semibold uppercase tracking-[0.06em] sm:tracking-wider text-deep-navy/70">
               {tagline}
             </span>
           </>
         )}
       </div>
 
-      <div className="flex items-center gap-2">
+      <div className="flex shrink-0 items-center gap-2">
+        {/* Phones use the large "Hướng dẫn" button under the draw button instead */}
         {showGuideButton && (
           <button
             type="button"
             onClick={onGuide}
-            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-soft-pink hover:bg-bright-magenta hover:text-white text-bright-magenta text-xs font-semibold border border-bright-magenta/30 shadow-soft-md transition-all active:scale-95 group cursor-pointer"
+            className="hidden sm:inline-flex items-center gap-1.5 whitespace-nowrap px-3 py-1 rounded-full bg-soft-pink hover:bg-bright-magenta hover:text-white text-bright-magenta text-xs font-semibold border border-bright-magenta/30 shadow-soft-md transition-all active:scale-95 group cursor-pointer"
           >
             <BookOpen className="w-3.5 h-3.5 text-bright-magenta group-hover:text-white transition-colors" />
-            <span>📖 {vi.dp01eq.guide}</span>
+            <span>{vi.dp01eq.guide}</span>
           </button>
         )}
 
@@ -121,7 +124,7 @@ export function EqIntroHeader({ view, align = 'auto' }: { view: EqIntroView; ali
       )}
 
       {subtitle && (
-        <p className="text-sm sm:text-base text-deep-navy/80 font-medium leading-relaxed">
+        <p className="text-sm sm:text-base text-deep-navy/80 font-medium leading-relaxed text-balance">
           {subtitle}
         </p>
       )}
@@ -224,9 +227,10 @@ export function EqDrawActions({
           <button
             type="button"
             onClick={onGuide}
-            className="text-xs text-deep-navy/70 hover:text-deep-navy underline underline-offset-4 transition-colors cursor-pointer"
+            className="inline-flex items-center gap-1.5 whitespace-nowrap text-xs text-deep-navy/70 hover:text-deep-navy underline underline-offset-4 transition-colors cursor-pointer"
           >
-            📖 {vi.dp01eq.guide}
+            <BookOpen className="w-3.5 h-3.5 text-bright-magenta" aria-hidden="true" />
+            {vi.dp01eq.guide}
           </button>
         )}
 
@@ -251,7 +255,7 @@ export function EqDrawActions({
           className="w-full sm:w-auto px-5 py-3 rounded-full bg-white hover:bg-soft-pink/40 border border-lavender-mist hover:border-bright-magenta text-deep-navy text-xs sm:text-sm font-semibold flex items-center justify-center gap-2 transition-all shadow-soft-md cursor-pointer order-2 sm:order-1"
         >
           <BookOpen className="w-4 h-4 text-bright-magenta" />
-          <span>📖 {vi.dp01eq.guide}</span>
+          <span className="whitespace-nowrap">{vi.dp01eq.guide}</span>
         </button>
       )}
 
