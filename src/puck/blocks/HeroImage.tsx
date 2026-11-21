@@ -137,6 +137,14 @@ export const HeroImageBlock: ComponentConfig<HeroImageProps> = {
             { label: 'Mờ (chấm rỗng)', value: true },
           ],
         },
+        heading: {
+          type: 'radio',
+          label: vi.pk26.heroImage.itemHeading,
+          options: [
+            { label: vi.pk26.heroImage.itemHeadingNo, value: false },
+            { label: vi.pk26.heroImage.itemHeadingYes, value: true },
+          ],
+        },
       },
     },
     mediaId: {

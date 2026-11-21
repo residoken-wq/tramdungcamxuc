@@ -3352,6 +3352,7 @@ Hana có thể sử dụng các khối và tính năng mới được thiết k�
    - **Khối Thẻ (`Card`)**: Chọn được 8 màu nền thương hiệu (khi chọn Xanh thẫm `deep-navy`, chữ tự động chuyển sang màu trắng). Hỗ trợ nhãn nhỏ `eyebrow` kèm vạch nhấn hồng sen, tiêu đề phụ đậm, nhãn chip, gõ `- ` để tạo danh sách gạch đầu dòng, danh sách mục chia 1 hoặc 2 cột, và hộp "Mang về" với tông màu riêng.
    - **Lưới thẻ (`IconCardGrid`)**: Bổ sung bố cục 5 cột (`columns: 5`) và tuỳ chọn hiện mũi tên sang phải (`connector: 'arrow'`) giữa các thẻ trên máy tính.
    - **Hero Ảnh (`HeroImage`)**: Thêm tiêu đề danh sách (`listTitle`) và danh sách các giai đoạn (`listItems`), có tuỳ chọn mờ (`muted`) cho giai đoạn tiếp theo (chấm rỗng, chữ mờ).
+     - **Nhiều nhóm (VD PHASE 1, PHASE 2)**: thêm một dòng, gõ `PHASE 2`, chọn **Kiểu dòng = Tiêu đề nhóm** → dòng này hiện giống "PHASE 1" (chữ in hoa, không chấm, cách nhóm trên một khoảng). Các dòng bên dưới là mục của nhóm 2.
    - **Dải ghi chú (`Callout` strip)**: Thêm tuỳ chọn tông màu (`stripTone`): Hồng phấn (mặc định), Tím sương, Trắng viền mảnh, Viền đứt hồng nền trong, và Xanh thẫm chữ trắng.
 
 4. **Lưu ý cho Hana khi biên tập mẫu "Trang lộ trình" (Chuyển mình không chênh vênh)**:
@@ -3410,6 +3411,10 @@ Dành riêng cho trang Về Trạm và các trang thương hiệu cần trình b
         Hộp luôn nằm ngay dưới tiêu đề, ô **Vị trí trích dẫn** không áp dụng cho kiểu này. Hai kiểu còn lại (vạch hồng / thuần chữ nghiêng) giữ như cũ.
      4. Tại mục **Các điểm nhấn (thẻ nhỏ đánh số)**, bấm Thêm và điền 3 thẻ điểm nhấn.
      5. Bấm **Xuất bản** ở góc trên bên phải.
+   - **Đổi kiểu chữ giữa 2 đoạn (chỉ khối "Câu chuyện Hana")**: ô **"Kiểu chữ của Đoạn kể câu chuyện và Dòng trích dẫn"**.
+     - *Mặc định*: Đoạn kể câu chuyện chữ thường, Dòng trích dẫn chữ nghiêng trong khung (có ngoặc kép).
+     - *Đảo*: Đoạn kể câu chuyện thành chữ nghiêng trong khung, Dòng trích dẫn thành chữ thường. **Vị trí 2 đoạn giữ nguyên**, chữ không phải gõ lại.
+     - Kiểu khung đi theo ô **Kiểu trích dẫn** (khung thường / hộp nổi bật).
 
 4. **Chân trang (Footer) nền xanh thẫm (Deep Navy)**:
    - Khi chỉnh sửa Chân trang trong trình dựng (`/admin/builder/[footerId]`): bấm vào phần viền ngoài cùng hoặc chọn cài đặt chân trang, tại mục **"Nền footer"**, chọn **"Xanh thẫm (Deep Navy)"**.

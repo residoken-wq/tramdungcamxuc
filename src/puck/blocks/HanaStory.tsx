@@ -74,6 +74,14 @@ export const HanaStoryBlock: ComponentConfig<HanaStoryProps> = {
         },
       ],
     },
+    textFormat: {
+      type: 'radio',
+      label: vi.hanaStoryTextFormat.label,
+      options: [
+        { label: vi.hanaStoryTextFormat.default, value: 'default' },
+        { label: vi.hanaStoryTextFormat.swapped, value: 'swapped' },
+      ],
+    },
     highlights: {
       type: 'array',
       label: vi.pk31?.hanaStory?.highlights || 'Các điểm nhấn (thẻ nhỏ đánh số)',
@@ -132,6 +140,7 @@ export const HanaStoryBlock: ComponentConfig<HanaStoryProps> = {
     chips: [],
     highlights: [],
     quoteStyle: 'line',
+    textFormat: 'default',
     storyContent:
       '[MẪU] Đoạn văn bản thứ nhất kể về hành trình và chiêm nghiệm.\n\n[MẪU] Đoạn văn bản thứ hai làm rõ hơn giá trị và sự đồng hành.',
     quoteLine: '[MẪU] Dòng cảm xúc trích dẫn chạm đến trái tim người đọc.',

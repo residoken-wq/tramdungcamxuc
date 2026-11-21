@@ -3532,6 +3532,9 @@ export const vi = {
       listItems: 'Danh sách giai đoạn',
       itemText: 'Nội dung giai đoạn',
       itemMuted: 'Giai đoạn tiếp theo (chấm rỗng, chữ mờ)',
+      itemHeading: 'Kiểu dòng',
+      itemHeadingNo: 'Mục có chấm (mặc định)',
+      itemHeadingYes: 'Tiêu đề nhóm (chữ in hoa như "PHASE 1")',
     },
     callout: {
       stripTone: 'Tông màu dải ghi chú',
@@ -4981,6 +4984,11 @@ export const vi = {
     animDraw: 'Vẽ dần',
     animPop: 'Nổi lên',
     chipHelp: 'Bấm chip: lần 1 nhấn (*), lần 2 gạch ngang (~), lần 3 bỏ.',
+  },
+  hanaStoryTextFormat: {
+    label: 'Kiểu chữ của Đoạn kể câu chuyện và Dòng trích dẫn',
+    default: 'Mặc định: đoạn kể chữ thường, trích dẫn chữ nghiêng trong khung',
+    swapped: 'Đảo: đoạn kể chữ nghiêng trong khung, trích dẫn chữ thường',
   },
   bx08: {
     builderPanel: {
