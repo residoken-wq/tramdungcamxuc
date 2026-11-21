@@ -3532,6 +3532,9 @@ export const vi = {
       listItems: 'Danh sách giai đoạn',
       itemText: 'Nội dung giai đoạn',
       itemMuted: 'Giai đoạn tiếp theo (chấm rỗng, chữ mờ)',
+      itemHeading: 'Kiểu dòng',
+      itemHeadingNo: 'Mục có chấm (mặc định)',
+      itemHeadingYes: 'Tiêu đề nhóm (chữ in hoa như "PHASE 1")',
     },
     callout: {
       stripTone: 'Tông màu dải ghi chú',

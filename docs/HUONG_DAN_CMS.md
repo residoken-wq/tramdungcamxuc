@@ -3352,6 +3352,7 @@ Hana có thể sử dụng các khối và tính năng mới được thiết k�
    - **Khối Thẻ (`Card`)**: Chọn được 8 màu nền thương hiệu (khi chọn Xanh thẫm `deep-navy`, chữ tự động chuyển sang màu trắng). Hỗ trợ nhãn nhỏ `eyebrow` kèm vạch nhấn hồng sen, tiêu đề phụ đậm, nhãn chip, gõ `- ` để tạo danh sách gạch đầu dòng, danh sách mục chia 1 hoặc 2 cột, và hộp "Mang về" với tông màu riêng.
    - **Lưới thẻ (`IconCardGrid`)**: Bổ sung bố cục 5 cột (`columns: 5`) và tuỳ chọn hiện mũi tên sang phải (`connector: 'arrow'`) giữa các thẻ trên máy tính.
    - **Hero Ảnh (`HeroImage`)**: Thêm tiêu đề danh sách (`listTitle`) và danh sách các giai đoạn (`listItems`), có tuỳ chọn mờ (`muted`) cho giai đoạn tiếp theo (chấm rỗng, chữ mờ).
+     - **Nhiều nhóm (VD PHASE 1, PHASE 2)**: thêm một dòng, gõ `PHASE 2`, chọn **Kiểu dòng = Tiêu đề nhóm** → dòng này hiện giống "PHASE 1" (chữ in hoa, không chấm, cách nhóm trên một khoảng). Các dòng bên dưới là mục của nhóm 2.
    - **Dải ghi chú (`Callout` strip)**: Thêm tuỳ chọn tông màu (`stripTone`): Hồng phấn (mặc định), Tím sương, Trắng viền mảnh, Viền đứt hồng nền trong, và Xanh thẫm chữ trắng.
 
 4. **Lưu ý cho Hana khi biên tập mẫu "Trang lộ trình" (Chuyển mình không chênh vênh)**:

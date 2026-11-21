@@ -42,6 +42,8 @@ export interface HeroBadge {
 export interface HeroListItem {
   text: string
   muted?: boolean
+  /** Group heading inside the list (looks like the list title, e.g. "PHASE 2"). */
+  heading?: boolean
 }
 
 export interface HeroImageProps {
@@ -134,7 +136,9 @@ function ArchGraphic({ isDeepNavy }: { isDeepNavy: boolean }) {
       {/* Outer arch frame */}
       <div
         className={`relative w-[280px] h-[390px] rounded-t-full border-2 ${
-          isDeepNavy ? 'border-white/40 shadow-[0_0_30px_rgba(239,59,131,0.2)]' : 'border-deep-navy/20'
+          isDeepNavy
+            ? 'border-white/40 shadow-[0_0_30px_rgba(239,59,131,0.2)]'
+            : 'border-deep-navy/20'
         } overflow-hidden flex flex-col items-center`}
       >
         {/* Inner subtle pink stroke */}
@@ -193,6 +197,9 @@ function renderHeroList(
   alignClass: string,
 ) {
   if (!listTitle && (!listItems || listItems.length === 0)) return null
+  const labelClass = `font-ui text-xs font-bold uppercase tracking-widest ${
+    isDeepNavy ? 'text-soft-pink' : 'text-bright-magenta'
+  }`
   return (
     <div className={`mt-6 mb-2 flex flex-col gap-2.5 w-full ${alignClass}`}>
       {listTitle && (
@@ -206,36 +213,43 @@ function renderHeroList(
       )}
       {listItems && listItems.length > 0 && (
         <ul className="flex flex-col gap-2">
-          {listItems.map((item, idx) => (
-            <li key={idx} className="flex items-center gap-2.5">
-              {item.muted ? (
-                <span
-                  className={`inline-block w-2.5 h-2.5 rounded-full border border-current shrink-0 ${
-                    isDeepNavy ? 'text-white/40' : 'text-deep-navy/40'
-                  }`}
-                  aria-hidden="true"
-                />
-              ) : (
-                <span
-                  className="inline-block w-2.5 h-2.5 rounded-full bg-accent-pink shrink-0"
-                  aria-hidden="true"
-                />
-              )}
-              <span
-                className={`font-ui text-sm sm:text-base leading-relaxed ${
-                  item.muted
-                    ? isDeepNavy
-                      ? 'text-white/50 italic'
-                      : 'text-deep-navy/50 italic'
-                    : isDeepNavy
-                      ? 'text-white/95 font-medium'
-                      : 'text-deep-navy font-medium'
-                }`}
-              >
+          {listItems.map((item, idx) =>
+            item.heading ? (
+              // A heading starts a new group: same look as the list title, with a gap above
+              <li key={idx} className={`${idx > 0 ? 'mt-3' : ''} ${labelClass}`.trim()}>
                 {item.text}
-              </span>
-            </li>
-          ))}
+              </li>
+            ) : (
+              <li key={idx} className="flex items-center gap-2.5">
+                {item.muted ? (
+                  <span
+                    className={`inline-block w-2.5 h-2.5 rounded-full border border-current shrink-0 ${
+                      isDeepNavy ? 'text-white/40' : 'text-deep-navy/40'
+                    }`}
+                    aria-hidden="true"
+                  />
+                ) : (
+                  <span
+                    className="inline-block w-2.5 h-2.5 rounded-full bg-accent-pink shrink-0"
+                    aria-hidden="true"
+                  />
+                )}
+                <span
+                  className={`font-ui text-sm sm:text-base leading-relaxed ${
+                    item.muted
+                      ? isDeepNavy
+                        ? 'text-white/50 italic'
+                        : 'text-deep-navy/50 italic'
+                      : isDeepNavy
+                        ? 'text-white/95 font-medium'
+                        : 'text-deep-navy font-medium'
+                  }`}
+                >
+                  {item.text}
+                </span>
+              </li>
+            ),
+          )}
         </ul>
       )}
     </div>
@@ -346,7 +360,7 @@ export function HeroImage({
     hasPrimaryButton ||
     hasSecondaryButton ||
     normalizedBadges.length > 0 ||
-    normalizedStats.length > 0
+    normalizedStats.length > 0,
   )
 
   if (!hasAnyContent && !isEditing) {
@@ -404,7 +418,9 @@ export function HeroImage({
         padding={padding}
         priority={priority}
       >
-        <div className={`flex flex-col ${alignClass} w-full ${contentWidth === 'half' ? 'max-w-xl' : ''}`}>
+        <div
+          className={`flex flex-col ${alignClass} w-full ${contentWidth === 'half' ? 'max-w-xl' : ''}`}
+        >
           {effectiveSeriesLabel && (
             <span
               {...textTarget(id, 'seriesLabel')}
@@ -487,7 +503,9 @@ export function HeroImage({
                   size="md"
                   className={bSecondaryBtnClass}
                 >
-                  <span {...textTarget(id, 'secondaryButtonText')}>{effectiveSecondaryButtonText}</span>
+                  <span {...textTarget(id, 'secondaryButtonText')}>
+                    {effectiveSecondaryButtonText}
+                  </span>
                 </Button>
               )}
             </div>
@@ -634,7 +652,9 @@ export function HeroImage({
                 size="md"
                 className={isDeepNavy ? 'text-white border-white/40 hover:bg-white/10' : ''}
               >
-                <span {...textTarget(id, 'secondaryButtonText')}>{effectiveSecondaryButtonText}</span>
+                <span {...textTarget(id, 'secondaryButtonText')}>
+                  {effectiveSecondaryButtonText}
+                </span>
               </Button>
             )}
           </div>
@@ -827,7 +847,9 @@ export function HeroImage({
                 size="md"
                 className={isDeepNavy ? 'text-white border-white/40 hover:bg-white/10' : ''}
               >
-                <span {...textTarget(id, 'secondaryButtonText')}>{effectiveSecondaryButtonText}</span>
+                <span {...textTarget(id, 'secondaryButtonText')}>
+                  {effectiveSecondaryButtonText}
+                </span>
               </Button>
             )}
           </div>
