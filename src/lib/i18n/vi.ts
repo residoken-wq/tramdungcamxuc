@@ -4982,6 +4982,11 @@ export const vi = {
     animPop: 'Nổi lên',
     chipHelp: 'Bấm chip: lần 1 nhấn (*), lần 2 gạch ngang (~), lần 3 bỏ.',
   },
+  hanaStoryTextFormat: {
+    label: 'Kiểu chữ của Đoạn kể câu chuyện và Dòng trích dẫn',
+    default: 'Mặc định: đoạn kể chữ thường, trích dẫn chữ nghiêng trong khung',
+    swapped: 'Đảo: đoạn kể chữ nghiêng trong khung, trích dẫn chữ thường',
+  },
   bx08: {
     builderPanel: {
       title: 'Bố cục trang sản phẩm',

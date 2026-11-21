@@ -6,7 +6,11 @@ import { HeartLine } from '@/components/brand/HeartLine'
 import { safeHref } from '@/lib/safe-href'
 import { textTarget } from '@/puck/style/text-target'
 import { stripWrappingQuotes } from '@/lib/text/quotes'
-import { TwoToneTitle, type TitleHighlightAnimation, type TitleHighlightStyle } from '@/components/ui/TwoToneTitle'
+import {
+  TwoToneTitle,
+  type TitleHighlightAnimation,
+  type TitleHighlightStyle,
+} from '@/components/ui/TwoToneTitle'
 import { StoryHighlights } from './StoryHighlights'
 import { pickCopy, hasCopy } from '@/lib/copy'
 
@@ -28,6 +32,11 @@ export interface HanaStoryProps {
   chips?: HanaStoryChipItem[]
   highlights?: HanaStoryHighlightItem[]
   quoteStyle?: 'line' | 'box'
+  /**
+   * 'swapped': the story paragraphs get the quote look (italic, framed) and the quote line the
+   * plain paragraph look. Positions stay the same. Default 'default'.
+   */
+  textFormat?: 'default' | 'swapped'
   layout?: 'story' | 'letter' | 'spotlight'
   imagePosition?: 'left' | 'right'
   seriesLabel?: string
@@ -84,6 +93,7 @@ export function HanaStory({
   chips = [],
   highlights = [],
   quoteStyle = 'line',
+  textFormat = 'default',
   layout = 'story',
   imagePosition = 'left',
   seriesLabel,
@@ -132,7 +142,9 @@ export function HanaStory({
   const effectiveButtonText = pickCopy(buttonText, '', useDefaultCopy)
 
   // Split multi-paragraph text
-  const paragraphs = effectiveStoryContent ? effectiveStoryContent.split('\n\n').filter(Boolean) : []
+  const paragraphs = effectiveStoryContent
+    ? effectiveStoryContent.split('\n\n').filter(Boolean)
+    : []
 
   const chipList = Array.isArray(chips)
     ? chips
@@ -168,7 +180,75 @@ export function HanaStory({
     ? 'bg-white/10 text-soft-pink border-soft-pink/30'
     : 'bg-soft-pink text-deep-navy border-bright-magenta/20'
 
+  const swapped = textFormat === 'swapped'
+  const quoteTextBase = 'font-quote italic text-lg sm:text-xl leading-relaxed whitespace-pre-line'
+  const boxFrameClass = `p-5 sm:p-6 rounded-card border shadow-sm ${
+    isDarkOrNavy
+      ? 'bg-white/10 border-white/20 text-soft-pink'
+      : 'bg-soft-pink border-accent-pink/20 text-bright-magenta'
+  }`
+
+  /** Text in the plain paragraph look (the default look of the story). */
+  const renderPlain = (target: 'storyContent' | 'quoteLine', lines: string[]) => (
+    <div
+      {...textTarget(id, target)}
+      className={`space-y-4 font-sans text-base sm:text-lg leading-relaxed ${descColorClass}`}
+    >
+      {lines.map((p, idx) => (
+        <p key={idx} className="whitespace-pre-line">
+          {p}
+        </p>
+      ))}
+    </div>
+  )
+
+  /** Text in the quote look (the default look of the quote line) inside `frameClass`. */
+  const renderQuote = (
+    target: 'storyContent' | 'quoteLine',
+    text: string,
+    frameClass: string,
+    textColorClass = '',
+  ) => (
+    <div className={frameClass}>
+      <p {...textTarget(id, target)} className={`${quoteTextBase} ${textColorClass}`.trim()}>
+        &ldquo;{text}&rdquo;
+      </p>
+    </div>
+  )
+
+  /** Story paragraphs at their own position, in the look chosen by `textFormat`. */
+  const renderStory = (quoteFrameClass: string, quoteTextColorClass = '') => {
+    if (paragraphs.length === 0) return null
+    if (!swapped) return renderPlain('storyContent', paragraphs)
+    return renderQuote(
+      'storyContent',
+      stripWrappingQuotes(paragraphs.join('\n\n')) || '',
+      quoteFrameClass,
+      quoteTextColorClass,
+    )
+  }
+
+  /** Quote line at its own position (`marginClass` keeps the gap), in the chosen look. */
+  const renderQuoteLine = (
+    marginClass: string,
+    quoteFrameClass: string,
+    quoteTextColorClass = '',
+  ) => {
+    if (!cleanQuoteLine) return null
+    if (swapped)
+      return <div className={marginClass}>{renderPlain('quoteLine', [cleanQuoteLine])}</div>
+    return renderQuote(
+      'quoteLine',
+      cleanQuoteLine,
+      `${marginClass} ${quoteFrameClass}`,
+      quoteTextColorClass,
+    )
+  }
+
   if (isSpotlight) {
+    const spotlightFrameClass =
+      quoteStyle === 'box' ? boxFrameClass : 'pl-4 border-l-[3px] border-accent-pink'
+    const spotlightTextColor = quoteStyle === 'box' ? '' : quoteTextClass
     const jobTitleColor = isDarkOrNavy ? 'text-soft-pink' : 'text-bright-magenta'
     return (
       <section className={`w-full overflow-hidden ${sectionBgClass} transition-colors`}>
@@ -217,43 +297,9 @@ export function HanaStory({
               </p>
             )}
 
-            {cleanQuoteLine &&
-              (quoteStyle === 'box' ? (
-                <div
-                  className={`mb-6 p-5 sm:p-6 rounded-card border shadow-sm ${
-                    isDarkOrNavy
-                      ? 'bg-white/10 border-white/20 text-soft-pink'
-                      : 'bg-soft-pink border-accent-pink/20 text-bright-magenta'
-                  }`}
-                >
-                  <p
-                    {...textTarget(id, 'quoteLine')}
-                    className="font-quote italic text-lg sm:text-xl leading-relaxed whitespace-pre-line"
-                  >
-                    &ldquo;{cleanQuoteLine}&rdquo;
-                  </p>
-                </div>
-              ) : (
-                <div className="mb-6 pl-4 border-l-[3px] border-accent-pink">
-                  <p
-                    {...textTarget(id, 'quoteLine')}
-                    className={`font-quote italic text-lg sm:text-xl leading-relaxed whitespace-pre-line ${quoteTextClass}`}
-                  >
-                    &ldquo;{cleanQuoteLine}&rdquo;
-                  </p>
-                </div>
-              ))}
+            {renderQuoteLine('mb-6', spotlightFrameClass, spotlightTextColor)}
 
-            {paragraphs.length > 0 && (
-              <div
-                {...textTarget(id, 'storyContent')}
-                className={`space-y-4 font-sans text-base sm:text-lg leading-relaxed ${descColorClass}`}
-              >
-                {paragraphs.map((p, idx) => (
-                  <p key={idx} className="whitespace-pre-line">{p}</p>
-                ))}
-              </div>
-            )}
+            {renderStory(spotlightFrameClass, spotlightTextColor)}
 
             {highlights && highlights.length > 0 && (
               <StoryHighlights items={highlights} isDark={isDarkOrNavy} />
@@ -425,47 +471,24 @@ export function HanaStory({
               </p>
             )}
 
-            {/* Box Quote (when quoteStyle === 'box', placed above paragraphs) */}
-            {quoteStyle === 'box' && cleanQuoteLine && (
-              <div
-                className={`mb-6 p-5 sm:p-6 rounded-card border shadow-sm ${
-                  isDarkOrNavy
-                    ? 'bg-white/10 border-white/20 text-soft-pink'
-                    : 'bg-soft-pink border-accent-pink/20 text-bright-magenta'
-                }`}
-              >
-                <p
-                  {...textTarget(id, 'quoteLine')}
-                  className="font-quote italic text-lg sm:text-xl leading-relaxed whitespace-pre-line"
-                >
-                  &ldquo;{cleanQuoteLine}&rdquo;
-                </p>
-              </div>
-            )}
+            {/* Box quote (quoteStyle 'box') sits above the paragraphs, the line quote below */}
+            {quoteStyle === 'box' && renderQuoteLine('mb-6', boxFrameClass)}
 
-            {/* Story Paragraphs */}
-            {paragraphs.length > 0 && (
-              <div
-                {...textTarget(id, 'storyContent')}
-                className={`space-y-4 font-sans text-base sm:text-lg leading-relaxed ${descColorClass}`}
-              >
-                {paragraphs.map((p, idx) => (
-                  <p key={idx} className="whitespace-pre-line">{p}</p>
-                ))}
-              </div>
-            )}
+            {/* Story paragraphs */}
+            {quoteStyle === 'box'
+              ? renderStory(boxFrameClass)
+              : renderStory(
+                  `p-5 sm:p-6 rounded-card border shadow-sm ${quoteBgClass}`,
+                  quoteTextClass,
+                )}
 
-            {/* Emotional Quote Block */}
-            {quoteStyle !== 'box' && cleanQuoteLine && (
-              <div className={`mt-6 p-5 sm:p-6 rounded-card border shadow-sm ${quoteBgClass}`}>
-                <p
-                  {...textTarget(id, 'quoteLine')}
-                  className={`font-quote italic text-lg sm:text-xl leading-relaxed whitespace-pre-line ${quoteTextClass}`}
-                >
-                  &ldquo;{cleanQuoteLine}&rdquo;
-                </p>
-              </div>
-            )}
+            {/* Emotional quote line */}
+            {quoteStyle !== 'box' &&
+              renderQuoteLine(
+                'mt-6',
+                `p-5 sm:p-6 rounded-card border shadow-sm ${quoteBgClass}`,
+                quoteTextClass,
+              )}
 
             {/* Highlights (3 numbered small cards) */}
             {highlights && highlights.length > 0 && (

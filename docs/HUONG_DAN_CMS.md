@@ -3410,6 +3410,10 @@ Dành riêng cho trang Về Trạm và các trang thương hiệu cần trình b
         Hộp luôn nằm ngay dưới tiêu đề, ô **Vị trí trích dẫn** không áp dụng cho kiểu này. Hai kiểu còn lại (vạch hồng / thuần chữ nghiêng) giữ như cũ.
      4. Tại mục **Các điểm nhấn (thẻ nhỏ đánh số)**, bấm Thêm và điền 3 thẻ điểm nhấn.
      5. Bấm **Xuất bản** ở góc trên bên phải.
+   - **Đổi kiểu chữ giữa 2 đoạn (chỉ khối "Câu chuyện Hana")**: ô **"Kiểu chữ của Đoạn kể câu chuyện và Dòng trích dẫn"**.
+     - *Mặc định*: Đoạn kể câu chuyện chữ thường, Dòng trích dẫn chữ nghiêng trong khung (có ngoặc kép).
+     - *Đảo*: Đoạn kể câu chuyện thành chữ nghiêng trong khung, Dòng trích dẫn thành chữ thường. **Vị trí 2 đoạn giữ nguyên**, chữ không phải gõ lại.
+     - Kiểu khung đi theo ô **Kiểu trích dẫn** (khung thường / hộp nổi bật).
 
 4. **Chân trang (Footer) nền xanh thẫm (Deep Navy)**:
    - Khi chỉnh sửa Chân trang trong trình dựng (`/admin/builder/[footerId]`): bấm vào phần viền ngoài cùng hoặc chọn cài đặt chân trang, tại mục **"Nền footer"**, chọn **"Xanh thẫm (Deep Navy)"**.
