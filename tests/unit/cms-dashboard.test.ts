@@ -253,8 +253,9 @@ describe('CMS Today Dashboard - getDashboardStats (CM-02)', () => {
       'createLesson',
     ])
 
-    expect(stats.guides.length).toBe(5)
+    expect(stats.guides.length).toBe(6)
     expect(stats.guides.map((g) => g.id)).toEqual([
+      'siteMap',
       'products',
       'puck',
       'payments',

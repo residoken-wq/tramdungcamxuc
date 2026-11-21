@@ -69,6 +69,7 @@ export default buildConfig({
     },
     components: {
       beforeDashboard: ['@/components/admin/dashboard/TodayDashboard#TodayDashboard'],
+      beforeNavLinks: ['@/components/admin/site-map/SiteMapNavLink#SiteMapNavLink'],
       graphics: {
         Logo: '@/components/admin/brand/Logo#AdminLogo',
         Icon: '@/components/admin/brand/Icon#AdminIcon',
@@ -86,6 +87,13 @@ export default buildConfig({
           path: '/them-bai-hoc',
           meta: {
             title: 'Thêm bài học – Trạm Dừng Cảm Xúc',
+          },
+        },
+        SiteMap: {
+          Component: '@/components/admin/site-map/SiteMapView#SiteMapView',
+          path: '/so-do-website',
+          meta: {
+            title: 'Sơ đồ website – Trạm Dừng Cảm Xúc',
           },
         },
         WorkshopWizard: {

@@ -477,8 +477,9 @@ export async function TodayDashboard(props: TodayDashboardProps) {
               <a
                 key={guide.id}
                 href={guide.href}
-                target="_blank"
-                rel="noopener noreferrer"
+                // Internal pages (site map) open in place; the written guide opens in a new tab
+                target={guide.href.startsWith('http') ? '_blank' : undefined}
+                rel={guide.href.startsWith('http') ? 'noopener noreferrer' : undefined}
                 data-testid={`cms-guide-${guide.id}`}
                 style={{
                   display: 'flex',

@@ -82,6 +82,12 @@ export const CMS_DASHBOARD_QUICK_ACTIONS: DashboardQuickActionItem[] = [
 
 export const CMS_DASHBOARD_GUIDES: DashboardGuideItem[] = [
   {
+    id: 'siteMap',
+    title: vi.cms.dashboard.guides.siteMap.title,
+    description: vi.cms.dashboard.guides.siteMap.description,
+    href: '/admin/so-do-website',
+  },
+  {
     id: 'products',
     title: vi.cms.dashboard.guides.products.title,
     description: vi.cms.dashboard.guides.products.description,
