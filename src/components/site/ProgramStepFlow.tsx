@@ -1,4 +1,5 @@
 import React from 'react'
+import { textTarget } from '@/puck/style/text-target'
 
 export interface StepSubColumn {
   title: string
@@ -32,12 +33,7 @@ export interface ProgramStepFlowProps {
   bottomStripLeftText?: string
   bottomStripRightText?: string
   bgColor?:
-    | 'warm-ivory'
-    | 'soft-pink'
-    | 'lavender-mist'
-    | 'mint-haze'
-    | 'butter-cream'
-    | 'deep-navy'
+    'warm-ivory' | 'soft-pink' | 'lavender-mist' | 'mint-haze' | 'butter-cream' | 'deep-navy'
   padding?: 'sm' | 'md' | 'lg'
 }
 
@@ -63,6 +59,7 @@ const TAKEAWAY_TONES = {
 } as const
 
 export function ProgramStepFlow({
+  id,
   seriesLabel,
   title,
   showAccentBar = true,
@@ -74,7 +71,7 @@ export function ProgramStepFlow({
   bottomStripRightText,
   bgColor = 'warm-ivory',
   padding = 'md',
-}: ProgramStepFlowProps) {
+}: ProgramStepFlowProps & { id?: string }) {
   const isDeepNavy = bgColor === 'deep-navy'
 
   return (
@@ -84,6 +81,7 @@ export function ProgramStepFlow({
         <div>
           {seriesLabel && (
             <span
+              {...textTarget(id, 'seriesLabel')}
               className={`mb-3 block font-ui text-xs sm:text-sm font-bold uppercase tracking-widest ${
                 isDeepNavy ? 'text-soft-pink' : 'text-bright-magenta'
               }`}
@@ -91,7 +89,10 @@ export function ProgramStepFlow({
               {seriesLabel}
             </span>
           )}
-          <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl text-deep-navy tracking-tight !leading-[1.25]">
+          <h2
+            {...textTarget(id, 'title')}
+            className="font-display text-3xl sm:text-4xl lg:text-5xl text-deep-navy tracking-tight !leading-[1.25]"
+          >
             {title}
           </h2>
           {showAccentBar && (
@@ -101,7 +102,10 @@ export function ProgramStepFlow({
             />
           )}
           {emotionLine && (
-            <p className="mt-3 font-quote text-lg sm:text-xl italic text-bright-magenta leading-relaxed">
+            <p
+              {...textTarget(id, 'emotionLine')}
+              className="mt-3 font-quote text-lg sm:text-xl italic text-bright-magenta leading-relaxed"
+            >
               {emotionLine}
             </p>
           )}

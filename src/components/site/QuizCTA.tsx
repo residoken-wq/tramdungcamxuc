@@ -20,6 +20,7 @@ export interface QuizCTAProps {
 }
 
 export function QuizCTA({
+  id,
   seriesLabel = '[MẪU] Thấu hiểu bản thân',
   titleLine1 = '[MẪU] 5 PHÚT CHẨN ĐOÁN',
   titleLine2 = '[MẪU] ĐIỂM NGHẼN THÓI QUEN',
@@ -29,7 +30,7 @@ export function QuizCTA({
   buttonText = 'Bắt đầu chẩn đoán 5 phút',
   bgColor = 'warm-ivory',
   padding = 'md',
-}: QuizCTAProps) {
+}: QuizCTAProps & { id?: string }) {
   const paddingClasses = {
     sm: 'py-8 px-4',
     md: 'py-14 px-4 sm:px-6',
@@ -42,6 +43,7 @@ export function QuizCTA({
         <SectionHeader
           titleHighlightStyle={titleHighlightStyle}
           titleHighlightAnimation={titleHighlightAnimation}
+          id={id}
           seriesLabel={seriesLabel}
           titleLine1={titleLine1}
           titleLine2={titleLine2}

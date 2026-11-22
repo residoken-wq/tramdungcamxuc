@@ -1,4 +1,5 @@
 import React from 'react'
+import { textTarget } from '@/puck/style/text-target'
 
 export interface StoryLeadProps {
   version?: number
@@ -28,6 +29,7 @@ const PADDINGS = {
 } as const
 
 export function StoryLead({
+  id,
   seriesLabel,
   titleLine1,
   titleLine2,
@@ -35,7 +37,7 @@ export function StoryLead({
   content,
   bgColor = 'lavender-mist',
   padding = 'lg',
-}: StoryLeadProps) {
+}: StoryLeadProps & { id?: string }) {
   const isDeepNavy = bgColor === 'deep-navy'
   // QA PK-28b: small bright-magenta text is 4.4:1 on lavender-mist (AA needs 4.5).
   const isLavender = bgColor === 'lavender-mist'
@@ -47,6 +49,7 @@ export function StoryLead({
       <div className="mx-auto max-w-4xl text-left flex flex-col items-start">
         {seriesLabel && (
           <span
+            {...textTarget(id, 'seriesLabel')}
             className={`mb-4 font-ui text-xs sm:text-sm font-bold uppercase tracking-widest ${
               isDeepNavy ? 'text-soft-pink' : isLavender ? 'text-deep-navy' : 'text-bright-magenta'
             }`}
@@ -56,12 +59,21 @@ export function StoryLead({
         )}
 
         <h2 className="font-display text-4xl sm:text-5xl lg:text-6xl tracking-tight !leading-[1.25] text-deep-navy">
-          <span className="block text-deep-navy">{titleLine1}</span>
-          {titleLine2 && <span className="block text-deep-navy">{titleLine2}</span>}
+          <span {...textTarget(id, 'titleLine1')} className="block text-deep-navy">
+            {titleLine1}
+          </span>
+          {titleLine2 && (
+            <span {...textTarget(id, 'titleLine2')} className="block text-deep-navy">
+              {titleLine2}
+            </span>
+          )}
         </h2>
 
         {emotionLine && (
-          <p className="mt-4 font-quote text-2xl lg:text-3xl italic text-bright-magenta leading-relaxed">
+          <p
+            {...textTarget(id, 'emotionLine')}
+            className="mt-4 font-quote text-2xl lg:text-3xl italic text-bright-magenta leading-relaxed"
+          >
             {emotionLine}
           </p>
         )}
@@ -71,7 +83,10 @@ export function StoryLead({
           aria-hidden="true"
         />
 
-        <p className="font-ui text-base sm:text-lg lg:text-xl leading-relaxed text-deep-navy/90 max-w-3xl">
+        <p
+          {...textTarget(id, 'content')}
+          className="font-ui text-base sm:text-lg lg:text-xl leading-relaxed text-deep-navy/90 max-w-3xl"
+        >
           {content}
         </p>
       </div>

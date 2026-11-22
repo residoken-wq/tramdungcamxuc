@@ -1,4 +1,5 @@
 import React from 'react'
+import { textTarget } from '@/puck/style/text-target'
 import { TwoToneTitle } from '@/components/ui/TwoToneTitle'
 import type { TitleHighlightAnimation, TitleHighlightStyle } from '@/components/ui/TwoToneTitle'
 
@@ -82,6 +83,7 @@ function getToneClass(tone: string | undefined, isDeepNavy: boolean): string {
 }
 
 export function MatrixTable({
+  id,
   variant = 'grid',
   seriesLabel,
   titleLine1,
@@ -98,7 +100,7 @@ export function MatrixTable({
   footerNote,
   bgColor = 'warm-ivory',
   padding = 'md',
-}: MatrixTableProps) {
+}: MatrixTableProps & { id?: string }) {
   const isDeepNavy = bgColor === 'deep-navy'
   const isUpper = titleCase !== 'none'
   const hasHeader = Boolean(titleLine1 || titleLine2 || seriesLabel)
@@ -112,6 +114,7 @@ export function MatrixTable({
             <header className="flex flex-col text-left items-start">
               {seriesLabel && (
                 <span
+                  {...textTarget(id, 'seriesLabel')}
                   className={`mb-[var(--tdcx-eyebrow-gap,1rem)] font-ui text-xs font-bold uppercase tracking-widest ${
                     isDeepNavy ? 'text-soft-pink' : 'text-bright-magenta'
                   }`}
@@ -126,6 +129,7 @@ export function MatrixTable({
                   } tracking-tight !leading-[var(--tdcx-title-lh,1.3)]`}
                 >
                   <TwoToneTitle
+                    id={id}
                     highlightStyle={titleHighlightStyle}
                     highlightAnimation={titleHighlightAnimation}
                     line1={titleLine1}
@@ -143,6 +147,7 @@ export function MatrixTable({
               )}
               {emotionLine && (
                 <p
+                  {...textTarget(id, 'emotionLine')}
                   className={`mt-[var(--tdcx-emotion-gap,0.875rem)] font-quote text-lg sm:text-xl italic max-w-2xl ${
                     isDeepNavy ? 'text-white/85' : 'text-deep-navy/85'
                   }`}

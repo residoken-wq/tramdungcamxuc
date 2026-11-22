@@ -1,4 +1,5 @@
 import React from 'react'
+import { textTarget } from '@/puck/style/text-target'
 
 export interface PillarOverviewCard {
   tone: 'butter-cream' | 'soft-pink' | 'mint-haze'
@@ -21,12 +22,7 @@ export interface ProgramOverviewProps {
   bottomStripLabel?: string
   bottomStripText?: string
   bgColor?:
-    | 'warm-ivory'
-    | 'soft-pink'
-    | 'lavender-mist'
-    | 'mint-haze'
-    | 'butter-cream'
-    | 'deep-navy'
+    'warm-ivory' | 'soft-pink' | 'lavender-mist' | 'mint-haze' | 'butter-cream' | 'deep-navy'
   padding?: 'sm' | 'md' | 'lg'
 }
 
@@ -52,6 +48,7 @@ const PILLAR_TONES = {
 } as const
 
 export function ProgramOverview({
+  id,
   seriesLabel,
   title,
   showAccentBar = true,
@@ -64,7 +61,7 @@ export function ProgramOverview({
   bottomStripText,
   bgColor = 'warm-ivory',
   padding = 'md',
-}: ProgramOverviewProps) {
+}: ProgramOverviewProps & { id?: string }) {
   const isDeepNavy = bgColor === 'deep-navy'
 
   return (
@@ -74,6 +71,7 @@ export function ProgramOverview({
         <div className="text-left">
           {seriesLabel && (
             <span
+              {...textTarget(id, 'seriesLabel')}
               className={`mb-3 block font-ui text-xs sm:text-sm font-bold uppercase tracking-widest ${
                 isDeepNavy ? 'text-soft-pink' : 'text-bright-magenta'
               }`}
@@ -81,7 +79,10 @@ export function ProgramOverview({
               {seriesLabel}
             </span>
           )}
-          <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl text-deep-navy tracking-tight !leading-[1.25]">
+          <h2
+            {...textTarget(id, 'title')}
+            className="font-display text-3xl sm:text-4xl lg:text-5xl text-deep-navy tracking-tight !leading-[1.25]"
+          >
             {title}
           </h2>
           {showAccentBar && (

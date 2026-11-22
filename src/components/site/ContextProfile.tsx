@@ -1,4 +1,5 @@
 import React from 'react'
+import { textTarget } from '@/puck/style/text-target'
 
 export interface StatItemData {
   stat: string
@@ -56,6 +57,7 @@ function renderBoldText(raw: string) {
 }
 
 export function ContextProfile({
+  id,
   seriesLabel,
   title,
   showAccentBar = true,
@@ -65,7 +67,7 @@ export function ContextProfile({
   sourceNote,
   bgColor = 'warm-ivory',
   padding = 'md',
-}: ContextProfileProps) {
+}: ContextProfileProps & { id?: string }) {
   const isDeepNavy = bgColor === 'deep-navy'
 
   return (
@@ -75,6 +77,7 @@ export function ContextProfile({
         <div className="mb-8 text-left">
           {seriesLabel && (
             <span
+              {...textTarget(id, 'seriesLabel')}
               className={`mb-3 block font-ui text-xs sm:text-sm font-bold uppercase tracking-widest ${
                 isDeepNavy ? 'text-soft-pink' : 'text-bright-magenta'
               }`}
@@ -82,7 +85,10 @@ export function ContextProfile({
               {seriesLabel}
             </span>
           )}
-          <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl text-deep-navy tracking-tight !leading-[1.25]">
+          <h2
+            {...textTarget(id, 'title')}
+            className="font-display text-3xl sm:text-4xl lg:text-5xl text-deep-navy tracking-tight !leading-[1.25]"
+          >
             {title}
           </h2>
           {showAccentBar && (
@@ -115,7 +121,10 @@ export function ContextProfile({
             </div>
 
             {italicQuoteLeft && (
-              <p className="font-quote text-base sm:text-lg italic text-bright-magenta leading-relaxed text-left mt-2">
+              <p
+                {...textTarget(id, 'italicQuoteLeft')}
+                className="font-quote text-base sm:text-lg italic text-bright-magenta leading-relaxed text-left mt-2"
+              >
                 {italicQuoteLeft}
               </p>
             )}
@@ -162,7 +171,10 @@ export function ContextProfile({
 
         {/* Source Note Footer */}
         {sourceNote && (
-          <p className="mt-8 text-left font-ui text-xs text-deep-navy/60 leading-relaxed">
+          <p
+            {...textTarget(id, 'sourceNote')}
+            className="mt-8 text-left font-ui text-xs text-deep-navy/60 leading-relaxed"
+          >
             {sourceNote}
           </p>
         )}

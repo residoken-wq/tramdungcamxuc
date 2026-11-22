@@ -262,6 +262,13 @@ export function StyleField({
   const ratio = textHex && bgHex ? contrastRatio(textHex, bgHex) : null
 
   const t18 = vi.pk18.bgImage
+  // A hero in "Ảnh nền phủ kín" layout draws its own image over the whole block, so a style
+  // background image would be hidden behind it (QA Liên hệ 22/11).
+  const selectedProps = (selectedItem?.props ?? {}) as { layout?: string; mediaId?: unknown }
+  const ownImageCovers =
+    ['HeroImage', 'HeroTwoEntries'].includes(String(selectedItem?.type)) &&
+    selectedProps.layout === 'backdrop' &&
+    Boolean(selectedProps.mediaId)
   const hasBgImage = Boolean(style.backgroundImage?.mediaId || style.backgroundImage?.imageUrl)
   const bgType = hasBgImage || bgImageMode ? 'image' : 'color'
 
@@ -328,6 +335,15 @@ export function StyleField({
               />
             ) : (
               <div className="flex flex-col gap-3 pt-1">
+                {ownImageCovers ? (
+                  <p
+                    role="note"
+                    data-testid="style-bg-covered"
+                    className="rounded-md border border-butter-cream bg-butter-cream/60 px-2.5 py-2 text-[11px] leading-snug text-deep-navy"
+                  >
+                    {t18.coveredByOwnImage}
+                  </p>
+                ) : null}
                 {/* Desktop & Tablet background image */}
                 <MediaPickerField
                   label={t18.imageLabel}

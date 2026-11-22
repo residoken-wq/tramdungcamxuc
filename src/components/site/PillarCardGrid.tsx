@@ -1,4 +1,5 @@
 import React from 'react'
+import { textTarget } from '@/puck/style/text-target'
 
 export interface PillarCardSubItem {
   title: string
@@ -21,12 +22,7 @@ export interface PillarCardGridProps {
   cards?: PillarCardItem[]
   bottomQuote?: string
   bgColor?:
-    | 'warm-ivory'
-    | 'soft-pink'
-    | 'lavender-mist'
-    | 'mint-haze'
-    | 'butter-cream'
-    | 'deep-navy'
+    'warm-ivory' | 'soft-pink' | 'lavender-mist' | 'mint-haze' | 'butter-cream' | 'deep-navy'
   padding?: 'sm' | 'md' | 'lg'
 }
 
@@ -53,6 +49,7 @@ const TONE_CLASSES = {
 } as const
 
 export function PillarCardGrid({
+  id,
   seriesLabel,
   title,
   showAccentBar = true,
@@ -61,7 +58,7 @@ export function PillarCardGrid({
   bottomQuote,
   bgColor = 'warm-ivory',
   padding = 'md',
-}: PillarCardGridProps) {
+}: PillarCardGridProps & { id?: string }) {
   const isDeepNavy = bgColor === 'deep-navy'
 
   return (
@@ -71,6 +68,7 @@ export function PillarCardGrid({
         <div className="mb-8 text-left">
           {seriesLabel && (
             <span
+              {...textTarget(id, 'seriesLabel')}
               className={`mb-3 block font-ui text-xs sm:text-sm font-bold uppercase tracking-widest ${
                 isDeepNavy ? 'text-soft-pink' : 'text-bright-magenta'
               }`}
@@ -78,7 +76,10 @@ export function PillarCardGrid({
               {seriesLabel}
             </span>
           )}
-          <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl text-deep-navy tracking-tight !leading-[1.25]">
+          <h2
+            {...textTarget(id, 'title')}
+            className="font-display text-3xl sm:text-4xl lg:text-5xl text-deep-navy tracking-tight !leading-[1.25]"
+          >
             {title}
           </h2>
           {showAccentBar && (
@@ -88,7 +89,10 @@ export function PillarCardGrid({
             />
           )}
           {emotionLine && (
-            <p className="mt-3 font-quote text-lg sm:text-xl italic text-bright-magenta leading-relaxed">
+            <p
+              {...textTarget(id, 'emotionLine')}
+              className="mt-3 font-quote text-lg sm:text-xl italic text-bright-magenta leading-relaxed"
+            >
               {emotionLine}
             </p>
           )}
@@ -133,7 +137,10 @@ export function PillarCardGrid({
 
         {/* Bottom Quote */}
         {bottomQuote && (
-          <p className="mt-8 text-left font-quote text-base sm:text-lg italic text-bright-magenta leading-relaxed">
+          <p
+            {...textTarget(id, 'bottomQuote')}
+            className="mt-8 text-left font-quote text-base sm:text-lg italic text-bright-magenta leading-relaxed"
+          >
             {bottomQuote}
           </p>
         )}

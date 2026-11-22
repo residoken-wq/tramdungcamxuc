@@ -44,6 +44,7 @@ const PADDINGS = {
 } as const
 
 export function TeamGrid({
+  id,
   seriesLabel,
   titleLine1,
   titleLine2,
@@ -54,7 +55,7 @@ export function TeamGrid({
   padding = 'md',
   _resolved,
   puck,
-}: TeamGridProps) {
+}: TeamGridProps & { id?: string }) {
   const isEditing = puck?.isEditing ?? false
   const isDeepNavy = bgColor === 'deep-navy'
 
@@ -107,6 +108,7 @@ export function TeamGrid({
         <SectionHeader
           titleHighlightStyle={titleHighlightStyle}
           titleHighlightAnimation={titleHighlightAnimation}
+          id={id}
           seriesLabel={seriesLabel}
           titleLine1={titleLine1}
           titleLine2={titleLine2}

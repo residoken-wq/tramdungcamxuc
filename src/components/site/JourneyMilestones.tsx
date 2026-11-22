@@ -1,4 +1,5 @@
 import React from 'react'
+import { textTarget } from '@/puck/style/text-target'
 
 export interface BigStatMilestone {
   number: string
@@ -23,12 +24,7 @@ export interface JourneyMilestonesProps {
   group2Title?: string
   group2Cards?: SmallMilestoneCard[]
   bgColor?:
-    | 'warm-ivory'
-    | 'soft-pink'
-    | 'lavender-mist'
-    | 'mint-haze'
-    | 'butter-cream'
-    | 'deep-navy'
+    'warm-ivory' | 'soft-pink' | 'lavender-mist' | 'mint-haze' | 'butter-cream' | 'deep-navy'
   padding?: 'sm' | 'md' | 'lg'
 }
 
@@ -48,6 +44,7 @@ const PADDINGS = {
 } as const
 
 export function JourneyMilestones({
+  id,
   seriesLabel,
   title,
   showAccentBar = true,
@@ -58,7 +55,7 @@ export function JourneyMilestones({
   group2Cards = [],
   bgColor = 'warm-ivory',
   padding = 'md',
-}: JourneyMilestonesProps) {
+}: JourneyMilestonesProps & { id?: string }) {
   const isDeepNavy = bgColor === 'deep-navy'
 
   return (
@@ -68,6 +65,7 @@ export function JourneyMilestones({
         <div>
           {seriesLabel && (
             <span
+              {...textTarget(id, 'seriesLabel')}
               className={`mb-3 block font-ui text-xs sm:text-sm font-bold uppercase tracking-widest ${
                 isDeepNavy ? 'text-soft-pink' : 'text-bright-magenta'
               }`}
@@ -75,7 +73,10 @@ export function JourneyMilestones({
               {seriesLabel}
             </span>
           )}
-          <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl text-deep-navy tracking-tight !leading-[1.25]">
+          <h2
+            {...textTarget(id, 'title')}
+            className="font-display text-3xl sm:text-4xl lg:text-5xl text-deep-navy tracking-tight !leading-[1.25]"
+          >
             {title}
           </h2>
           {showAccentBar && (

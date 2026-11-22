@@ -1,4 +1,5 @@
 import React from 'react'
+import { textTarget } from '@/puck/style/text-target'
 
 export interface Phase1StripItem {
   tone: 'butter-cream' | 'soft-pink' | 'mint-haze'
@@ -23,12 +24,7 @@ export interface PhaseArchitectureProps {
   noteBoxText?: string
   bottomQuote?: string
   bgColor?:
-    | 'warm-ivory'
-    | 'soft-pink'
-    | 'lavender-mist'
-    | 'mint-haze'
-    | 'butter-cream'
-    | 'deep-navy'
+    'warm-ivory' | 'soft-pink' | 'lavender-mist' | 'mint-haze' | 'butter-cream' | 'deep-navy'
   padding?: 'sm' | 'md' | 'lg'
 }
 
@@ -54,6 +50,7 @@ const STRIP_TONES = {
 } as const
 
 export function PhaseArchitecture({
+  id,
   seriesLabel,
   title,
   showAccentBar = true,
@@ -70,7 +67,7 @@ export function PhaseArchitecture({
   bottomQuote,
   bgColor = 'warm-ivory',
   padding = 'md',
-}: PhaseArchitectureProps) {
+}: PhaseArchitectureProps & { id?: string }) {
   const isDeepNavy = bgColor === 'deep-navy'
 
   return (
@@ -80,6 +77,7 @@ export function PhaseArchitecture({
         <div className="mb-8 text-left">
           {seriesLabel && (
             <span
+              {...textTarget(id, 'seriesLabel')}
               className={`mb-3 block font-ui text-xs sm:text-sm font-bold uppercase tracking-widest ${
                 isDeepNavy ? 'text-soft-pink' : 'text-bright-magenta'
               }`}
@@ -87,7 +85,10 @@ export function PhaseArchitecture({
               {seriesLabel}
             </span>
           )}
-          <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl text-deep-navy tracking-tight !leading-[1.25]">
+          <h2
+            {...textTarget(id, 'title')}
+            className="font-display text-3xl sm:text-4xl lg:text-5xl text-deep-navy tracking-tight !leading-[1.25]"
+          >
             {title}
           </h2>
           {showAccentBar && (
@@ -198,7 +199,10 @@ export function PhaseArchitecture({
 
         {/* Bottom Quote */}
         {bottomQuote && (
-          <p className="mt-8 text-left font-quote text-base sm:text-lg italic text-bright-magenta leading-relaxed">
+          <p
+            {...textTarget(id, 'bottomQuote')}
+            className="mt-8 text-left font-quote text-base sm:text-lg italic text-bright-magenta leading-relaxed"
+          >
             {bottomQuote}
           </p>
         )}

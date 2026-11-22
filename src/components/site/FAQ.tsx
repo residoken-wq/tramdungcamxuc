@@ -1,4 +1,5 @@
 import React from 'react'
+import { textTarget } from '@/puck/style/text-target'
 import { Button } from '@/components/ui/Button'
 import { safeHref } from '@/lib/safe-href'
 import { BOOKING_PATH, getBookingPath } from '@/lib/products'
@@ -6,7 +7,11 @@ import { vi } from '@/lib/i18n/vi'
 import { FaqAccordionList, type FAQItem } from './FaqAccordionList'
 import { FaqItemView } from './FaqItemView'
 import { EmptySlotHint } from '@/components/ui/EmptySlotHint'
-import { TwoToneTitle, type TitleHighlightAnimation, type TitleHighlightStyle } from '@/components/ui/TwoToneTitle'
+import {
+  TwoToneTitle,
+  type TitleHighlightAnimation,
+  type TitleHighlightStyle,
+} from '@/components/ui/TwoToneTitle'
 import { FaqContactAvatar } from './FaqContactAvatar'
 import { FaqStyleProvider } from './faq-style-context'
 import { pickCopy, hasCopy } from '@/lib/copy'
@@ -46,12 +51,7 @@ export interface FAQProps {
   email?: string
   seeAllLink?: string
   bgColor?:
-    | 'warm-ivory'
-    | 'soft-pink'
-    | 'lavender-mist'
-    | 'mint-haze'
-    | 'butter-cream'
-    | 'deep-navy'
+    'warm-ivory' | 'soft-pink' | 'lavender-mist' | 'mint-haze' | 'butter-cream' | 'deep-navy'
   padding?: 'sm' | 'md' | 'lg'
   _resolved?: {
     email?: string | null
@@ -129,7 +129,11 @@ export function FAQ({
   const effectiveTitle1 = pickCopy(titleLine1, '[MẪU] CÂU HỎI THƯỜNG GẶP', useDefaultCopy)
   const effectiveTitle2 = pickCopy(titleLine2, '[MẪU] GIẢI ĐÁP BĂN KHOĂN', useDefaultCopy)
   const effectiveDesc = pickCopy(description, '', useDefaultCopy)
-  const effectiveBookingAsideTitle = pickCopy(bookingAsideTitle, vi.sm03.bookingAsideTitle, useDefaultCopy)
+  const effectiveBookingAsideTitle = pickCopy(
+    bookingAsideTitle,
+    vi.sm03.bookingAsideTitle,
+    useDefaultCopy,
+  )
   const effectiveBookingAsideDesc = pickCopy(bookingAsideDescription, '', useDefaultCopy)
 
   const resolvedContactImageUrl = _resolved?.contactImageUrl ?? propContactImageUrl
@@ -341,6 +345,7 @@ export function FAQ({
             {effectiveSeriesLabel &&
               (seriesLabelStyle === 'pill' ? (
                 <span
+                  {...textTarget(id, 'seriesLabel')}
                   className={`mb-[var(--tdcx-eyebrow-gap,0.75rem)] inline-flex items-center px-4 py-1 rounded-full border-[1.5px] font-ui text-xs font-bold uppercase tracking-wider ${
                     isDeepNavy
                       ? 'border-soft-pink text-soft-pink bg-white/5'
@@ -351,6 +356,7 @@ export function FAQ({
                 </span>
               ) : (
                 <span
+                  {...textTarget(id, 'seriesLabel')}
                   className={`mb-[var(--tdcx-eyebrow-gap,0.75rem)] font-ui text-xs font-bold uppercase tracking-widest ${seriesLabelColorClass}`}
                 >
                   {effectiveSeriesLabel}
@@ -363,6 +369,7 @@ export function FAQ({
                 className={`${headingId ? 'scroll-mt-24 ' : ''}font-display text-3xl sm:text-4xl lg:text-5xl uppercase tracking-tight !leading-[var(--tdcx-title-lh,1.3)]`}
               >
                 <TwoToneTitle
+                  id={id}
                   highlightStyle={titleHighlightStyle}
                   highlightAnimation={titleHighlightAnimation}
                   line1={effectiveTitle1}
@@ -375,6 +382,7 @@ export function FAQ({
 
             {effectiveDesc && (
               <p
+                {...textTarget(id, 'description')}
                 className={`mt-4 font-ui text-base sm:text-lg leading-relaxed max-w-3xl ${
                   isDeepNavy ? 'text-white/85' : 'text-deep-navy/80'
                 }`}

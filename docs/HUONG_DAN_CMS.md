@@ -3240,6 +3240,8 @@ Khi Hana bấm chọn một khối đang bị khoá trong trình soạn thảo:
 
 Trong các khối hiển thị văn bản (như Hero 2 lối vào, Hero ảnh biểu tượng, Tiêu đề phân đoạn, Câu chuyện Hana, Trích dẫn, Khối kêu gọi chuyển đổi lớn, Ảnh & Chữ, và các widget Tiêu đề / Đoạn văn / Nút bấm), Hana có thể tuỳ chỉnh màu sắc, cỡ chữ, độ đậm và căn lề cho **từng ô chữ riêng biệt** mà không ảnh hưởng đến các dòng chữ khác trong khối.
 
+> **Bổ sung 22/11:** thêm nút "Aa" cho phần tiêu đề (nhãn series, tiêu đề 2 dòng, dòng cảm xúc, mô tả) của: Câu hỏi thường gặp, Lời chia sẻ (lưới), Đội ngũ, Thư viện ảnh, Cột, Thư viện tài nguyên, Băng chuyền quà tặng, Dùng thử, Quiz, Thông tin liên hệ, Bảng lưới, Sơ đồ vòng lặp, Hệ sinh thái giải pháp, và các khối trang Chuyển mình (Câu chuyện mở đầu, Hồ sơ bối cảnh, Thẻ trụ cột, Mong muốn chương trình, Kiến trúc 2 phase, Tổng quan chương trình, Cột mốc hành trình, Luồng các bước, Công thức thương hiệu, Dải bước đánh số).
+
 #### 1. Nhận biết nút "Aa" cạnh ô chữ
 
 Khi bấm chọn khối trong trình soạn thảo trực quan:
