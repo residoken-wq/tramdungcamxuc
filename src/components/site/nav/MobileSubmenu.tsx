@@ -66,7 +66,8 @@ export function MobileSubmenu({
         )}
         {groups.map((group, groupIndex) => (
           <div key={`${group.label ?? ''}-${groupIndex}`}>
-            {group.label && (
+            {/* A single group needs no heading: the menu item already names it */}
+            {groups.length > 1 && group.label && (
               <p className="px-3 pb-1 font-ui text-xs font-bold uppercase tracking-wider text-bright-magenta">
                 {group.label}
               </p>

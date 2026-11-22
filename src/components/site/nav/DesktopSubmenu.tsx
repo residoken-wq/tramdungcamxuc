@@ -142,7 +142,8 @@ export function DesktopSubmenu({ item, pathname }: { item: NavItem; pathname: st
         >
           {groups.map((group, groupIndex) => (
             <div key={`${group.label ?? ''}-${groupIndex}`} className="min-w-[13rem] flex-1">
-              {group.label && (
+              {/* A single group needs no heading: the menu item already names it */}
+              {groups.length > 1 && group.label && (
                 <p className="mb-3 font-ui text-xs font-bold uppercase tracking-wider text-bright-magenta">
                   {group.label}
                 </p>
