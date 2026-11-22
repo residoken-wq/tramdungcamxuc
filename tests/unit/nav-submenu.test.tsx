@@ -78,6 +78,30 @@ describe('Navbar submenu rendering (SM-02)', () => {
     expect(document.activeElement).toBe(trigger)
     expect(screen.queryByRole('link', { name: '' })).toBeNull()
   })
+
+  it('shows group headings only when the submenu has 2 or more groups', () => {
+    const { unmount } = render(<Navbar items={items} cta={{ label: '', href: '' }} />)
+    const nav = screen.getByRole('navigation', { name: 'Điều hướng chính' })
+    fireEvent.click(nav.querySelector('button[aria-expanded]') as HTMLButtonElement)
+    expect(screen.queryByText('Cá nhân')).toBeNull()
+    unmount()
+
+    const twoGroups: NavItem[] = [
+      {
+        label: 'Sản phẩm',
+        href: '',
+        groups: [
+          { label: 'Cá nhân', items: [{ label: 'EQ Buddy', href: '/eq-buddy' }] },
+          { label: 'Doanh nghiệp', items: [{ label: 'EQ', href: '/doanh-nghiep/eq' }] },
+        ],
+      },
+    ]
+    render(<Navbar items={twoGroups} cta={{ label: '', href: '' }} />)
+    const nav2 = screen.getByRole('navigation', { name: 'Điều hướng chính' })
+    fireEvent.click(nav2.querySelector('button[aria-expanded]') as HTMLButtonElement)
+    expect(screen.getAllByText('Cá nhân').length).toBeGreaterThan(0)
+    expect(screen.getAllByText('Doanh nghiệp').length).toBeGreaterThan(0)
+  })
 })
 
 describe('isLegacySeedMenu (SM-02 seed guard)', () => {

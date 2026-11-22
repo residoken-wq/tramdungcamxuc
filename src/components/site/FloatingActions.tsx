@@ -11,11 +11,14 @@ import {
   useCoffeeModal,
 } from './FloatingCoffee'
 import { FloatingChat, shouldHideFloatingChat } from './FloatingChat'
+import { FloatingEmail } from './FloatingEmail'
 
 export interface FloatingActionsProps {
   floatingCoffee?: FloatingCoffeeData | null
   showFloatingChat?: boolean | null
   zaloChatUrl?: string | null
+  /** `mailto:` link; shown together with Zalo (same "Hiện nút Email & Zalo nổi" switch). */
+  emailHref?: string | null
   className?: string
 }
 
@@ -23,6 +26,7 @@ export function FloatingActions({
   floatingCoffee,
   showFloatingChat,
   zaloChatUrl,
+  emailHref,
   className = '',
 }: FloatingActionsProps) {
   const pathname = usePathname()
@@ -33,11 +37,11 @@ export function FloatingActions({
     floatingCoffee && floatingCoffee.qrSrc && !shouldHideFloatingCoffee(pathname),
   )
 
-  const isChatVisible = Boolean(
-    showFloatingChat && zaloChatUrl && !shouldHideFloatingChat(pathname),
-  )
+  const contactAllowed = Boolean(showFloatingChat && !shouldHideFloatingChat(pathname))
+  const isChatVisible = contactAllowed && Boolean(zaloChatUrl)
+  const isEmailVisible = contactAllowed && Boolean(emailHref)
 
-  if (!isCoffeeVisible && !isChatVisible) {
+  if (!isCoffeeVisible && !isChatVisible && !isEmailVisible) {
     return null
   }
 
@@ -48,18 +52,20 @@ export function FloatingActions({
         className={`fixed right-4 sm:right-6 z-30 flex flex-col items-end gap-3 ${className}`}
         style={{ bottom: 'calc(16px + env(safe-area-inset-bottom, 0px))' }}
       >
-        {isCoffeeVisible && (
-          <CoffeeButton
-            label={floatingCoffee?.title}
-            onOpen={coffeeModal.open}
-            buttonRef={coffeeModal.buttonRef}
-          />
-        )}
+        {/* Top to bottom: email, Zalo, coffee cup */}
+        {isEmailVisible && emailHref && <FloatingEmail href={emailHref} />}
         {isChatVisible && (
           <FloatingChat
             showFloatingChat={showFloatingChat}
             zaloChatUrl={zaloChatUrl}
             isStandalone={false}
+          />
+        )}
+        {isCoffeeVisible && (
+          <CoffeeButton
+            label={floatingCoffee?.title}
+            onOpen={coffeeModal.open}
+            buttonRef={coffeeModal.buttonRef}
           />
         )}
       </aside>

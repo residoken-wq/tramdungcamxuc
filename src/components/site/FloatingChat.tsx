@@ -72,26 +72,21 @@ export function FloatingChat({
       target="_blank"
       rel="noopener noreferrer"
       aria-label={vi.site.floatingChat.ariaLabel}
+      title={vi.site.floatingChat.tooltip}
+      data-testid="floating-zalo"
       onClick={handleClick}
       className={`group flex items-center justify-center min-w-[48px] min-h-[48px] w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-bright-magenta text-white shadow-soft hover:bg-accent-pink hover:scale-105 active:scale-95 transition-all duration-200 focus-visible:outline-2 focus-visible:outline-deep-navy cursor-pointer ${
         !isStandalone ? className : ''
       }`}
     >
       <span className="sr-only">{vi.site.floatingChat.ariaLabel}</span>
-      {/* Biểu tượng trò chuyện / Zalo */}
-      <svg
-        className="w-6 h-6 sm:w-7 sm:h-7 transition-transform duration-200 group-hover:rotate-6"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
+      {/* "Zalo" word instead of a generic chat bubble, so the button is recognisable */}
+      <span
         aria-hidden="true"
+        className="font-ui text-[13px] sm:text-sm font-bold tracking-tight transition-transform duration-200 motion-reduce:transition-none group-hover:scale-105"
       >
-        <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
-        <path d="M8 11h.01M12 11h.01M16 11h.01" />
-      </svg>
+        Zalo
+      </span>
     </a>
   )
 

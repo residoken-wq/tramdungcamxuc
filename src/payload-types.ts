@@ -3846,7 +3846,7 @@ export interface SiteSetting {
    */
   zaloChatUrl?: string | null;
   /**
-   * Bật để áp dụng: hiện nút trò chuyện zalo.
+   * Hai nút tròn nằm trên ly cà phê ở mọi trang (trừ trang học, tracker, rút thẻ). Email lấy từ "Email liên hệ"; Zalo lấy từ "Liên kết trò chuyện Zalo", để trống thì tự dùng số "Hotline / Zalo".
    */
   showFloatingChat?: boolean | null;
   /**

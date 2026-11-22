@@ -3906,14 +3906,18 @@ Trang giới thiệu **Habit Tracker số** (`/habit/1-percent-better`), trang *
 
 ### 7.2. Cài đặt liên kết Zalo và bật nút trò chuyện nổi (FloatingChat)
 
-**Mục đích**: Cho phép độc giả bấm nút trò chuyện nổi ở góc màn hình để nhắn tin trực tiếp qua Zalo với Hana.
+**Mục đích**: Hai nút tròn nổi ở góc phải dưới, nằm **trên ly cà phê**: **Email** (mở ứng dụng email của khách) và **Zalo** (mở trò chuyện Zalo với Hana).
 
 **Cách thực hiện**:
 
 1. Vào **Cài đặt website** -> chọn tab **Liên hệ & Zalo**.
-2. Dán đường dẫn Zalo của bạn vào ô **Liên kết trò chuyện Zalo** (ví dụ: `https://zalo.me/090xxxxxxx`).
-3. Tick chọn vào ô **Hiện nút trò chuyện Zalo**.
-4. Bấm **Lưu**. Nút trò chuyện màu xanh tím với cánh bướm ấm áp sẽ xuất hiện ở góc phải bên dưới website.
+2. **Email liên hệ**: email nhận thư của khách (nút Email dùng địa chỉ này).
+3. **Hotline / Zalo**: số điện thoại, VD `097.8497.893`. Nếu ô **Liên kết trò chuyện Zalo** để trống, nút Zalo tự mở `https://zalo.me/<số này>`.
+4. **Liên kết trò chuyện Zalo** (không bắt buộc): dán link riêng nếu muốn khác số hotline (VD link Zalo OA).
+5. Tick ô **Hiện nút Email & Zalo nổi (góc phải dưới)** → bấm **Lưu**.
+
+- Thứ tự từ trên xuống: Email → Zalo → Ly cà phê. Ô nào để trống thì nút đó không hiện.
+- Hai nút tự ẩn ở trang học bài, tracker và rút thẻ để không che nội dung.
 
 ![Cài đặt Zalo và nút chat nổi](images/huong-dan/20-cai-dat-zalo-chat.png)
 <!-- ẢNH 20: trang Cài đặt website, tab Liên hệ & Zalo với ô Liên kết trò chuyện Zalo và công tắc bật nút chat -->
