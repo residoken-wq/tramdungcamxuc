@@ -1,4 +1,5 @@
 import React from 'react'
+import { textTarget } from '@/puck/style/text-target'
 
 export interface FormulaStepItem {
   number: string
@@ -21,12 +22,7 @@ export interface BrandFormulaProps {
   planItem2Title?: string
   planItem2Text?: string
   bgColor?:
-    | 'warm-ivory'
-    | 'soft-pink'
-    | 'lavender-mist'
-    | 'mint-haze'
-    | 'butter-cream'
-    | 'deep-navy'
+    'warm-ivory' | 'soft-pink' | 'lavender-mist' | 'mint-haze' | 'butter-cream' | 'deep-navy'
   padding?: 'sm' | 'md' | 'lg'
 }
 
@@ -46,6 +42,7 @@ const PADDINGS = {
 } as const
 
 export function BrandFormula({
+  id,
   seriesLabel,
   title,
   showAccentBar = true,
@@ -60,7 +57,7 @@ export function BrandFormula({
   planItem2Text,
   bgColor = 'warm-ivory',
   padding = 'md',
-}: BrandFormulaProps) {
+}: BrandFormulaProps & { id?: string }) {
   const isDeepNavy = bgColor === 'deep-navy'
 
   return (
@@ -70,6 +67,7 @@ export function BrandFormula({
         <div className="mb-8 text-left">
           {seriesLabel && (
             <span
+              {...textTarget(id, 'seriesLabel')}
               className={`mb-3 block font-ui text-xs sm:text-sm font-bold uppercase tracking-widest ${
                 isDeepNavy ? 'text-soft-pink' : 'text-bright-magenta'
               }`}
@@ -77,7 +75,10 @@ export function BrandFormula({
               {seriesLabel}
             </span>
           )}
-          <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl text-deep-navy tracking-tight !leading-[1.25]">
+          <h2
+            {...textTarget(id, 'title')}
+            className="font-display text-3xl sm:text-4xl lg:text-5xl text-deep-navy tracking-tight !leading-[1.25]"
+          >
             {title}
           </h2>
           {showAccentBar && (
@@ -115,7 +116,10 @@ export function BrandFormula({
             </div>
 
             {bottomQuoteLeft && (
-              <p className="font-quote text-base sm:text-lg italic text-bright-magenta leading-relaxed mt-2">
+              <p
+                {...textTarget(id, 'bottomQuoteLeft')}
+                className="font-quote text-base sm:text-lg italic text-bright-magenta leading-relaxed mt-2"
+              >
                 {bottomQuoteLeft}
               </p>
             )}
@@ -134,9 +138,7 @@ export function BrandFormula({
                   </span>
                 )}
                 {planCardSubtitle && (
-                  <p className="font-ui text-xs sm:text-sm text-deep-navy/85">
-                    {planCardSubtitle}
-                  </p>
+                  <p className="font-ui text-xs sm:text-sm text-deep-navy/85">{planCardSubtitle}</p>
                 )}
                 {planCardQuote && (
                   <p className="font-quote text-lg sm:text-xl italic text-deep-navy leading-relaxed my-2">

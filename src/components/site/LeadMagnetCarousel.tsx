@@ -71,6 +71,7 @@ const PADDING_CLASSES: Record<string, string> = {
 }
 
 export function LeadMagnetCarousel({
+  id,
   display = 'carousel',
   seriesLabel,
   titleLine1 = vi.sm05.carousel.emptyEditor,
@@ -86,7 +87,7 @@ export function LeadMagnetCarousel({
   items: propsItems,
   _resolved,
   puck,
-}: LeadMagnetCarouselProps) {
+}: LeadMagnetCarouselProps & { id?: string }) {
   const isEditing = puck?.isEditing ?? false
 
   // QA PK-27b: the builder has no server resolve, so fetch the same cards for the preview.
@@ -204,6 +205,7 @@ export function LeadMagnetCarousel({
           <SectionHeader
             titleHighlightStyle={titleHighlightStyle}
             titleHighlightAnimation={titleHighlightAnimation}
+            id={id}
             seriesLabel={seriesLabel}
             titleLine1={titleLine1}
             titleLine2={titleLine2}

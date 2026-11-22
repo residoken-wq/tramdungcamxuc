@@ -1,4 +1,5 @@
 import React from 'react'
+import { textTarget } from '@/puck/style/text-target'
 
 export interface NumberedStepCard {
   number: string
@@ -20,12 +21,7 @@ export interface NumberedStepsStripProps {
   outputStripText?: string
   bottomQuote?: string
   bgColor?:
-    | 'warm-ivory'
-    | 'soft-pink'
-    | 'lavender-mist'
-    | 'mint-haze'
-    | 'butter-cream'
-    | 'deep-navy'
+    'warm-ivory' | 'soft-pink' | 'lavender-mist' | 'mint-haze' | 'butter-cream' | 'deep-navy'
   padding?: 'sm' | 'md' | 'lg'
 }
 
@@ -45,6 +41,7 @@ const PADDINGS = {
 } as const
 
 export function NumberedStepsStrip({
+  id,
   seriesLabel,
   title,
   showAccentBar = true,
@@ -54,7 +51,7 @@ export function NumberedStepsStrip({
   bottomQuote,
   bgColor = 'warm-ivory',
   padding = 'md',
-}: NumberedStepsStripProps) {
+}: NumberedStepsStripProps & { id?: string }) {
   const isDeepNavy = bgColor === 'deep-navy'
 
   return (
@@ -64,6 +61,7 @@ export function NumberedStepsStrip({
         <div>
           {seriesLabel && (
             <span
+              {...textTarget(id, 'seriesLabel')}
               className={`mb-3 block font-ui text-xs sm:text-sm font-bold uppercase tracking-widest ${
                 isDeepNavy ? 'text-soft-pink' : 'text-bright-magenta'
               }`}
@@ -71,7 +69,10 @@ export function NumberedStepsStrip({
               {seriesLabel}
             </span>
           )}
-          <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl text-deep-navy tracking-tight !leading-[1.25]">
+          <h2
+            {...textTarget(id, 'title')}
+            className="font-display text-3xl sm:text-4xl lg:text-5xl text-deep-navy tracking-tight !leading-[1.25]"
+          >
             {title}
           </h2>
           {showAccentBar && (
@@ -98,9 +99,7 @@ export function NumberedStepsStrip({
               </h3>
 
               {st.text && (
-                <p className="font-ui text-xs text-deep-navy/80 leading-relaxed mt-1">
-                  {st.text}
-                </p>
+                <p className="font-ui text-xs text-deep-navy/80 leading-relaxed mt-1">{st.text}</p>
               )}
 
               {st.subLines && st.subLines.length > 0 && (
@@ -142,7 +141,10 @@ export function NumberedStepsStrip({
 
         {/* Optional Quote */}
         {bottomQuote && (
-          <p className="font-quote text-base sm:text-lg italic text-bright-magenta leading-relaxed mt-2 text-left">
+          <p
+            {...textTarget(id, 'bottomQuote')}
+            className="font-quote text-base sm:text-lg italic text-bright-magenta leading-relaxed mt-2 text-left"
+          >
             {bottomQuote}
           </p>
         )}

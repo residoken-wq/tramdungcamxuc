@@ -1,4 +1,5 @@
 import React from 'react'
+import { textTarget } from '@/puck/style/text-target'
 import { TwoToneTitle } from '@/components/ui/TwoToneTitle'
 import type { TitleHighlightAnimation, TitleHighlightStyle } from '@/components/ui/TwoToneTitle'
 
@@ -28,12 +29,7 @@ export interface LoopDiagramProps {
   rightItems?: LoopRightItem[]
   bottomQuote?: string
   bgColor?:
-    | 'warm-ivory'
-    | 'soft-pink'
-    | 'lavender-mist'
-    | 'mint-haze'
-    | 'butter-cream'
-    | 'deep-navy'
+    'warm-ivory' | 'soft-pink' | 'lavender-mist' | 'mint-haze' | 'butter-cream' | 'deep-navy'
   padding?: 'sm' | 'md' | 'lg'
 }
 
@@ -62,6 +58,7 @@ const DEFAULT_NODES: LoopNode[] = [
 ]
 
 export function LoopDiagram({
+  id,
   seriesLabel,
   titleLine1,
   titleLine2,
@@ -77,7 +74,7 @@ export function LoopDiagram({
   bottomQuote,
   bgColor = 'warm-ivory',
   padding = 'md',
-}: LoopDiagramProps) {
+}: LoopDiagramProps & { id?: string }) {
   const isDeepNavy = bgColor === 'deep-navy'
   const hasHeader = Boolean(titleLine1 || titleLine2 || seriesLabel)
   const isUpper = titleCase !== 'none'
@@ -228,6 +225,7 @@ export function LoopDiagram({
             <header className="flex flex-col text-left items-start">
               {seriesLabel && (
                 <span
+                  {...textTarget(id, 'seriesLabel')}
                   className={`mb-[var(--tdcx-eyebrow-gap,0.75rem)] font-ui text-xs font-bold uppercase tracking-widest ${
                     isDeepNavy ? 'text-soft-pink' : 'text-bright-magenta'
                   }`}
@@ -242,6 +240,7 @@ export function LoopDiagram({
                   } tracking-tight !leading-[var(--tdcx-title-lh,1.3)]`}
                 >
                   <TwoToneTitle
+                    id={id}
                     highlightStyle={titleHighlightStyle}
                     highlightAnimation={titleHighlightAnimation}
                     line1={titleLine1}
@@ -259,6 +258,7 @@ export function LoopDiagram({
               )}
               {emotionLine && (
                 <p
+                  {...textTarget(id, 'emotionLine')}
                   className={`mt-[var(--tdcx-emotion-gap,0.875rem)] font-quote text-lg sm:text-xl italic max-w-2xl ${
                     isDeepNavy ? 'text-white/85' : 'text-deep-navy/85'
                   }`}
@@ -281,7 +281,10 @@ export function LoopDiagram({
               )}
               <div className="flex flex-col gap-4">
                 {rightItems?.map((item, idx) => (
-                  <div key={idx} className="flex flex-col sm:flex-row sm:items-baseline gap-2 sm:gap-3">
+                  <div
+                    key={idx}
+                    className="flex flex-col sm:flex-row sm:items-baseline gap-2 sm:gap-3"
+                  >
                     <span
                       className={`inline-flex items-center justify-center px-3.5 py-1 rounded-full font-ui text-xs font-semibold shrink-0 w-fit ${
                         item.pillStyle === 'outline'
@@ -311,4 +314,3 @@ export function LoopDiagram({
     </section>
   )
 }
-

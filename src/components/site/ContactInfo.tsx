@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+import { textTarget } from '@/puck/style/text-target'
 import { safeHref } from '@/lib/safe-href'
 import { vi } from '@/lib/i18n/vi'
 import { TwoToneTitle } from '@/components/ui/TwoToneTitle'
@@ -57,6 +58,7 @@ const PADDINGS = {
 } as const
 
 export function ContactInfo({
+  id,
   seriesLabel = vi.sm06.contactInfo.defaultSeriesLabel,
   titleLine1 = vi.sm06.contactInfo.defaultTitleLine1,
   titleLine2 = vi.sm06.contactInfo.defaultTitleLine2,
@@ -71,7 +73,7 @@ export function ContactInfo({
   padding = 'md',
   _resolved,
   puck,
-}: ContactInfoProps) {
+}: ContactInfoProps & { id?: string }) {
   const isDeepNavy = bgColor === 'deep-navy'
   const isEditing = puck?.isEditing ?? false
   const contact = _resolved?.contact
@@ -160,6 +162,7 @@ export function ContactInfo({
           <div className="text-center mb-10 sm:mb-14 flex flex-col items-center">
             {seriesLabel && (
               <span
+                {...textTarget(id, 'seriesLabel')}
                 className={`mb-[var(--tdcx-eyebrow-gap,0.75rem)] font-ui text-xs font-bold uppercase tracking-widest ${seriesLabelColorClass}`}
               >
                 {seriesLabel}
@@ -169,6 +172,7 @@ export function ContactInfo({
             {(titleLine1 || titleLine2) && (
               <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl uppercase tracking-tight !leading-[var(--tdcx-title-lh,1.3)]">
                 <TwoToneTitle
+                  id={id}
                   highlightStyle={titleHighlightStyle}
                   highlightAnimation={titleHighlightAnimation}
                   line1={titleLine1}
@@ -181,6 +185,7 @@ export function ContactInfo({
 
             {emotionLine && (
               <p
+                {...textTarget(id, 'emotionLine')}
                 className={`mt-[var(--tdcx-emotion-gap,1rem)] font-quote text-base sm:text-lg italic leading-relaxed max-w-2xl ${emotionColorClass}`}
               >
                 {emotionLine}

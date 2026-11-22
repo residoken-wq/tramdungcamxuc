@@ -1,4 +1,5 @@
 import React from 'react'
+import { textTarget } from '@/puck/style/text-target'
 
 export interface ProgramWishCard {
   tone: 'butter-cream' | 'soft-pink' | 'mint-haze' | 'deep-navy'
@@ -44,6 +45,7 @@ const CARD_TONES = {
 } as const
 
 export function ProgramWishes({
+  id,
   seriesLabel,
   title,
   showAccentBar = true,
@@ -53,7 +55,7 @@ export function ProgramWishes({
   calloutText,
   bgColor = 'warm-ivory',
   padding = 'md',
-}: ProgramWishesProps) {
+}: ProgramWishesProps & { id?: string }) {
   const isDeepNavy = bgColor === 'deep-navy'
 
   return (
@@ -63,6 +65,7 @@ export function ProgramWishes({
         <div className="mb-6 text-left">
           {seriesLabel && (
             <span
+              {...textTarget(id, 'seriesLabel')}
               className={`mb-3 block font-ui text-xs sm:text-sm font-bold uppercase tracking-widest ${
                 isDeepNavy ? 'text-soft-pink' : 'text-bright-magenta'
               }`}
@@ -70,7 +73,10 @@ export function ProgramWishes({
               {seriesLabel}
             </span>
           )}
-          <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl text-deep-navy tracking-tight !leading-[1.25]">
+          <h2
+            {...textTarget(id, 'title')}
+            className="font-display text-3xl sm:text-4xl lg:text-5xl text-deep-navy tracking-tight !leading-[1.25]"
+          >
             {title}
           </h2>
           {showAccentBar && (
@@ -80,7 +86,10 @@ export function ProgramWishes({
             />
           )}
           {topQuote && (
-            <p className="mt-4 font-quote text-lg sm:text-xl lg:text-2xl italic text-bright-magenta leading-relaxed">
+            <p
+              {...textTarget(id, 'topQuote')}
+              className="mt-4 font-quote text-lg sm:text-xl lg:text-2xl italic text-bright-magenta leading-relaxed"
+            >
               {topQuote}
             </p>
           )}
@@ -134,12 +143,18 @@ export function ProgramWishes({
             className="bg-white rounded-2xl p-5 sm:p-6 border border-deep-navy/10 shadow-soft flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-6 text-left"
           >
             {calloutTitle && (
-              <span className="font-ui text-xs sm:text-sm font-bold uppercase tracking-wider text-deep-navy shrink-0">
+              <span
+                {...textTarget(id, 'calloutTitle')}
+                className="font-ui text-xs sm:text-sm font-bold uppercase tracking-wider text-deep-navy shrink-0"
+              >
                 {calloutTitle}
               </span>
             )}
             {calloutText && (
-              <p className="font-ui text-xs sm:text-sm leading-relaxed text-deep-navy/85 flex-1">
+              <p
+                {...textTarget(id, 'calloutText')}
+                className="font-ui text-xs sm:text-sm leading-relaxed text-deep-navy/85 flex-1"
+              >
                 {calloutText}
               </p>
             )}

@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+import { textTarget } from '@/puck/style/text-target'
 import Link from 'next/link'
 import { Button } from '@/components/ui/Button'
 import { BrandIcon } from '@/components/brand/BrandIcon'
@@ -15,7 +16,11 @@ import {
   type PublicProgramSummary,
 } from '@/puck/client-preview'
 import { vi } from '@/lib/i18n/vi'
-import { TwoToneTitle, type TitleHighlightAnimation, type TitleHighlightStyle } from '@/components/ui/TwoToneTitle'
+import {
+  TwoToneTitle,
+  type TitleHighlightAnimation,
+  type TitleHighlightStyle,
+} from '@/components/ui/TwoToneTitle'
 import { pickCopy, hasCopy } from '@/lib/copy'
 
 export type { PublicServiceSummary, PublicProgramSummary }
@@ -126,6 +131,7 @@ const PADDINGS = {
 } as const
 
 export function SolutionEcosystem({
+  id,
   version: _version,
   layout = 'cards',
   seriesLabel,
@@ -158,7 +164,7 @@ export function SolutionEcosystem({
   padding = 'md',
   _resolved,
   puck,
-}: SolutionEcosystemProps) {
+}: SolutionEcosystemProps & { id?: string }) {
   const isEditing = puck?.isEditing ?? false
   const isDeepNavy = bgColor === 'deep-navy'
   const seriesLabelColorClass = isDeepNavy ? 'text-soft-pink' : 'text-bright-magenta'
@@ -176,11 +182,23 @@ export function SolutionEcosystem({
   const effectiveDesc = pickCopy(description, '', useDefaultCopy)
 
   const effectiveCol1Title = pickCopy(col1Title, '[MẪU] Đào tạo cá nhân', useDefaultCopy)
-  const effectiveCol1Desc = pickCopy(col1Description, '[MẪU] Các công cụ số và lộ trình tự học', useDefaultCopy)
+  const effectiveCol1Desc = pickCopy(
+    col1Description,
+    '[MẪU] Các công cụ số và lộ trình tự học',
+    useDefaultCopy,
+  )
   const effectiveCol2Title = pickCopy(col2Title, '[MẪU] Khai vấn 1:1', useDefaultCopy)
-  const effectiveCol2Desc = pickCopy(col2Description, '[MẪU] Đồng hành chuyên sâu cá nhân hóa', useDefaultCopy)
+  const effectiveCol2Desc = pickCopy(
+    col2Description,
+    '[MẪU] Đồng hành chuyên sâu cá nhân hóa',
+    useDefaultCopy,
+  )
   const effectiveCol3Title = pickCopy(col3Title, '[MẪU] Doanh nghiệp', useDefaultCopy)
-  const effectiveCol3Desc = pickCopy(col3Description, '[MẪU] Giải pháp phát triển văn hóa và đội ngũ', useDefaultCopy)
+  const effectiveCol3Desc = pickCopy(
+    col3Description,
+    '[MẪU] Giải pháp phát triển văn hóa và đội ngũ',
+    useDefaultCopy,
+  )
 
   const col1GroupProductIds = (col1Groups || []).flatMap(
     (g) => g?.items?.map((it) => it?.productId).filter(Boolean) || [],
@@ -613,6 +631,7 @@ export function SolutionEcosystem({
           <div className="text-center mb-10 sm:mb-14 flex flex-col items-center">
             {effectiveSeriesLabel && (
               <span
+                {...textTarget(id, 'seriesLabel')}
                 className={`mb-[var(--tdcx-eyebrow-gap,0.75rem)] font-ui text-xs font-bold uppercase tracking-widest ${seriesLabelColorClass}`}
               >
                 {effectiveSeriesLabel}
@@ -622,6 +641,7 @@ export function SolutionEcosystem({
             {(effectiveTitle1 || effectiveTitle2) && (
               <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl uppercase tracking-tight !leading-[var(--tdcx-title-lh,1.3)]">
                 <TwoToneTitle
+                  id={id}
                   highlightStyle={titleHighlightStyle}
                   highlightAnimation={titleHighlightAnimation}
                   line1={effectiveTitle1}
@@ -634,6 +654,7 @@ export function SolutionEcosystem({
 
             {effectiveEmotion && (
               <p
+                {...textTarget(id, 'emotionLine')}
                 className={`mt-[var(--tdcx-emotion-gap,1rem)] font-quote text-lg sm:text-xl italic max-w-2xl ${
                   isDeepNavy ? 'text-white/90' : 'text-deep-navy/85'
                 }`}
@@ -644,6 +665,7 @@ export function SolutionEcosystem({
 
             {effectiveDesc && (
               <p
+                {...textTarget(id, 'description')}
                 className={`mt-4 font-ui text-base sm:text-lg leading-relaxed max-w-2xl ${descColorClass}`}
               >
                 {effectiveDesc}

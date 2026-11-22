@@ -4854,6 +4854,8 @@ export const vi = {
       overlayNone: 'Không phủ',
       overlayOpacityLabel: 'Độ đậm lớp phủ',
       contrastWarning: 'Kiểm tra chữ còn đọc rõ trên ảnh',
+      coveredByOwnImage:
+        'Khối này đang có ảnh riêng phủ kín (ô ảnh "Thư viện media" ở tab Nội dung), nên ảnh nền ở đây bị che, khách không thấy. Muốn đổi ảnh banner: đổi ở ô ảnh trong tab Nội dung.',
       positions: {
         'top left': 'Trên cùng bên trái',
         'top center': 'Trên cùng ở giữa',

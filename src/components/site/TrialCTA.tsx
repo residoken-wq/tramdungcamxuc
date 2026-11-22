@@ -43,6 +43,7 @@ const PADDINGS = {
 } as const
 
 export function TrialCTA({
+  id,
   productId,
   seriesLabel,
   titleLine1,
@@ -54,7 +55,7 @@ export function TrialCTA({
   padding = 'md',
   _resolved,
   puck,
-}: TrialCTAProps) {
+}: TrialCTAProps & { id?: string }) {
   const isEditing = puck?.isEditing ?? false
 
   const { product, loading } = useClientProduct(productId, _resolved?.product)
@@ -112,6 +113,7 @@ export function TrialCTA({
         <SectionHeader
           titleHighlightStyle={titleHighlightStyle}
           titleHighlightAnimation={titleHighlightAnimation}
+          id={id}
           seriesLabel={seriesLabel}
           titleLine1={titleLine1}
           titleLine2={titleLine2}

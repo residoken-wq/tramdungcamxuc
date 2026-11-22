@@ -48,6 +48,7 @@ export interface LibraryPreviewProps {
 }
 
 export function LibraryPreview({
+  id,
   version = 1,
   layout = 'grid',
   seriesLabel = '[MẪU] Khám phá tri thức',
@@ -61,7 +62,7 @@ export function LibraryPreview({
   padding = 'md',
   items,
   puck,
-}: LibraryPreviewProps) {
+}: LibraryPreviewProps & { id?: string }) {
   const isEditing = puck?.isEditing ?? false
   const paddingClasses = {
     sm: 'py-8 px-4',
@@ -119,7 +120,7 @@ export function LibraryPreview({
   let secondaryItems: LibraryPreviewItem[] = []
   if (layout === 'featured' && displayItems.length > 0) {
     const featuredIndex = displayItems.findIndex(
-      (item) => 'isPost' in item && item.isPost && item.featured
+      (item) => 'isPost' in item && item.isPost && item.featured,
     )
     const actualFeaturedIndex = featuredIndex >= 0 ? featuredIndex : 0
     featuredItem = displayItems[actualFeaturedIndex]
@@ -132,6 +133,7 @@ export function LibraryPreview({
         <SectionHeader
           titleHighlightStyle={titleHighlightStyle}
           titleHighlightAnimation={titleHighlightAnimation}
+          id={id}
           seriesLabel={seriesLabel}
           titleLine1={titleLine1}
           titleLine2={titleLine2}
@@ -149,11 +151,7 @@ export function LibraryPreview({
           </div>
         ) : layout === 'featured' ? (
           <div className="space-y-6 sm:space-y-8" data-testid="library-preview-featured">
-            {featuredItem && (
-              <div className="w-full">
-                {renderPreviewItem(featuredItem, true)}
-              </div>
-            )}
+            {featuredItem && <div className="w-full">{renderPreviewItem(featuredItem, true)}</div>}
             {secondaryItems.length > 0 && (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 items-stretch">
                 {secondaryItems.map((item) => renderPreviewItem(item, false))}
