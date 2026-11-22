@@ -217,7 +217,13 @@ export const SiteSettings: GlobalConfig = {
             },
             url('zaloGroupUrl', 'Nhóm Zalo'),
             url('zaloChatUrl', 'Liên kết trò chuyện Zalo'),
-            checkbox('showFloatingChat', 'Hiện nút trò chuyện Zalo'),
+            {
+              ...checkbox('showFloatingChat', 'Hiện nút Email & Zalo nổi (góc phải dưới)'),
+              admin: {
+                description:
+                  'Hai nút tròn nằm trên ly cà phê ở mọi trang (trừ trang học, tracker, rút thẻ). Email lấy từ "Email liên hệ"; Zalo lấy từ "Liên kết trò chuyện Zalo", để trống thì tự dùng số "Hotline / Zalo".',
+              },
+            },
             url('shopeeStoreUrl', 'Gian hàng Shopee'),
             {
               name: 'leadStatusOptions',

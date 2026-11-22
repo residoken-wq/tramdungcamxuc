@@ -1213,6 +1213,9 @@ export const vi = {
       ariaLabel: 'Trò chuyện qua Zalo',
       tooltip: 'Chat qua Zalo',
     },
+    floatingEmail: {
+      ariaLabel: 'Gửi email cho Trạm',
+    },
   },
   library: {
     pageTitle: 'Thư viện | Trạm Dừng Cảm Xúc',

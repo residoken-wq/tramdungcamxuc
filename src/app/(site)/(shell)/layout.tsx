@@ -60,6 +60,7 @@ export default async function SiteShellLayout({ children }: { children: React.Re
         floatingCoffee={shellData.floatingCoffee}
         showFloatingChat={shellData.floatingChat.showFloatingChat}
         zaloChatUrl={shellData.floatingChat.zaloChatUrl}
+        emailHref={shellData.floatingChat.emailHref}
       />
     </div>
   )

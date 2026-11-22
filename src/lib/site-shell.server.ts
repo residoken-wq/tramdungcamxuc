@@ -1,4 +1,5 @@
 import 'server-only'
+import { mailtoHref, zaloHref } from '@/lib/contact-links'
 import { isLegalFooterHidden } from '@/puck/locks'
 import { cache } from 'react'
 import { getPayload, type Where } from 'payload'
@@ -38,7 +39,10 @@ export interface SiteShellData {
   }
   floatingChat: {
     showFloatingChat: boolean
+    /** Zalo chat link (CMS link, else built from the hotline). */
     zaloChatUrl?: string | null
+    /** `mailto:` link of the contact email. */
+    emailHref?: string | null
   }
   floatingCoffee: FloatingCoffeeData | null
   headerSource: 'code' | 'builder'
@@ -63,6 +67,7 @@ export const DEFAULT_SITE_SHELL_DATA: SiteShellData = {
   floatingChat: {
     showFloatingChat: false,
     zaloChatUrl: null,
+    emailHref: null,
   },
   floatingCoffee: null,
   headerSource: 'code',
@@ -261,7 +266,8 @@ export function buildSiteShellFromPayloadData(args: {
   // 3. FloatingChat mapping
   const floatingChat = {
     showFloatingChat: Boolean(siteSettings?.showFloatingChat),
-    zaloChatUrl: siteSettings?.zaloChatUrl?.trim() || null,
+    zaloChatUrl: zaloHref(siteSettings?.zaloChatUrl, siteSettings?.hotline),
+    emailHref: mailtoHref(siteSettings?.email),
   }
 
   // 4. FloatingCoffee mapping
