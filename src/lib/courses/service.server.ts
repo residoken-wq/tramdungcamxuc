@@ -6,7 +6,6 @@ import type { CourseModule, Lesson, LessonProgress } from '@/payload-types'
 import { hasAccess } from '@/lib/entitlements'
 import { HABIT_TRACKER_PRODUCT_SLUG } from '@/lib/habit/config'
 import {
-  BunnyStreamProvider,
   buildYoutubeEmbedUrl,
   getVideoProvider,
   parseSocialVideoUrl,
@@ -192,8 +191,8 @@ async function getLessonPlaybackInternal(
 
     // Nhánh Bunny Stream giữ nguyên getVideoProvider()
     const videoProvider = getVideoProvider()
-    // No video id on Bunny: no player (an unsigned /embed/<lib>/ link would be broken)
-    if (videoProvider instanceof BunnyStreamProvider && !lesson.videoId?.trim()) {
+    // No video id: no player (Bunny would build a broken /embed/<lib>/ link, sandbox a fake one)
+    if (!lesson.videoId?.trim()) {
       return { kind: 'iframe', url: null, expiresAt: new Date(now.getTime() + 3600 * 1000) }
     }
     return videoProvider.getPlayback(lesson.videoId || '')
