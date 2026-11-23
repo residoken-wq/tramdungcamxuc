@@ -1450,6 +1450,10 @@ export interface Lesson {
    */
   videoId?: string | null;
   /**
+   * Không bắt buộc. Bài học hiện nút "Xem video trên Facebook / TikTok" (mở tab mới). Dùng khi video bài nằm trên trang của Hana; video Facebook / TikTok công khai thì ai có link cũng xem được. Bài không có link video nào thì khung video tự ẩn.
+   */
+  socialVideoUrl?: string | null;
+  /**
    * Nhập số không âm. Giá tiền tính bằng đồng.
    */
   durationSec?: number | null;
@@ -3131,6 +3135,7 @@ export interface LessonsSelect<T extends boolean = true> {
   videoSource?: T;
   youtubeUrl?: T;
   videoId?: T;
+  socialVideoUrl?: T;
   durationSec?: T;
   stage?: T;
   downloadables?:

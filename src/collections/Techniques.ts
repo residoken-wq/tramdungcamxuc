@@ -36,11 +36,13 @@ export function isValidExampleVideoUrl(value?: string | null): boolean {
       }
     }
 
-    // Facebook / YouTube / Web video links (mở tab mới theo zip DP-01)
+    // Facebook / TikTok / YouTube video links (opened in a new tab, DP-01)
     if (
       hostname === 'facebook.com' ||
       hostname.endsWith('.facebook.com') ||
       hostname === 'fb.watch' ||
+      hostname === 'tiktok.com' ||
+      hostname.endsWith('.tiktok.com') ||
       hostname === 'youtube.com' ||
       hostname.endsWith('.youtube.com') ||
       hostname === 'youtu.be'

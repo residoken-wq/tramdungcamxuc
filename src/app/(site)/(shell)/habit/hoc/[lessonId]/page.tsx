@@ -10,7 +10,7 @@ import { vi } from '@/lib/i18n/vi'
 import { VideoPlayer } from '@/components/habit/learning/VideoPlayer'
 import { LockedLessonCard } from '@/components/habit/learning/LockedLessonCard'
 import { LessonNavigation } from '@/components/habit/learning/LessonNavigation'
-import { getVideoProvider } from '@/lib/video'
+import { getVideoProvider, parseSocialVideoUrl } from '@/lib/video'
 import { RefreshOnSave } from '@/components/site/RefreshOnSave'
 import { getAdminPreviewUser } from '@/lib/live-preview.server'
 import type { Lesson } from '@/payload-types'
@@ -84,7 +84,15 @@ export default async function HabitLessonPage({ params, searchParams }: LessonPa
     }
 
     const provider = getVideoProvider()
-    const playback = doc.videoId ? await provider.getPlayback(doc.videoId) : null
+    const player = doc.videoId ? await provider.getPlayback(doc.videoId) : null
+    const external = parseSocialVideoUrl((doc as { socialVideoUrl?: string | null }).socialVideoUrl)
+    const playback =
+      player || external
+        ? {
+            ...(player ?? { kind: 'iframe' as const, url: null, expiresAt: new Date() }),
+            external,
+          }
+        : null
 
     result = {
       allowed: true,

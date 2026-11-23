@@ -61,7 +61,8 @@ export function Step5LoopDesign({
       const title = customLaw?.title || section.title
       const subLabel = customLaw?.subLabel || section.subLabel
       const question = customLaw?.question || section.question
-      const videoUrl = customLaw?.videoUrl || section.videoUrl
+      // Law edited in the CMS: its own link only (empty = no video button); else the default
+      const videoUrl = customLaw ? customLaw.videoUrl?.trim() || '' : section.videoUrl
 
       // Filter techniques for this section from CMS if provided
       const stageTechniques = techniques.filter((t) => t.stage === section.id)
