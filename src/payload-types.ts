@@ -1572,7 +1572,7 @@ export interface Technique {
    */
   lesson?: (number | null) | Lesson;
   /**
-   * Chỉ video công khai / miễn phí (YouTube, Vimeo, Bunny). Video trả phí gắn qua Bài học liên quan
+   * Link video công khai: Facebook, TikTok, YouTube, Vimeo hoặc Bunny. Để trống thì nút "Xem video" của kỹ thuật này tự ẩn. Video trả phí gắn qua Bài học liên quan.
    */
   exampleVideoUrl?: string | null;
   isSample?: boolean | null;

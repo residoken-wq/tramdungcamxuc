@@ -427,3 +427,17 @@ a.nav__link[aria-current='page'] {
   font-size: 14px;
   color: var(--sm-muted);
 }
+
+/* Rich text fields (Lexical) default to Georgia, which draws Vietnamese stacked accents badly on
+   Windows ("Bă´t đâ`u gõ"). Use the admin sans-serif stack, which has full Vietnamese glyphs. */
+.rich-text-lexical .editor-container,
+.lexical-diff .field-diff-content .html-diff {
+  font-family:
+    var(--font-body, system-ui),
+    'Segoe UI',
+    Roboto,
+    'Helvetica Neue',
+    Arial,
+    sans-serif;
+  letter-spacing: normal;
+}
