@@ -3774,7 +3774,7 @@ export const vi = {
     technique: {
       exampleVideoUrl: 'Video ví dụ',
       exampleVideoUrlDesc:
-        'Chỉ video công khai / miễn phí (YouTube, Vimeo, Bunny). Video trả phí gắn qua Bài học liên quan',
+        'Link video công khai: Facebook, TikTok, YouTube, Vimeo hoặc Bunny. Để trống thì nút "Xem video" của kỹ thuật này tự ẩn. Video trả phí gắn qua Bài học liên quan.',
     },
     errors: {
       requiredStationName: 'Vui lòng nhập tên chặng.',
