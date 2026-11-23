@@ -6,6 +6,7 @@ export * from './types'
 export * from './sandbox'
 export * from './bunny'
 export * from './youtube'
+export * from './social'
 
 /**
  * REVIEW-REQUIRED: Video provider factory.

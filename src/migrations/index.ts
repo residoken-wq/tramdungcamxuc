@@ -47,6 +47,7 @@ import * as migration_20261111_164500_au03_habit_fields from './20261111_164500_
 import * as migration_20261115_180000_bx03_product_sections from './20261115_180000_bx03_product_sections';
 import * as migration_20261115_210000_bx05_empty_means_hidden from './20261115_210000_bx05_empty_means_hidden';
 import * as migration_20261116_120000_bx07_youtube_lessons from './20261116_120000_bx07_youtube_lessons';
+import * as migration_20261123_090000_lesson_social_video from './20261123_090000_lesson_social_video';
 
 export const migrations = [
   {
@@ -293,5 +294,10 @@ export const migrations = [
     up: migration_20261116_120000_bx07_youtube_lessons.up,
     down: migration_20261116_120000_bx07_youtube_lessons.down,
     name: '20261116_120000_bx07_youtube_lessons'
+  },
+  {
+    up: migration_20261123_090000_lesson_social_video.up,
+    down: migration_20261123_090000_lesson_social_video.down,
+    name: '20261123_090000_lesson_social_video'
   },
 ];

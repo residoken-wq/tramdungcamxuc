@@ -5,7 +5,14 @@ import config from '@/payload.config'
 import type { CourseModule, Lesson, LessonProgress } from '@/payload-types'
 import { hasAccess } from '@/lib/entitlements'
 import { HABIT_TRACKER_PRODUCT_SLUG } from '@/lib/habit/config'
-import { buildYoutubeEmbedUrl, getVideoProvider, parseYoutubeVideoId, type VideoPlayback } from '@/lib/video'
+import {
+  BunnyStreamProvider,
+  buildYoutubeEmbedUrl,
+  getVideoProvider,
+  parseSocialVideoUrl,
+  parseYoutubeVideoId,
+  type VideoPlayback,
+} from '@/lib/video'
 import { getSiteUrl } from '@/lib/site-url'
 import type {
   CourseDashboardData,
@@ -70,11 +77,14 @@ async function getLessonPlaybackInternal(
   }
 
   // 1. Tìm bài học trong database
-  let lesson: (Lesson & {
-    videoId?: string | null
-    videoSource?: ('bunny' | 'youtube') | null
-    youtubeUrl?: string | null
-  }) | null = null
+  let lesson:
+    | (Lesson & {
+        videoId?: string | null
+        videoSource?: ('bunny' | 'youtube') | null
+        youtubeUrl?: string | null
+        socialVideoUrl?: string | null
+      })
+    | null = null
   try {
     lesson = (await payload.findByID({
       collection: 'lessons',
@@ -152,8 +162,15 @@ async function getLessonPlaybackInternal(
     _status: lesson._status,
   })
 
-  // REVIEW-REQUIRED: BX-07 - Phát video YouTube tạm thời khi videoSource = youtube
   const resolveLessonPlayback = async (): Promise<VideoPlayback | null> => {
+    const playback = await resolvePlayer()
+    // Hana's Facebook / TikTok link (opened in a new tab), only after access was checked
+    const external = parseSocialVideoUrl(lesson?.socialVideoUrl)
+    return playback ? { ...playback, external } : playback
+  }
+
+  // REVIEW-REQUIRED: BX-07 - Phát video YouTube tạm thời khi videoSource = youtube
+  const resolvePlayer = async (): Promise<VideoPlayback | null> => {
     if (lesson.videoSource === 'youtube') {
       const videoId = parseYoutubeVideoId(lesson.youtubeUrl)
       const expiresAt = new Date(now.getTime() + 3600 * 1000)
@@ -175,6 +192,10 @@ async function getLessonPlaybackInternal(
 
     // Nhánh Bunny Stream giữ nguyên getVideoProvider()
     const videoProvider = getVideoProvider()
+    // No video id on Bunny: no player (an unsigned /embed/<lib>/ link would be broken)
+    if (videoProvider instanceof BunnyStreamProvider && !lesson.videoId?.trim()) {
+      return { kind: 'iframe', url: null, expiresAt: new Date(now.getTime() + 3600 * 1000) }
+    }
     return videoProvider.getPlayback(lesson.videoId || '')
   }
 

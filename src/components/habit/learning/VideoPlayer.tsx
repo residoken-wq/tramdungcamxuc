@@ -20,7 +20,93 @@ export interface VideoPlayerProps {
   onProgressRecorded?: (percent: number) => void
 }
 
-export function VideoPlayer({
+/**
+ * Lesson video: the player (Bunny / YouTube / sandbox) and, when set, a button to the same lesson
+ * on Hana's Facebook / TikTok. With neither, nothing is shown (no empty video box).
+ */
+export function VideoPlayer(props: VideoPlayerProps) {
+  const { playback } = props
+  const hasPlayer = playback.kind === 'sandbox' || Boolean(playback.url)
+  const external = playback.external ?? null
+  if (!hasPlayer && !external) return null
+  return (
+    <div className="space-y-3">
+      {hasPlayer && <LessonPlayer {...props} />}
+      {external && (
+        <ExternalLessonVideo
+          lessonId={props.lessonId}
+          url={external.url}
+          platform={external.platform}
+          isAuthenticated={Boolean(props.isAuthenticated)}
+          lessonOrder={props.lessonOrder ?? 0}
+          moduleId={props.moduleId ?? 0}
+          compact={hasPlayer}
+        />
+      )}
+    </div>
+  )
+}
+
+function ExternalLessonVideo({
+  lessonId,
+  url,
+  platform,
+  isAuthenticated,
+  lessonOrder,
+  moduleId,
+  compact,
+}: {
+  lessonId: number
+  url: string
+  platform: 'facebook' | 'tiktok'
+  isAuthenticated: boolean
+  lessonOrder: number
+  moduleId: number
+  compact: boolean
+}) {
+  const t = vi.learning.lesson.externalVideo
+  const label = platform === 'tiktok' ? t.tiktok : t.facebook
+  const onOpen = () => {
+    track('external_clicked', { type: platform, context: 'lesson' })
+    // The video plays on another site, so opening it counts as watching the lesson
+    if (!isAuthenticated) return
+    recordLessonProgress(lessonId, 100)
+      .then((res) => {
+        if (res.success && res.newlyCompleted && res.meta) {
+          track('lesson_completed', {
+            courseSlug: res.meta.courseSlug,
+            moduleId: res.meta.moduleId ?? moduleId,
+            lessonId: res.meta.lessonId,
+            lessonOrder: res.meta.lessonOrder ?? lessonOrder,
+          })
+        }
+      })
+      .catch(() => {})
+  }
+  const button = (
+    <a
+      href={url}
+      target="_blank"
+      rel="noopener noreferrer"
+      onClick={onOpen}
+      data-testid="lesson-external-video"
+      className="inline-flex items-center justify-center gap-2 rounded-full bg-bright-magenta px-6 py-3 font-ui text-sm font-semibold text-white shadow-soft hover:bg-accent-pink transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-deep-navy"
+    >
+      <span aria-hidden="true">▶</span>
+      <span>{label}</span>
+      <span aria-hidden="true">↗</span>
+    </a>
+  )
+  if (compact) return <div className="flex justify-end">{button}</div>
+  return (
+    <div className="aspect-video w-full rounded-2xl border border-lavender-mist bg-gradient-to-br from-soft-pink via-warm-ivory to-lavender-mist flex flex-col items-center justify-center gap-3 p-6 text-center">
+      {button}
+      <p className="font-body text-xs sm:text-sm text-deep-navy/70">{t.hint}</p>
+    </div>
+  )
+}
+
+function LessonPlayer({
   lessonId,
   playback,
   moduleId = 0,

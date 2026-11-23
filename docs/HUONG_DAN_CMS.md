@@ -993,6 +993,17 @@ Bạn có thể mở trình hướng dẫn bằng 3 cách rất thuận tiện:
 
 ---
 
+### 3.10.1c. Dẫn bài học sang video Facebook / TikTok của Hana
+
+1. **Bài học** → mở bài → ô **Link video Facebook / TikTok** → dán link video (VD `https://www.tiktok.com/@.../video/...` hoặc `https://www.facebook.com/reel/...`) → **Xuất bản**.
+2. Trên trang bài học, khách thấy nút **"Xem video bài học trên TikTok / Facebook"** (mở tab mới). Bấm nút được tính là đã học xong bài.
+3. Bài có cả trình phát (Bunny / YouTube) và link Facebook / TikTok: hiện trình phát, nút nằm bên dưới.
+4. **Bài chưa có link video nào thì khung video tự ẩn**, không còn ô "Chưa có liên kết phát video".
+
+> Link chỉ hiện cho khách có quyền xem bài (bài xem thử hoặc đã mua / đang dùng thử). Video công khai trên Facebook / TikTok thì ai có link cũng xem được.
+
+Nút "Xem video" ở **Habit Loop 5 phút** (Kỹ thuật thực hành → *Link video ví dụ*; Nội dung hành trình Habit → 4 quy luật → *Link video bài giảng*) cũng nhận link TikTok. Quy luật đã nhập trong CMS mà để trống link thì nút video ẩn.
+
 ### 3.10.2. Thêm bài học bằng Trình hướng dẫn (4 bước)
 
 **Mục đích**: Hỗ trợ Hana đăng tải bài học mới vào lộ trình khóa học một cách nhanh gọn và trực quan nhất: vừa chọn chương vừa có thể tạo nhanh chương mới ngay tại chỗ, gắn bài học vào 4 chặng Habit Loop, tự động kiểm tra mã video Bunny và gõ thời lượng theo dạng phút:giây quen thuộc, kèm theo màn hình xem trước 3 kích thước trước khi lưu.

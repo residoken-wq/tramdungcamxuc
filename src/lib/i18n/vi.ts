@@ -1844,6 +1844,11 @@ export const vi = {
       defaultLessonTitle: 'Bài học',
       videoTitle: 'Video bài học',
       noVideoUrl: 'Chưa có liên kết phát video khả dụng.',
+      externalVideo: {
+        facebook: 'Xem video bài học trên Facebook',
+        tiktok: 'Xem video bài học trên TikTok',
+        hint: 'Video mở ở tab mới. Xem xong quay lại đây để học tiếp.',
+      },
       navAriaLabel: 'Điều hướng bài học',
       progressRecordFailed: 'Không thể ghi nhận tiến độ.',
       progressError: 'Đã có lỗi xảy ra khi ghi nhận tiến độ.',
@@ -3780,7 +3785,7 @@ export const vi = {
       requiredFactStatement: 'Vui lòng nhập số liệu hoặc dẫn chứng.',
       requiredFactSource: 'Bắt buộc ghi nguồn kiểm chứng cho số liệu.',
       invalidExampleVideoUrl:
-        'Chỉ chấp nhận liên kết video công khai từ YouTube, Vimeo hoặc Bunny Stream.',
+        'Chỉ chấp nhận liên kết video công khai từ Facebook, TikTok, YouTube, Vimeo hoặc Bunny Stream.',
       invalidDailyPercent: 'Tỷ lệ cải thiện mỗi ngày phải từ 0.1% đến 10%.',
       invalidMaxDays: 'Số ngày tối đa phải từ 7 đến 1000 ngày.',
     },
