@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useCallback, useEffect, useRef, useState, useTransition } from 'react'
+import { Play } from 'lucide-react'
 import type { VideoPlayback } from '@/lib/video'
 import { track } from '@/lib/analytics/track'
 import { vi } from '@/lib/i18n/vi'
@@ -26,7 +27,10 @@ export interface VideoPlayerProps {
  */
 export function VideoPlayer(props: VideoPlayerProps) {
   const { playback } = props
-  const hasPlayer = playback.kind === 'sandbox' || Boolean(playback.url)
+  // The sandbox player is a test stand-in: only shown where simulating is allowed (dev / e2e),
+  // never on the live site, where it read "Video mẫu – chưa kết nối Bunny".
+  const hasPlayer =
+    playback.kind === 'sandbox' ? Boolean(playback.allowSimulate) : Boolean(playback.url)
   const external = playback.external ?? null
   if (!hasPlayer && !external) return null
   return (
@@ -92,7 +96,7 @@ function ExternalLessonVideo({
       data-testid="lesson-external-video"
       className="inline-flex items-center justify-center gap-2 rounded-full bg-bright-magenta px-6 py-3 font-ui text-sm font-semibold text-white shadow-soft hover:bg-accent-pink transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-deep-navy"
     >
-      <span aria-hidden="true">▶</span>
+      <Play className="h-4 w-4 fill-current" aria-hidden="true" />
       <span>{label}</span>
       <span aria-hidden="true">↗</span>
     </a>

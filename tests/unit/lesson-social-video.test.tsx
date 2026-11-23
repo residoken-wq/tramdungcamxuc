@@ -77,6 +77,24 @@ describe('Lesson video on Facebook / TikTok', () => {
       cleanup()
     })
 
+    it('sandbox stand-in is hidden on the live site (no simulate), only the link shows', () => {
+      render(
+        <VideoPlayer
+          {...base}
+          playback={{
+            kind: 'sandbox',
+            url: null,
+            expiresAt,
+            allowSimulate: false,
+            external: { url: FACEBOOK, platform: 'facebook' },
+          }}
+        />,
+      )
+      expect(screen.queryByText(viLabels.learning.lesson.sandboxNotice)).toBeNull()
+      expect(screen.getByTestId('lesson-external-video')).toBeTruthy()
+      cleanup()
+    })
+
     it('player and link: both are shown', () => {
       render(
         <VideoPlayer
@@ -103,6 +121,7 @@ describe('Lesson video on Facebook / TikTok', () => {
     let freeLessonId = 0
     let paidLessonId = 0
     let emptyLessonId = 0
+    let noIdLessonId = 0
 
     beforeAll(async () => {
       payload = await getPayload({ config: await config })
@@ -139,6 +158,12 @@ describe('Lesson video on Facebook / TikTok', () => {
         socialVideoUrl: FACEBOOK,
         isFreePreview: false,
       })
+      noIdLessonId = await lesson({
+        title: '[MẪU] Bài Bunny chưa có mã',
+        videoSource: 'bunny',
+        socialVideoUrl: FACEBOOK,
+        isFreePreview: true,
+      })
       emptyLessonId = await lesson({
         title: '[MẪU] Bài chưa có video',
         videoSource: 'youtube',
@@ -166,6 +191,13 @@ describe('Lesson video on Facebook / TikTok', () => {
       const res = await getLessonPlayback(paidLessonId, null)
       expect(res.allowed).toBe(false)
       expect(JSON.stringify(res)).not.toContain('facebook.com')
+    })
+
+    it('bunny lesson without a video id: no sandbox / Bunny player is created', async () => {
+      const res = await getLessonPlayback(noIdLessonId, null)
+      expect(res.playback?.kind).toBe('iframe')
+      expect(res.playback?.url).toBeNull()
+      expect(res.playback?.external).toEqual({ url: FACEBOOK, platform: 'facebook' })
     })
 
     it('lesson without any video: no player URL and no link (page hides the box)', async () => {
